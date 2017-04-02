@@ -2,6 +2,7 @@ package controller.controllers;
 import java.awt.FlowLayout;
 
 import controller.MainController;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -42,7 +43,7 @@ public class LoginController {
     }
 
     public void initialize() {
-
+    	
     }
 
     public void btnNextEvent(ActionEvent event) {
