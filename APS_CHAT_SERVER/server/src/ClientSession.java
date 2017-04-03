@@ -4,7 +4,7 @@ import java.net.Socket;
 
 import requests.Request;
 
-public class ClientSession implements Runnable {
+public class ClientSession extends Thread {
 
 	private Socket session;
 	private String user;

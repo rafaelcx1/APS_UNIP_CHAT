@@ -7,6 +7,8 @@ import controller.controllers.LoginController;
 import controller.controllers.MessageController;
 import controller.controllers.PrincipalController;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import model.requests.MessageRequest;
 import model.requests.Request;
@@ -20,6 +22,7 @@ public class MainController extends Application {
 	 * loginController = Instância da tela de login
 	 * principalController = Instância da tela Principal
 	 * messageWindows = Lista com as janelas de mensagem
+	 * chatWindowsUsers = Lista com listener com os usuários de cada janela
 	 * connectionStatus = Atributo com o status da conexão, caso a conexão falhe, este atributo será setado como false
 	 * userLogged = Atributo para indicar se há um usuário logado
 	 * nickname = Atributo para armazenar o nickname do usuário
@@ -31,6 +34,7 @@ public class MainController extends Application {
 	private LoginController loginController;
 	private PrincipalController principalController;
 	private List<MessageController> messageWindows;
+	private ObservableList<String> chatWindowsUsers = FXCollections.observableArrayList();
 	private boolean connectionStatus;
 	private boolean userLogged;
 	private String nickname;
@@ -80,6 +84,11 @@ public class MainController extends Application {
 
 	// Método que irá abrir uma nova janela caso receba uma mensagem
 	public void openMessageScreen(MessageRequest msg) {
+
+	}
+
+	// Método de evento do ObservableList chatWindowsUsers
+	public void chatWindowsUsersEvent(ObservableList<String> list) {
 
 	}
 
