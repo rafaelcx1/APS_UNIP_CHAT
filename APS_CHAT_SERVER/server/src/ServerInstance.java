@@ -25,6 +25,7 @@ public class ServerInstance {
 			while(true) {
 				ClientSession clientConnection = new ClientSession(serverInstance.accept());
 				new Thread(clientConnection).start();
+				System.out.println("Client connection. | " + LocalDateTime.now().toString() + "\n");
 				loggedClients.add(clientConnection);
 			}
 
