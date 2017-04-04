@@ -1,6 +1,7 @@
 package controller;
 
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 import controller.controllers.LoginController;
@@ -33,7 +34,7 @@ public class MainController extends Application {
 	private RecieveObjectThread recieveObject;
 	private LoginController loginController;
 	private PrincipalController principalController;
-	private List<MessageController> messageWindows;
+	private List<MessageController> messageWindows = new ArrayList<>();
 	private ObservableList<String> chatWindowsUsers = FXCollections.observableArrayList();
 	private boolean connectionStatus;
 	private boolean userLogged;

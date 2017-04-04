@@ -15,6 +15,13 @@ import model.requests.Request;
 @SuppressWarnings("unused")
 public class LoginController {
 
+	/*
+	 * Atributos com anotação @FXML = Elementos de interface
+	 * mainController = Instância do mainController
+	 * loginModel = Instância do loginModel para fazer o envio e tratamento de Requests
+	 * loginScreen = booleano para indicar se a tela está em config do servidor(false) ou do nickname(true)
+	 * */
+
 	@FXML
     private BorderPane pane;
 	@FXML
@@ -42,22 +49,27 @@ public class LoginController {
     	this.mainController = mainController;
     }
 
+    // Método padrão do FXML que é chamado ao carregar os elementos
     public void initialize() {
-    	
+
     }
 
+    // Método do botão btnNext, ele irá logar se o loginScreen for true, ou passar para a tela de login se esta variável for false
     public void btnNextEvent(ActionEvent event) {
 
     }
 
+    // Método do botão btnExit, irá sair se o loginScreen for false, ou voltar caso seja true
     public void btnExitEvent(ActionEvent event) {
 
     }
 
+    // Método para inserir um texto de no label de status
     public void setStatusText(String text) {
 
     }
 
+    // Método irá passar o request para o login model
     public void recieveObjetc(Request request) {
 
     }
