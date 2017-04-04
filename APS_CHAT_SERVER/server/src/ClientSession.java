@@ -3,6 +3,7 @@ package src;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
+import java.time.LocalDateTime;
 
 import requests.InfoRequest;
 import requests.InfoReturn;
@@ -35,11 +36,11 @@ public class ClientSession implements Runnable {
 			}
 
 		} catch(IOException e) {
-			System.out.println("IOException occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
+			System.out.println("IOException occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
 		} catch (ClassNotFoundException e) {
-			System.out.println("Invalid Object Recieved.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
+			System.out.println("Invalid Object Recieved.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
 		} catch (Exception e) {
-			System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
+			System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
 		}
 	}
 
@@ -50,7 +51,7 @@ public class ClientSession implements Runnable {
 
 				if(!ServerInstance.checkExistClient(user = request.getUserFrom())){
 					user = request.getUserFrom();
-					System.out.println(user + " logged on server!");
+					System.out.println(user + " logged on server! | " + LocalDateTime.now().toString() + "\n");
 					InfoReturn infoReturn = new InfoReturn(false);
 					infoReturn.setUserFrom("Server");
 					infoReturn.setUserTo(request.getUserFrom());
@@ -64,7 +65,7 @@ public class ClientSession implements Runnable {
 					ServerTasks.sendObject(infoRequest);
 				} else {
 					user = request.getUserFrom();
-					System.out.println(user + " failed to loggon!");
+					System.out.println(user + " failed to loggon! | " + LocalDateTime.now().toString() + "\n");
 					InfoReturn infoReturn = new InfoReturn(true);
 					infoReturn.setUserFrom("Server");
 					infoReturn.setUserTo(request.getUserFrom());
@@ -79,22 +80,38 @@ public class ClientSession implements Runnable {
 			case LOGOFF: {
 
 				try {
-					System.out.println(request.getUserFrom() + " deslogged on server!");
+					System.out.println(request.getUserFrom() + " deslogged on server! | " + LocalDateTime.now().toString() + "\n");
 					session.close();
 					ServerInstance.logoffClient(this);
 				} catch (Exception e) {
-					System.out.println("An error occurred on logoff of the user '" + request.getUserFrom() +"'.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
+					System.out.println("An error occurred on logoff of the user '" + request.getUserFrom() +"'.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
 				}
 
 				break;
 			}
 
 			case SEND_OR_RECIEVE_MSG: {
-				ServerTasks.sendObject(request);
+				System.out.println("The user '" + request.getUserFrom() + "' is sending a message to '" + request.getUserTo() + "'. | " + LocalDateTime.now().toString() + "\n");
+				if(ServerTasks.sendObject(request)){
+					InfoReturn infoReturn = new InfoReturn(false);
+					infoReturn.setUserFrom("Server");
+					infoReturn.setUserTo(request.getUserFrom());
+					infoReturn.setOperationSource(OperationType.SUCCESS_MSG);
+					infoReturn.setMessage("Message sended!");
+					ServerTasks.sendObject(infoReturn);
+				} else {
+					InfoReturn infoReturn = new InfoReturn(true);
+					infoReturn.setUserFrom("Server");
+					infoReturn.setUserTo(request.getUserFrom());
+					infoReturn.setOperationSource(OperationType.ERROR_MSG);
+					infoReturn.setMessage("Error on send message.");
+					ServerTasks.sendObject(infoReturn);
+				}
 				break;
 			}
 
 			case INFO: {
+				System.out.println("The user '" + request.getUserFrom() + "' is requesting a info from the server!. | " + LocalDateTime.now().toString() + "\n");
 				InfoRequest infoRequest = new InfoRequest("Server");
 				infoRequest.setUserTo(request.getUserFrom());
 				infoRequest.setUsers(ServerInstance.getOnlineUsers());
@@ -102,7 +119,7 @@ public class ClientSession implements Runnable {
 				break;
 			}
 			default: {
-				System.out.println(request.getUserFrom() + " sended a invalid object to server!");
+				System.out.println(request.getUserFrom() + " sended a invalid object to server! | " + LocalDateTime.now().toString() + "\n");
 				InfoReturn infoReturn = new InfoReturn(true);
 				infoReturn.setUserFrom("Server");
 				infoReturn.setUserTo(request.getUserFrom());
