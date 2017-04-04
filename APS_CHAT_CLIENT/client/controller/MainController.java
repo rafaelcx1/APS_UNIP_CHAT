@@ -1,15 +1,26 @@
 package controller;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 
 import controller.controllers.LoginController;
 import controller.controllers.MessageController;
 import controller.controllers.PrincipalController;
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import model.requests.MessageRequest;
 import model.requests.Request;
@@ -34,9 +45,9 @@ public class MainController extends Application {
 	private RecieveObjectThread recieveObject;
 	private LoginController loginController;
 	private PrincipalController principalController;
-	private List<MessageController> messageWindows = new ArrayList<>();
+	private ArrayList<MessageController> messageWindows = new ArrayList<>();
 	private ObservableList<String> chatWindowsUsers = FXCollections.observableArrayList();
-	private boolean connectionStatus;
+	private BooleanProperty connectionStatus = new SimpleBooleanProperty(false);
 	private boolean userLogged;
 	private String nickname;
 	private Stage rootStage;
@@ -56,6 +67,7 @@ public class MainController extends Application {
 	public void start(Stage stage) {
 
 		chatWindowsUsersEvent(this.chatWindowsUsers); // Irá inserir um evento na lista chatWindowsUsers
+		connectionStatusEvent(this.connectionStatus); // Irá inserir um evento no connectionStatus
 		openLogonScreen(); // Abertura da tela de logon
 	}
 
@@ -79,6 +91,14 @@ public class MainController extends Application {
 
 	}
 
+	// Método que irá inicializar as Threads
+	public void initializeThreads() {
+		testConnection = new TestConnectionThread();
+		new Thread(testConnection);
+		recieveObject = new RecieveObjectThread();
+		new Thread(recieveObject);
+	}
+
 	// Método que irá abrir a janela principal
 	public void openPrincipalScreen(String nickname) {
 
@@ -92,6 +112,36 @@ public class MainController extends Application {
 	// Método de evento do ObservableList chatWindowsUsers
 	public void chatWindowsUsersEvent(ObservableList<String> list) {
 
+		list.addListener((ListChangeListener<String>) (c) -> {
+			while(c.next()) {
+				if(c.wasAdded()) {
+					for(String user : c.getAddedSubList()) {
+						messageWindows.add(new MessageController(user));
+					}
+				} else if(c.wasRemoved()) {
+					for(String user : c.getRemoved()) {
+						messageWindows.removeIf((t) -> {
+							if(t.getLoginRecipient().equals("user")) {
+								return true;
+							} else {
+								return false;
+							}
+						});
+					}
+				}
+			}
+		});
+
+	}
+
+	// Método de evento do BooleanProperty connectionStatus
+	public void connectionStatusEvent(BooleanProperty connectionStatus) {
+		connectionStatus.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
+			if(newValue && oldValue != newValue)
+				reconnectionAction();
+			else
+				lostConnectionAction();
+		});
 	}
 
 	// Método que irá executar os procedimentos de perda de conexão
@@ -121,9 +171,20 @@ public class MainController extends Application {
 		@Override
 		public void run() {
 			try {
-				Thread.sleep(100);
+				while(true){
+					if(connection.isConnected())
+						connectionStatus.setValue(true);
+					else
+						connectionStatus.setValue(false);
+					Thread.sleep(100);
+				}
 			} catch(InterruptedException e) {
-
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setContentText("An InterruptedException has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
+				alert.setHeaderText("InterruptedException:");
+				alert.setTitle("APPLICATION ERROR");
+				alert.setResizable(false);
+				alert.show();
 			}
 		}
 
@@ -138,9 +199,25 @@ public class MainController extends Application {
 		@Override
 		public void run() {
 			try {
-				Thread.sleep(100);
-			} catch(InterruptedException e) {
-
+				while(true) {
+					if(connection != null) {
+						ObjectInputStream ois = (ObjectInputStream) connection.getInputStream();
+						while(true) {
+							if(ois.read() > -1) {
+								recieveObject((Request) ois.readObject());
+							}
+							Thread.sleep(100);
+						}
+					}
+					Thread.sleep(100);
+				}
+			} catch(InterruptedException | ClassNotFoundException | IOException e) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setContentText("A FATAL ERROR has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
+				alert.setHeaderText("ERROR:");
+				alert.setTitle("APPLICATION ERROR");
+				alert.setResizable(false);
+				alert.show();
 			}
 		}
 

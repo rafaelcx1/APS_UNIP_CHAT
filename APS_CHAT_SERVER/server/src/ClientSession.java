@@ -24,7 +24,7 @@ public class ClientSession implements Runnable {
 		sessionStart();
 		// Thread para testar conexão com o client
 		new Thread(() -> {
-			if(!session.isConnected() || !session.isClosed()) {
+			while(session.isConnected() || !session.isClosed()) {
 				try {
 					System.out.println("Closing session with user '" + ((user != null) ? user : "%not logged user%") + "'... | " + LocalDateTime.now().toString());
 					this.session.close();
