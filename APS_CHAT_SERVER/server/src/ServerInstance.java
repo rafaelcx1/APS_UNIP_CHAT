@@ -2,30 +2,96 @@ package src;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import requests.InfoRequest;
+import requests.InfoUserModel;
 
 public class ServerInstance {
 
 	private static ObservableList<ClientSession> loggedClients = FXCollections.observableArrayList();
 
-	public static void main(String[] args) throws IOException {
-		ServerSocket serverInstance = null;
-		try {
-			serverInstance = new ServerSocket(9876);
+	public static void main(String[] args) {
+		loggedClients.addListener(new LoggedClientEvent());
+
+		try(ServerSocket serverInstance = new ServerSocket(9876)) {
+			System.out.println("Server started!\nLogs below:\n");
 
 			while(true) {
 				ClientSession clientConnection = new ClientSession(serverInstance.accept());
+				new Thread(clientConnection).start();
 				loggedClients.add(clientConnection);
-				clientConnection.start();
 			}
 
 		} catch (IOException e) {
 			System.out.println("IOExeption error.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n");
-			e.printStackTrace();
-		} finally {
-			if(serverInstance != null) serverInstance.close();
+		}
+
+	}
+
+	public static void logoffClient(ClientSession client) {
+		loggedClients.remove(client);
+	}
+
+	public static Socket getClientSession(String user) {
+		for(ClientSession client : loggedClients) {
+			if(client.getUser().equals(user))
+				return client.getSession();
+		}
+		return null;
+	}
+
+	public static boolean checkExistClient(String user) {
+		for(ClientSession client : loggedClients) {
+			if(client.getUser().equals(user))
+				return true;
+		}
+		return false;
+	}
+
+	private static class LoggedClientEvent implements ListChangeListener<ClientSession> {
+
+		@Override
+		public void onChanged(Change<? extends ClientSession> c) {
+
+			while(c.next()) {
+
+				if(c.wasAdded()) {
+					List<InfoUserModel> users = new ArrayList<>();
+
+					for(ClientSession client : c.getAddedSubList()) {
+						InfoUserModel user = new InfoUserModel();
+						user.setLogin(client.getUser());
+						user.setStatus(true);
+						users.add(user);
+					}
+
+					InfoRequest infoRequest = new InfoRequest("server");
+					infoRequest.setUsers((InfoUserModel[]) users.toArray());
+					ServerTasks.broadcast(infoRequest, (ClientSession[]) loggedClients.toArray());
+
+				} else {
+					List<InfoUserModel> users = new ArrayList<>();
+
+					for(ClientSession client : c.getAddedSubList()) {
+						InfoUserModel user = new InfoUserModel();
+						user.setLogin(client.getUser());
+						user.setStatus(false);
+						users.add(user);
+					}
+
+					InfoRequest infoRequest = new InfoRequest("server");
+					infoRequest.setUsers((InfoUserModel[]) users.toArray());
+					ServerTasks.broadcast(infoRequest, (ClientSession[]) loggedClients.toArray());
+				}
+
+			}
+
 		}
 
 	}

@@ -2,6 +2,7 @@ package model.requests;
 
 public class InfoReturn extends Request {
 
+	private static final long serialVersionUID = -8921135274858873355L;
 	private String message;
 	private OperationType operationSource;
 	private boolean errorMessage;

@@ -2,6 +2,7 @@ package model.requests;
 
 public class MessageRequest extends Request {
 
+	private static final long serialVersionUID = 657771955333502982L;
 	private String message;
 	private String recipient;
 
