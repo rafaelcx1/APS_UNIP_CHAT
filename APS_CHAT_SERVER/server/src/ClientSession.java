@@ -22,7 +22,24 @@ public class ClientSession implements Runnable {
 	@Override
 	public void run() {
 		sessionStart();
+		// Thread para testar conexão com o client
+		new Thread(() -> {
+			if(!session.isConnected() || !session.isClosed()) {
+				try {
+					System.out.println("Closing session with user '" + ((user != null) ? user : "%not logged user%") + "'... | " + LocalDateTime.now().toString());
+					this.session.close();
+					ServerInstance.logoffClient(this);
+					System.out.println("Session with user '" + ((user != null) ? user : "%not logged user%") + "' closed. | " + LocalDateTime.now().toString());
+					this.finalize();
+				} catch (IOException e) {
+					System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
+				} catch (Throwable e) {
+					System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
+				}
+			}
+		});
 	}
+
 
 	public void sessionStart() {
 		try(ObjectInputStream ois = (ObjectInputStream) session.getInputStream()) {

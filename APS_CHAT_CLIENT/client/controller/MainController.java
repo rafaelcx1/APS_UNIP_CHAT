@@ -51,11 +51,12 @@ public class MainController extends Application {
 		launch(args);
 	}
 
-
 	// Método chamado através do método main - Serve para a preparação da Janela
 	@Override
 	public void start(Stage stage) {
 
+		chatWindowsUsersEvent(this.chatWindowsUsers); // Irá inserir um evento na lista chatWindowsUsers
+		openLogonScreen(); // Abertura da tela de logon
 	}
 
 	// Retorna o Stage principal da aplicação(Janela)
