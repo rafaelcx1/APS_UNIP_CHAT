@@ -54,6 +54,17 @@ public class ServerInstance {
 		return false;
 	}
 
+	public static InfoUserModel[] getOnlineUsers() {
+		List<InfoUserModel> users = new ArrayList<>();
+		for(ClientSession client : loggedClients) {
+			InfoUserModel user = new InfoUserModel();
+			user.setLogin(client.getUser());
+			user.setStatus(true);
+			users.add(user);
+		}
+		return (InfoUserModel[]) users.toArray();
+	}
+
 	private static class LoggedClientEvent implements ListChangeListener<ClientSession> {
 
 		@Override
@@ -71,7 +82,7 @@ public class ServerInstance {
 						users.add(user);
 					}
 
-					InfoRequest infoRequest = new InfoRequest("server");
+					InfoRequest infoRequest = new InfoRequest("Server");
 					infoRequest.setUsers((InfoUserModel[]) users.toArray());
 					ServerTasks.broadcast(infoRequest, (ClientSession[]) loggedClients.toArray());
 
@@ -85,7 +96,7 @@ public class ServerInstance {
 						users.add(user);
 					}
 
-					InfoRequest infoRequest = new InfoRequest("server");
+					InfoRequest infoRequest = new InfoRequest("Server");
 					infoRequest.setUsers((InfoUserModel[]) users.toArray());
 					ServerTasks.broadcast(infoRequest, (ClientSession[]) loggedClients.toArray());
 				}
