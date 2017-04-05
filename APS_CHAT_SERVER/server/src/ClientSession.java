@@ -22,7 +22,11 @@ public class ClientSession implements Runnable {
 	@Override
 	public void run() {
 		sessionStart();
-		// Thread para testar conexão com o client
+	}
+
+
+	public void sessionStart() {
+		// Thread para testar conexÃ£o com o client
 		new Thread(() -> {
 			while(session.isConnected() || !session.isClosed()) {
 				try {
@@ -38,10 +42,7 @@ public class ClientSession implements Runnable {
 				}
 			}
 		});
-	}
-
-
-	public void sessionStart() {
+		
 		try(ObjectInputStream ois = (ObjectInputStream) session.getInputStream()) {
 
 			while(true) {
