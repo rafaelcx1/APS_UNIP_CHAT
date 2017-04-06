@@ -16,10 +16,10 @@ import model.requests.Request;
 public class LoginController {
 
 	/*
-	 * Atributos com anotaÁ„o @FXML = Elementos de interface
-	 * mainController = Inst‚ncia do mainController
-	 * loginModel = Inst‚ncia do loginModel para fazer o envio e tratamento de Requests
-	 * loginScreen = booleano para indicar se a tela est· em config do servidor(false) ou do nickname(true)
+	 * Atributos com anota√ß√£o @FXML = Elementos de interface
+	 * mainController = Inst√¢ncia do mainController
+	 * loginModel = Inst√¢ncia do loginModel para fazer o envio e tratamento de Requests
+	 * loginScreen = booleano para indicar se a tela est√° em config do servidor(false) ou do nickname(true)
 	 * */
 
 	@FXML
@@ -49,28 +49,34 @@ public class LoginController {
     	this.mainController = mainController;
     }
 
-    // MÈtodo padr„o do FXML que È chamado ao carregar os elementos
+    // M√©todo padr√£o do FXML que √© chamado ao carregar os elementos
     public void initialize() {
 
     }
 
-    // MÈtodo do bot„o btnNext, ele ir· logar se o loginScreen for true, ou passar para a tela de login se esta vari·vel for false
+    // M√©todo do bot√£o btnNext, ele ir√° logar se o loginScreen for true, ou passar para a tela de login se esta vari√°vel for false
     public void btnNextEvent(ActionEvent event) {
 
     }
 
-    // MÈtodo do bot„o btnExit, ir· sair se o loginScreen for false, ou voltar caso seja true
+    // M√©todo do bot√£o btnExit, ir√° sair se o loginScreen for false, ou voltar caso seja true
     public void btnExitEvent(ActionEvent event) {
 
     }
 
-    // MÈtodo para inserir um texto de no label de status
+    // M√©todo para inserir um texto de no label de status
     public void setStatusText(String text) {
 
     }
 
-    // MÈtodo ir· passar o request para o login model
-    public void recieveObjetc(Request request) {
+    // M√©todo ir√° passar o request para o login model
+    public void recieveObject(Request request) {
 
     }
+	
+    // M√©todo que ir√° fechar a janela
+    public void close() {
+
+    }
+	
 }
