@@ -65,7 +65,6 @@ public class MainController extends Application {
 	// Método chamado através do método main - Serve para a preparação da Janela
 	@Override
 	public void start(Stage stage) {
-
 		chatWindowsUsersEvent(this.chatWindowsUsers); // Irá inserir um evento na lista chatWindowsUsers
 		connectionStatusEvent(this.connectionStatus); // Irá inserir um evento no connectionStatus
 		openLogonScreen(); // Abertura da tela de logon
@@ -119,8 +118,8 @@ public class MainController extends Application {
 	// Método que irá inicializar as Threads
 	public void initializeThreads() {
 		testConnection = new TestConnectionThread();
-		new Thread(testConnection);
 		recieveObject = new RecieveObjectThread();
+		new Thread(testConnection);
 		new Thread(recieveObject);
 	}
 
@@ -161,17 +160,29 @@ public class MainController extends Application {
 
 	// Método que irá executar os procedimentos de perda de conexão
 	public void lostConnectionAction() {
-
+		if(loginController != null) {
+			loginController.lostConnection();
+		} else {
+			principalController.lostConnection();
+			loggedStatus = false;
+		}
 	}
 
 	// Método que irá executar os procedimentos de reconexão
 	public void reconnectionAction() {
-
+		if(loginController != null) {
+			loginController.reconnect();
+		} else {
+			principalController.reconnect();
+			loggedStatus = true;
+		}
 	}
 
 	// Método para deslogar o usuário e fechar a conexão com o servidor
 	public void logoff() {
-
+		if(connection != null) {
+			connection.close();
+		}
 	}
 
 	/*---------- Threads ----------*/
