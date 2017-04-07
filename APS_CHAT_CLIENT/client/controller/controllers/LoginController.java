@@ -41,12 +41,13 @@ public class LoginController {
 	@FXML
     private Label lblStatus;
 
-	private MainController mainController;
+    private MainController mainController;
     private LoginModel loginModel;
     private boolean loginScreen;
 
     public LoginController(MainController mainController) {
     	this.mainController = mainController;
+	// Terminar
     }
 
     // Método padrão do FXML que é chamado ao carregar os elementos
@@ -64,14 +65,19 @@ public class LoginController {
 
     }
 
-    // Método para inserir um texto de no label de status
-    public void setStatusText(String text) {
-
-    }
-
     // Método irá passar o request para o login model
     public void recieveObject(Request request) {
 
+    }
+
+    // Método que irá executar ações quando a conexão com o servidor cair
+    public void lostConnection() {
+	    
+    }
+
+    // Método que irá executar ações quando a conexão com o servidor voltar
+    public void reconnect() {
+	    
     }
 	
     // Método que irá fechar a janela
