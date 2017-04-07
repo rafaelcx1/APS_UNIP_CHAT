@@ -51,38 +51,48 @@ public class LoginController {
     }
 
     // Método padrão do FXML que é chamado ao carregar os elementos
-    public void initialize() {
-
-    }
+    public void initialize() {}
 
     // Método do botão btnNext, ele irá logar se o loginScreen for true, ou passar para a tela de login se esta variável for false
     public void btnNextEvent(ActionEvent event) {
-
+	if(loginScreen) {
+		// Terminar
+	} else {
+		// Terminar
+	}
     }
 
     // Método do botão btnExit, irá sair se o loginScreen for false, ou voltar caso seja true
     public void btnExitEvent(ActionEvent event) {
-
+	if(loginScreen) {
+		// Terminar
+	} else {
+		// Terminar
+	}
     }
 
     // Método irá passar o request para o login model
     public void recieveObject(Request request) {
-
+	if(loginModel.recieveObject(request)) {
+		// Terminar
+	} else {
+		// Terminar
+	}
     }
 
     // Método que irá executar ações quando a conexão com o servidor cair
     public void lostConnection() {
-	    
+	    // Terminar
     }
 
     // Método que irá executar ações quando a conexão com o servidor voltar
     public void reconnect() {
-	    
+	    // Terminar
     }
 	
     // Método que irá fechar a janela
     public void close() {
-
+	// Terminar
     }
 	
 }
