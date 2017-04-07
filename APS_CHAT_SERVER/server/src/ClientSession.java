@@ -26,7 +26,7 @@ public class ClientSession implements Runnable {
 
 
 	public void sessionStart() {
-		// Thread para testar conexÃ£o com o client
+		// Thread para testar conexão com o client
 		new Thread(() -> {
 			while(session.isConnected() || !session.isClosed()) {
 				try {

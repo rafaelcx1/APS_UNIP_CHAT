@@ -16,10 +16,10 @@ import model.requests.Request;
 public class LoginController {
 
 	/*
-	 * Atributos com anota√ß√£o @FXML = Elementos de interface
+	 * Atributos com anotaÁ„o @FXML = Elementos de interface
 	 * mainController = Inst√¢ncia do mainController
 	 * loginModel = Inst√¢ncia do loginModel para fazer o envio e tratamento de Requests
-	 * loginScreen = booleano para indicar se a tela est√° em config do servidor(false) ou do nickname(true)
+	 * loginScreen = booleano para indicar se a tela est· em config do servidor(false) ou do nickname(true)
 	 * */
 
 	@FXML
@@ -50,10 +50,12 @@ public class LoginController {
 	// Terminar
     }
 
-    // M√©todo padr√£o do FXML que √© chamado ao carregar os elementos
-    public void initialize() {}
+    // MÈtodo padr„o do FXML que È chamado ao carregar os elementos
+    public void initialize() {
 
-    // M√©todo do bot√£o btnNext, ele ir√° logar se o loginScreen for true, ou passar para a tela de login se esta vari√°vel for false
+    }
+
+    // MÈtodo do bot„o btnNext, ele ir· logar se o loginScreen for true, ou passar para a tela de login se esta vari·vel for false
     public void btnNextEvent(ActionEvent event) {
 	if(loginScreen) {
 		// Terminar
@@ -62,22 +64,23 @@ public class LoginController {
 	}
     }
 
-    // M√©todo do bot√£o btnExit, ir√° sair se o loginScreen for false, ou voltar caso seja true
+    // MÈtodo do bot„o btnExit, ir· sair se o loginScreen for false, ou voltar caso seja true
     public void btnExitEvent(ActionEvent event) {
-	if(loginScreen) {
-		// Terminar
-	} else {
-		// Terminar
-	}
+    	if(loginScreen) {
+    		// Terminar
+    	} else {
+    		// Terminar
+    	}
+
     }
 
-    // M√©todo ir√° passar o request para o login model
+    // MÈtodo ir· passar o request para o login model
     public void recieveObject(Request request) {
-	if(loginModel.recieveObject(request)) {
-		// Terminar
-	} else {
-		// Terminar
-	}
+    	if(loginModel.loginObjectRecieve(request)) {
+    		// Terminar
+    	} else {
+    		// Terminar
+    	}
     }
 
     // M√©todo que ir√° executar a√ß√µes quando a conex√£o com o servidor cair
@@ -89,10 +92,10 @@ public class LoginController {
     public void reconnect() {
 	    // Terminar
     }
-	
-    // M√©todo que ir√° fechar a janela
+
+    // MÈtodo que ir· fechar a janela
     public void close() {
 	// Terminar
     }
-	
+
 }
