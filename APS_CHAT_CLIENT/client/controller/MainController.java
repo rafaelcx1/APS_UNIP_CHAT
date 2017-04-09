@@ -47,19 +47,22 @@ public class MainController extends Application {
 	private String nickname;
 	private Stage rootStage;
 
+
+	// Método main - Inicial
+	public static void main(String[] args) {
+			launch(args);
+	}
+
 	// Método que retorna o Socket da conexão
 	public static Socket getConnection() {
 		return connection;
 	}
 
-	// Método main - Inicial
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	// Método chamado através do método main - Serve para a preparação da Janela
 	@Override
 	public void start(Stage stage) {
+		rootStage = stage;
+		userLogged = false;
 		chatWindowsUsersEvent(this.chatWindowsUsers); // Irá inserir um evento na lista chatWindowsUsers
 		connectionStatusEvent(this.connectionStatus); // Irá inserir um evento no connectionStatus
 		rootStage.setOnCloseRequest((event) -> close());
@@ -251,6 +254,5 @@ public class MainController extends Application {
 		}
 
 	}
-
 
 }

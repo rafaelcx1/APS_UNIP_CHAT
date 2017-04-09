@@ -7,11 +7,11 @@ import model.requests.MessageRequest;
 public class PrincipalModel {
 
 	private String errorMessage = "";
-	private String nickName;
+	private String nickname;
 	private ObservableList<String> users;
 	private ObservableList<String> globalChatMsg;
 
-	public PrincipalModel(String nickName) {
+	public PrincipalModel(String nickname) {
 
 	}
 
@@ -19,8 +19,8 @@ public class PrincipalModel {
 		return errorMessage;
 	}
 
-	public String getNickName() {
-		return nickName;
+	public String getnickname() {
+		return nickname;
 	}
 
 	public ObservableList<String> getUsers() {
