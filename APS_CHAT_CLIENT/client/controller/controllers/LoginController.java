@@ -2,12 +2,12 @@ package controller.controllers;
 import java.awt.FlowLayout;
 
 import controller.MainController;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import model.LoginModel;
 import model.requests.Request;
@@ -26,6 +26,8 @@ public class LoginController {
     private BorderPane pane;
 	@FXML
     private FlowLayout statusBar;
+	@FXML
+	private ImageView logo;
 	@FXML
     private Label lbServer;
 	@FXML
@@ -47,7 +49,7 @@ public class LoginController {
 
     public LoginController(MainController mainController) {
     	this.mainController = mainController;
-	// Terminar
+    	// Terminar
     }
 
     // Método padrão do FXML que é chamado ao carregar os elementos

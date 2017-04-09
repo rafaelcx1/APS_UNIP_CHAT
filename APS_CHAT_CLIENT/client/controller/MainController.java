@@ -100,11 +100,11 @@ public class MainController extends Application {
 	// Método que irá abrir a janela principal
 	public void openPrincipalScreen(String nickname) {
 		if(loginController == null) {
-			principalController = new PrincipalController(this);
+			principalController = new PrincipalController(this, nickname);
 		} else {
 			loginController.close();
 			loginController = null;
-			principalController = new PrincipalController(this);
+			principalController = new PrincipalController(this, nickname);
 		}
 	}
 
@@ -133,7 +133,7 @@ public class MainController extends Application {
 				} else if(c.wasRemoved()) {
 					for(String user : c.getRemoved()) {
 						messageWindows.removeIf((t) -> {
-							if(t.getLoginRecipient().equals("user")) {
+							if(t.getRecipient().equals("user")) {
 								return true;
 							} else {
 								return false;
