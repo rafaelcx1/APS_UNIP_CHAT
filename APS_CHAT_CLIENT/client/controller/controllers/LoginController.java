@@ -23,7 +23,7 @@ public class LoginController {
 
 	/*
 	 * Atributos com anotaÁ„o @FXML = Elementos de interface
-	 * mainController = Inst√¢ncia do mainController
+	 * mainController = Inst‚ncia do mainController
 	 * loginModel = Inst√¢ncia do loginModel para fazer o envio e tratamento de Requests
 	 * loginScreen = booleano para indicar se a tela est· em config do servidor(false) ou do nickname(true)
 	 * */
@@ -52,6 +52,7 @@ public class LoginController {
 	private MainController mainController;
 	private LoginModel loginModel;
 	private boolean loginScreen;
+	private Alert loginStatus;
 
 	public LoginController(MainController mainController) {
 		this.mainController = mainController;
@@ -82,10 +83,18 @@ public class LoginController {
 	// MÈtodo do bot„o btnNext, ele ir· logar se o loginScreen for true, ou passar para a tela de login se esta vari·vel for false
 	public void btnNextEvent(ActionEvent event) {
 		if(loginScreen) {
-			if(!loginModel.login(tfLogin.getText())) {
+			if(loginModel.login(tfLogin.getText())) {
+				loginStatus = new Alert(AlertType.INFORMATION);
+				loginStatus.setContentText("Autenticando...");
+				loginStatus.setHeaderText("Login:");
+				loginStatus.setTitle("Aguarde");
+				loginStatus.setResizable(false);
+				loginStatus.setOnCloseRequest((value) -> {});
+				loginStatus.show();
+			} else {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
-				alert.setHeaderText("LOGIN ERROR:");
+				alert.setHeaderText("ERROR:");
 				alert.setTitle("APPLICATION ERROR");
 				alert.setResizable(false);
 				alert.show();
@@ -144,25 +153,28 @@ public class LoginController {
 	// MÈtodo ir· passar o request para o login model
 	public void recieveObject(Request request) {
 		if(loginModel.loginObjectRecieve(request)) {
+			if(loginStatus != null) {
+				loginStatus.close();
+			}
 			mainController.openPrincipalScreen(tfLogin.getText());
 		} else {
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
-			alert.setHeaderText("LOGIN ERROR:");
-			alert.setTitle("APPLICATION ERROR");
-			alert.setResizable(false);
-			alert.show();
+			loginStatus = new Alert(AlertType.INFORMATION);
+			loginStatus.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
+			loginStatus.setHeaderText("Login:");
+			loginStatus.setTitle("ERROR");
+			loginStatus.setResizable(false);
+			loginStatus.setOnCloseRequest((value) -> loginStatus.close());
 		}
 	}
 
-	// M√©todo que ir√° executar a√ß√µes quando a conex√£o com o servidor cair
+	// MÈtodo que ir· executar aÁıes quando a conex„o com o servidor cair
 	public void lostConnection() {
 		lblStatus.setText("STATUS: Sem conex„o com o servidor.");
 		tfLogin.setDisable(true);
 		btnNext.setDisable(true);
 	}
 
-	// M√©todo que ir√° executar a√ß√µes quando a conex√£o com o servidor voltar
+	// MÈtodo que ir· executar aÁıes quando a conex„o com o servidor voltar
 	public void reconnect() {
 		lblStatus.setText("STATUS: Conectado.");
 		tfLogin.setDisable(false);
