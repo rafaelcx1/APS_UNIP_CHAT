@@ -58,6 +58,11 @@ public class MainController extends Application {
 		return connection;
 	}
 
+	// Método que retorna o Socket da conexão
+	public static void setConnection(Socket connection) {
+		MainController.connection = connection;
+	}
+
 	// Método chamado através do método main - Serve para a preparação da Janela
 	@Override
 	public void start(Stage stage) {

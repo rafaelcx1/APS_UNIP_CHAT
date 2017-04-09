@@ -1,6 +1,7 @@
 package controller.controllers;
 import java.awt.FlowLayout;
 import java.io.IOException;
+import java.net.Socket;
 
 import controller.MainController;
 import javafx.event.ActionEvent;
@@ -8,10 +9,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import model.LoginModel;
@@ -81,18 +82,61 @@ public class LoginController {
 	// MÈtodo do bot„o btnNext, ele ir· logar se o loginScreen for true, ou passar para a tela de login se esta vari·vel for false
 	public void btnNextEvent(ActionEvent event) {
 		if(loginScreen) {
-			// Terminar
+			if(!loginModel.login(tfLogin.getText())) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
+				alert.setHeaderText("LOGIN ERROR:");
+				alert.setTitle("APPLICATION ERROR");
+				alert.setResizable(false);
+				alert.show();
+			}
 		} else {
-			// Terminar
+			try {
+				MainController.setConnection(new Socket(tfServer.getText(), 9876));
+
+				FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginView.fxml"));
+				loader.setController(this);
+				BorderPane scene = loader.load();
+				mainController.getStage().setScene(new Scene(scene));
+				loginScreen = true;
+			} catch (IOException e) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setContentText("An IOException has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
+				alert.setHeaderText("IOException:");
+				alert.setTitle("APPLICATION ERROR");
+				alert.setResizable(false);
+				alert.show();
+
+				e.printStackTrace();
+			}
+
 		}
 	}
 
 	// MÈtodo do bot„o btnExit, ir· sair se o loginScreen for false, ou voltar caso seja true
 	public void btnExitEvent(ActionEvent event) {
 		if(loginScreen) {
-			// Terminar
+			try {
+				MainController.getConnection().close();
+				MainController.setConnection(null);
+
+				FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginServerView.fxml"));
+				loader.setController(this);
+				BorderPane scene = loader.load();
+				mainController.getStage().setScene(new Scene(scene));
+				loginScreen = false;
+			} catch (IOException e) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setContentText("An IOException has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
+				alert.setHeaderText("IOException:");
+				alert.setTitle("APPLICATION ERROR");
+				alert.setResizable(false);
+				alert.show();
+
+				e.printStackTrace();
+			}
 		} else {
-			// Terminar
+			close();
 		}
 
 	}
@@ -100,20 +144,29 @@ public class LoginController {
 	// MÈtodo ir· passar o request para o login model
 	public void recieveObject(Request request) {
 		if(loginModel.loginObjectRecieve(request)) {
-			// Terminar
+			mainController.openPrincipalScreen(tfLogin.getText());
 		} else {
-			// Terminar
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
+			alert.setHeaderText("LOGIN ERROR:");
+			alert.setTitle("APPLICATION ERROR");
+			alert.setResizable(false);
+			alert.show();
 		}
 	}
 
 	// M√©todo que ir√° executar a√ß√µes quando a conex√£o com o servidor cair
 	public void lostConnection() {
-		// Terminar
+		lblStatus.setText("STATUS: Sem conex„o com o servidor.");
+		tfLogin.setDisable(true);
+		btnNext.setDisable(true);
 	}
 
 	// M√©todo que ir√° executar a√ß√µes quando a conex√£o com o servidor voltar
 	public void reconnect() {
-		// Terminar
+		lblStatus.setText("STATUS: Conectado.");
+		tfLogin.setDisable(false);
+		btnNext.setDisable(false);
 	}
 
 	// MÈtodo que ir· fechar a janela

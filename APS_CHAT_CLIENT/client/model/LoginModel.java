@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 import controller.MainController;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import model.requests.InfoReturn;
 import model.requests.OperationType;
 import model.requests.Request;
@@ -29,13 +27,7 @@ public class LoginModel {
     		ois.writeObject(loginRequest);
     		return true;
 		} catch (IOException e) {
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.setContentText("An IOException has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
-			alert.setHeaderText("IOException:");
-			alert.setTitle("APPLICATION ERROR");
-			alert.setResizable(false);
-			alert.show();
-
+			errorMessage = e.getMessage() + "\n" + e.getLocalizedMessage();
 			e.printStackTrace();
 			return false;
 		}
