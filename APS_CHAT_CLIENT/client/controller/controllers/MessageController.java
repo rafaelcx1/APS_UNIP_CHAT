@@ -1,5 +1,7 @@
 package controller.controllers;
 
+import java.net.Socket;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -9,8 +11,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import model.requests.MessageRequest;
 import model.MessageModel;
+import model.requests.MessageRequest;
 
 @SuppressWarnings("unused")
 public class MessageController {
@@ -24,7 +26,7 @@ public class MessageController {
 	@FXML
 	private HBox hbSendMsgPane;
 	@FXML
-	private Label lblNickNameRecipient;
+	private Label lblnicknameRecipient;
 	@FXML
 	private Label lblStatusRecipient;
 	@FXML

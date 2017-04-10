@@ -42,7 +42,7 @@ public class ClientSession implements Runnable {
 				}
 			}
 		});
-		
+
 		try(ObjectInputStream ois = (ObjectInputStream) session.getInputStream()) {
 
 			while(true) {

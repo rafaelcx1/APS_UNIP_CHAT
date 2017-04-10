@@ -38,7 +38,7 @@ public class PrincipalController {
 	@FXML
 	private FlowPane statusBar;
 	@FXML
-	private Label lblUserNickName;
+	private Label lblUsernickname;
 	@FXML
 	private Label lblTitleUsersPane;
 	@FXML

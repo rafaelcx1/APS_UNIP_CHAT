@@ -6,7 +6,6 @@ import model.requests.MessageRequest;
 public class MessageModel {
 
 	private String loginRecipient;
-
 	private ObservableList<MessageRequest> chatMsg;
 
 	public MessageModel(String loginRecipient) {
