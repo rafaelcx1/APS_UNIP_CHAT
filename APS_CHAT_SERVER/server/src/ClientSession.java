@@ -26,7 +26,7 @@ public class ClientSession implements Runnable {
 
 
 	public void sessionStart() {
-		// Thread para testar conexão com o client
+		// Thread para testar conexÃ£o com o client
 		new Thread(() -> {
 			while(session.isConnected() || !session.isClosed()) {
 				try {
@@ -77,6 +77,11 @@ public class ClientSession implements Runnable {
 					infoReturn.setMessage("Conected!");
 					ServerTasks.sendObject(infoReturn);
 					//Info users
+					try {
+						Thread.sleep(1000);
+					} catch(InterruptedException e) {
+						System.out.println("Error: " + e.getMessage());
+					}
 					InfoRequest infoRequest = new InfoRequest("Server");
 					infoRequest.setUserTo(request.getUserFrom());
 					infoRequest.setUsers(ServerInstance.getOnlineUsers());
