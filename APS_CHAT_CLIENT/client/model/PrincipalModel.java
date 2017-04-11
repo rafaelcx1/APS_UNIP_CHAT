@@ -3,6 +3,7 @@ package model;
 import javafx.collections.ObservableList;
 import model.requests.InfoRequest;
 import model.requests.MessageRequest;
+import model.requests.Request;
 
 public class PrincipalModel {
 
@@ -39,7 +40,7 @@ public class PrincipalModel {
 		return false;
 	}
 
-	public boolean sendObject(MessageRequest request) {
+	public boolean sendObject(Request request) {
 		return false;
 	}
 }

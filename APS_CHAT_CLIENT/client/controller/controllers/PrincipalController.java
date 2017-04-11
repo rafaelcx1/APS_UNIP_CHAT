@@ -20,6 +20,9 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import model.PrincipalModel;
+import model.requests.InfoRequest;
+import model.requests.MessageRequest;
+import model.requests.OperationType;
 import model.requests.Request;
 
 @SuppressWarnings("unused")
@@ -62,6 +65,7 @@ public class PrincipalController {
 
 	private MainController mainController;
 	private PrincipalModel principalModel;
+	private Alert statusLogon;
 
 
 	public PrincipalController(MainController mainController, String nickname) {
@@ -82,12 +86,38 @@ public class PrincipalController {
 
 			e.printStackTrace();
 		}
-		
-		
+
+		Request request = new Request(OperationType.INFO);
+		request.setUserFrom(nickname);
+		request.setUserTo("Server");
+		if(principalModel.sendObject(request)) {
+			// COMPLETAR
+		} else {
+			// COMPLETAR
+		}
+
 	}
 
 	public void recieveObject(Request request) {
+		if(request.getOperation() == OperationType.INFO) {
 
+			if(principalModel.treatObject((InfoRequest) request)) {
+				// COMPLETAR
+			} else {
+				// COMPLETAR
+			}
+
+		} else if(request.getOperation() == OperationType.SEND_OR_RECIEVE_MSG) {
+
+			if(principalModel.treatObject((MessageRequest) request)) {
+				// COMPLETAR
+			} else {
+				// COMPLETAR
+			}
+
+		} else {
+
+		}
 	}
 
 	public void lostConnection() {
