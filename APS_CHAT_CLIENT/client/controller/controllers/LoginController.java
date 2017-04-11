@@ -22,10 +22,10 @@ import model.requests.Request;
 public class LoginController {
 
 	/*
-	 * Atributos com anotaÁ„o @FXML = Elementos de interface
-	 * mainController = Inst‚ncia do mainController
-	 * loginModel = Inst√¢ncia do loginModel para fazer o envio e tratamento de Requests
-	 * loginScreen = booleano para indicar se a tela est· em config do servidor(false) ou do nickname(true)
+	 * Atributos com anota√ß√£o @FXML = Elementos de interface
+	 * mainController = Inst√¢ncia do mainController
+	 * loginModel = Inst√É¬¢ncia do loginModel para fazer o envio e tratamento de Requests
+	 * loginScreen = booleano para indicar se a tela est√° em config do servidor(false) ou do nickname(true)
 	 * */
 
 	@FXML
@@ -77,10 +77,10 @@ public class LoginController {
 
 	}
 
-	// MÈtodo padr„o do FXML que È chamado ao carregar os elementos
+	// M√©todo padr√£o do FXML que √© chamado ao carregar os elementos
 	public void initialize() {}
 
-	// MÈtodo do bot„o btnNext, ele ir· logar se o loginScreen for true, ou passar para a tela de login se esta vari·vel for false
+	// M√©todo do bot√£o btnNext, ele ir√° logar se o loginScreen for true, ou passar para a tela de login se esta vari√°vel for false
 	public void btnNextEvent(ActionEvent event) {
 		if(loginScreen) {
 			if(loginModel.login(tfLogin.getText())) {
@@ -91,6 +91,8 @@ public class LoginController {
 				loginStatus.setResizable(false);
 				loginStatus.setOnCloseRequest((value) -> {});
 				loginStatus.show();
+				btnBack.setDisabled(true);
+				btnNext.setDisabled(true);
 			} else {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
@@ -98,6 +100,8 @@ public class LoginController {
 				alert.setTitle("APPLICATION ERROR");
 				alert.setResizable(false);
 				alert.show();
+				btnBack.setDisabled(false);
+				btnNext.setDisabled(false);
 			}
 		} else {
 			try {
@@ -122,7 +126,7 @@ public class LoginController {
 		}
 	}
 
-	// MÈtodo do bot„o btnExit, ir· sair se o loginScreen for false, ou voltar caso seja true
+	// M√©todo do bot√£o btnExit, ir√° sair se o loginScreen for false, ou voltar caso seja true
 	public void btnExitEvent(ActionEvent event) {
 		if(loginScreen) {
 			try {
@@ -150,7 +154,7 @@ public class LoginController {
 
 	}
 
-	// MÈtodo ir· passar o request para o login model
+	// M√©todo ir√° passar o request para o login model
 	public void recieveObject(Request request) {
 		if(loginModel.loginObjectRecieve(request)) {
 			if(loginStatus != null) {
@@ -158,30 +162,36 @@ public class LoginController {
 			}
 			mainController.openPrincipalScreen(tfLogin.getText());
 		} else {
-			loginStatus = new Alert(AlertType.INFORMATION);
-			loginStatus.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
-			loginStatus.setHeaderText("Login:");
-			loginStatus.setTitle("ERROR");
-			loginStatus.setResizable(false);
-			loginStatus.setOnCloseRequest((value) -> loginStatus.close());
+			if(loginStatus != null) {
+				loginStatus.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
+				loginStatus.setHeaderText("Login:");
+				loginStatus.setTitle("ERROR");
+				loginStatus.setResizable(false);
+			} else {
+				loginStatus = new Alert(AlertType.ERROR);
+				loginStatus.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
+				loginStatus.setHeaderText("Login:");
+				loginStatus.setTitle("ERROR");
+				loginStatus.setResizable(false);
+			}
 		}
 	}
 
-	// MÈtodo que ir· executar aÁıes quando a conex„o com o servidor cair
+	// M√©todo que ir√° executar a√ß√µes quando a conex√£o com o servidor cair
 	public void lostConnection() {
-		lblStatus.setText("STATUS: Sem conex„o com o servidor.");
+		lblStatus.setText("STATUS: Sem conex√£o com o servidor.");
 		tfLogin.setDisable(true);
 		btnNext.setDisable(true);
 	}
 
-	// MÈtodo que ir· executar aÁıes quando a conex„o com o servidor voltar
+	// M√©todo que ir√° executar a√ß√µes quando a conex√£o com o servidor voltar
 	public void reconnect() {
 		lblStatus.setText("STATUS: Conectado.");
 		tfLogin.setDisable(false);
 		btnNext.setDisable(false);
 	}
 
-	// MÈtodo que ir· fechar a janela
+	// M√©todo que ir√° fechar a janela
 	public void close() {
 		mainController.close();
 	}
