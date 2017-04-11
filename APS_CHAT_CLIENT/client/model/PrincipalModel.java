@@ -12,7 +12,7 @@ public class PrincipalModel {
 	private ObservableList<String> globalChatMsg;
 
 	public PrincipalModel(String nickname) {
-
+		this.nickname = nickname;
 	}
 
 	public String getErrorMessage() {
@@ -39,7 +39,7 @@ public class PrincipalModel {
 		return false;
 	}
 
-	public boolean sedObject(MessageRequest request) {
+	public boolean sendObject(MessageRequest request) {
 		return false;
 	}
 }

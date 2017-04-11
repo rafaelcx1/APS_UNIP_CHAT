@@ -1,13 +1,19 @@
 package controller.controllers;
 
+import java.io.IOException;
+
 import controller.MainController;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -55,11 +61,29 @@ public class PrincipalController {
 	private TextField tfMsgBox;
 
 	private MainController mainController;
-	private PrincipalModel loginModel;
+	private PrincipalModel principalModel;
 
 
 	public PrincipalController(MainController mainController, String nickname) {
 		this.mainController = mainController;
+		principalModel = new PrincipalModel(nickname);
+
+		try {
+			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/PrincipalView.fxml"));
+			loader.setController(this);
+			mainController.getStage().setScene(new Scene(loader.load()));
+		} catch(IOException e) {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setContentText("An IOException has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
+			alert.setHeaderText("IOException:");
+			alert.setTitle("APPLICATION ERROR");
+			alert.setResizable(false);
+			alert.show();
+
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 	public void recieveObject(Request request) {

@@ -27,7 +27,6 @@ public class ServerInstance {
 				ClientSession clientConnection = new ClientSession(serverInstance.accept());
 				new Thread(clientConnection).start();
 				System.out.println("Client connection. | " + LocalDateTime.now().toString() + "\n");
-				loggedClients.add(clientConnection);
 			}
 
 		} catch (IOException e) {
@@ -38,6 +37,10 @@ public class ServerInstance {
 
 	public static void logoffClient(ClientSession client) {
 		loggedClients.remove(client);
+	}
+
+	public static void loginClient(ClientSession client) {
+		loggedClients.add(client);
 	}
 
 	public static Socket getClientSession(String user) {
@@ -86,12 +89,12 @@ public class ServerInstance {
 
 					InfoRequest infoRequest = new InfoRequest("Server");
 					infoRequest.setUsers((InfoUserModel[]) users.toArray());
-					ServerTasks.broadcast(infoRequest, (ClientSession[]) loggedClients.toArray());
+					ServerTasks.broadcast(infoRequest, (ClientSession[]) loggedClients.toArray(), (ClientSession[]) c.getAddedSubList().toArray());
 
 				} else {
 					List<InfoUserModel> users = new ArrayList<>();
 
-					for(ClientSession client : c.getAddedSubList()) {
+					for(ClientSession client : c.getRemoved()) {
 						InfoUserModel user = new InfoUserModel();
 						user.setLogin(client.getUser());
 						user.setStatus(false);
@@ -100,7 +103,7 @@ public class ServerInstance {
 
 					InfoRequest infoRequest = new InfoRequest("Server");
 					infoRequest.setUsers((InfoUserModel[]) users.toArray());
-					ServerTasks.broadcast(infoRequest, (ClientSession[]) loggedClients.toArray());
+					ServerTasks.broadcast(infoRequest, (ClientSession[]) loggedClients.toArray(), (ClientSession[]) c.getRemoved().toArray());
 				}
 
 			}

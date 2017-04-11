@@ -62,8 +62,7 @@ public class LoginController {
 		try {
 			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginServerView.fxml"));
 			loader.setController(this);
-			BorderPane scene = loader.load();
-			mainController.getStage().setScene(new Scene(scene));
+			mainController.getStage().setScene(new Scene(loader.load()));
 			loginScreen = false;
 		} catch (IOException e) {
 			Alert alert = new Alert(AlertType.ERROR);
@@ -92,8 +91,8 @@ public class LoginController {
 				loginStatus.setResizable(false);
 				loginStatus.getButtonTypes().setAll(new ButtonType[] {});
 				loginStatus.show();
-				btnBack.setDisabled(true);
-				btnNext.setDisabled(true);
+				btnBack.setDisable(true);
+				btnNext.setDisable(true);
 			} else {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
@@ -101,8 +100,8 @@ public class LoginController {
 				alert.setTitle("APPLICATION ERROR");
 				alert.setResizable(false);
 				alert.show();
-				btnBack.setDisabled(false);
-				btnNext.setDisabled(false);
+				btnBack.setDisable(false);
+				btnNext.setDisable(false);
 			}
 		} else {
 			try {
@@ -110,8 +109,7 @@ public class LoginController {
 
 				FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginView.fxml"));
 				loader.setController(this);
-				BorderPane scene = loader.load();
-				mainController.getStage().setScene(new Scene(scene));
+				mainController.getStage().setScene(new Scene(loader.load()));
 				loginScreen = true;
 			} catch (IOException e) {
 				Alert alert = new Alert(AlertType.ERROR);
@@ -136,8 +134,7 @@ public class LoginController {
 
 				FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginServerView.fxml"));
 				loader.setController(this);
-				BorderPane scene = loader.load();
-				mainController.getStage().setScene(new Scene(scene));
+				mainController.getStage().setScene(new Scene(loader.load()));
 				loginScreen = false;
 			} catch (IOException e) {
 				Alert alert = new Alert(AlertType.ERROR);
