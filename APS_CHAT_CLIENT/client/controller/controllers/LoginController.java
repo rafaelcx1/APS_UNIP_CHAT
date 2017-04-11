@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
@@ -89,7 +90,7 @@ public class LoginController {
 				loginStatus.setHeaderText("Login:");
 				loginStatus.setTitle("Aguarde");
 				loginStatus.setResizable(false);
-				loginStatus.setOnCloseRequest((value) -> {});
+				loginStatus.getButtonTypes().setAll(new ButtonType[] {});
 				loginStatus.show();
 			} else {
 				Alert alert = new Alert(AlertType.ERROR);
@@ -154,6 +155,9 @@ public class LoginController {
 	public void recieveObject(Request request) {
 		if(loginModel.loginObjectRecieve(request)) {
 			if(loginStatus != null) {
+				// Ações para tornar possível o fechamento da janela
+				loginStatus.getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
+				loginStatus.getDialogPane().lookupButton(ButtonType.CLOSE).setVisible(false);
 				loginStatus.close();
 			}
 			mainController.openPrincipalScreen(tfLogin.getText());
