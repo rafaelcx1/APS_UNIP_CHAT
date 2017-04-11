@@ -162,12 +162,18 @@ public class LoginController {
 			}
 			mainController.openPrincipalScreen(tfLogin.getText());
 		} else {
-			loginStatus = new Alert(AlertType.INFORMATION);
-			loginStatus.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
-			loginStatus.setHeaderText("Login:");
-			loginStatus.setTitle("ERROR");
-			loginStatus.setResizable(false);
-			loginStatus.setOnCloseRequest((value) -> loginStatus.close());
+			if(loginStatus != null) {
+				loginStatus.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
+				loginStatus.setHeaderText("Login:");
+				loginStatus.setTitle("ERROR");
+				loginStatus.setResizable(false);
+			} else {
+				loginStatus = new Alert(AlertType.ERROR);
+				loginStatus.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
+				loginStatus.setHeaderText("Login:");
+				loginStatus.setTitle("ERROR");
+				loginStatus.setResizable(false);
+			}
 		}
 	}
 
