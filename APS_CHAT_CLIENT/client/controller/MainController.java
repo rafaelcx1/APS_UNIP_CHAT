@@ -50,7 +50,7 @@ public class MainController extends Application {
 
 	// Método main - Inicial
 	public static void main(String[] args) {
-			launch(args);
+		launch(args);
 	}
 
 	// Método que retorna o Socket da conexão
@@ -236,32 +236,32 @@ public class MainController extends Application {
 		@Override
 		public void run() {
 			try {
+
 				while(true) {
 					if(connection != null) {
 						ObjectInputStream ois = (ObjectInputStream) connection.getInputStream();
-							try {
-								while(true) {
-									if(ois.read() > -1) {
-										recieveObject((Request) ois.readObject());
-									}
-									Thread.sleep(100);
+						try {
+							while(true) {
+								if(ois.read() > -1) {
+									recieveObject((Request) ois.readObject());
 								}
-							} catch(Exception e) {
+								Thread.sleep(100);
 							}
-						}
+						} catch(Exception e) {}
 					}
 					Thread.sleep(100);
 				}
-			} catch(InterruptedException | ClassNotFoundException | IOException e) {
-				Alert alert = new Alert(AlertType.ERROR);
-				alert.setContentText("A FATAL ERROR has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
-				alert.setHeaderText("ERROR:");
-				alert.setTitle("APPLICATION ERROR");
-				alert.setResizable(false);
-				alert.show();
-			}
-		}
 
+		} catch(InterruptedException | IOException e) {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setContentText("A FATAL ERROR has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
+			alert.setHeaderText("ERROR:");
+			alert.setTitle("APPLICATION ERROR");
+			alert.setResizable(false);
+			alert.show();
+		}
 	}
+
+}
 
 }

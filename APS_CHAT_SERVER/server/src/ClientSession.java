@@ -76,16 +76,7 @@ public class ClientSession implements Runnable {
 					infoReturn.setOperationSource(OperationType.LOGIN);
 					infoReturn.setMessage("Conected!");
 					ServerTasks.sendObject(infoReturn);
-					//Info users
-					try {
-						Thread.sleep(1000);
-					} catch(InterruptedException e) {
-						System.out.println("Error: " + e.getMessage());
-					}
-					InfoRequest infoRequest = new InfoRequest("Server");
-					infoRequest.setUserTo(request.getUserFrom());
-					infoRequest.setUsers(ServerInstance.getOnlineUsers());
-					ServerTasks.sendObject(infoRequest);
+					ServerInstance.loginClient(this);
 				} else {
 					user = request.getUserFrom();
 					System.out.println(user + " failed to loggon! | " + LocalDateTime.now().toString() + "\n");

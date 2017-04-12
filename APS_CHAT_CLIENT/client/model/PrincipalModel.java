@@ -3,6 +3,7 @@ package model;
 import javafx.collections.ObservableList;
 import model.requests.InfoRequest;
 import model.requests.MessageRequest;
+import model.requests.Request;
 
 public class PrincipalModel {
 
@@ -12,7 +13,7 @@ public class PrincipalModel {
 	private ObservableList<String> globalChatMsg;
 
 	public PrincipalModel(String nickname) {
-
+		this.nickname = nickname;
 	}
 
 	public String getErrorMessage() {
@@ -39,7 +40,7 @@ public class PrincipalModel {
 		return false;
 	}
 
-	public boolean sedObject(MessageRequest request) {
+	public boolean sendObject(Request request) {
 		return false;
 	}
 }
