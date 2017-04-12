@@ -86,14 +86,25 @@ public class PrincipalController {
 
 			e.printStackTrace();
 		}
-
+		
 		Request request = new Request(OperationType.INFO);
 		request.setUserFrom(nickname);
 		request.setUserTo("Server");
 		if(principalModel.sendObject(request)) {
-			// COMPLETAR
+			statusLogon = new Alert(AlertType.INFORMATION);
+			statusLogon.setTitle("Logon");
+			statusLogon.setHeaderText("Buscando dados do servidor...");
+			statusLogon.setContentText("Aguarde...");
+			statusLogon.setResizable(false);
+			statusLogon.getButtonTypes().setAll(new ButtonType[] {});
+			statusLogon.show();
 		} else {
-			// COMPLETAR
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setContentText("An error has been occurred.\nDetails: " + principalModel.getMessage());
+			alert.setHeaderText("ERROR:");
+			alert.setTitle("APPLICATION ERROR");
+			alert.setResizable(false);
+			alert.show();
 		}
 
 	}
@@ -102,9 +113,22 @@ public class PrincipalController {
 		if(request.getOperation() == OperationType.INFO) {
 
 			if(principalModel.treatObject((InfoRequest) request)) {
+				if(statusLogon != null) {
+					// Ações para tornar possível o fechamento da janela de status
+					statusLogon.getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
+					statusLogon.getDialogPane().lookupButton(ButtonType.CLOSE).setVisible(false);
+					statusLogon.close();
+				}
+				
 				// COMPLETAR
+				
 			} else {
-				// COMPLETAR
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setContentText("An error has been occurred.\nDetails: " + principalModel.getMessage());
+				alert.setHeaderText("ERROR:");
+				alert.setTitle("APPLICATION ERROR");
+				alert.setResizable(false);
+				alert.show();
 			}
 
 		} else if(request.getOperation() == OperationType.SEND_OR_RECIEVE_MSG) {
@@ -112,7 +136,12 @@ public class PrincipalController {
 			if(principalModel.treatObject((MessageRequest) request)) {
 				// COMPLETAR
 			} else {
-				// COMPLETAR
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setContentText("An error has been occurred.\nDetails: " + principalModel.getMessage());
+				alert.setHeaderText("ERROR:");
+				alert.setTitle("APPLICATION ERROR");
+				alert.setResizable(false);
+				alert.show();
 			}
 
 		} else {
