@@ -26,7 +26,7 @@ public class ServerInstance {
 			while(true) {
 				ClientSession clientConnection = new ClientSession(serverInstance.accept());
 				new Thread(clientConnection).start();
-				System.out.println("Client connection. | " + LocalDateTime.now().toString() + "\n");
+				System.out.println("Client connection. IP: " + clientConnection.getSession().getInetAddress().getHostAddress() + " | " + LocalDateTime.now().toString() + "\n");
 			}
 
 		} catch (IOException e) {
