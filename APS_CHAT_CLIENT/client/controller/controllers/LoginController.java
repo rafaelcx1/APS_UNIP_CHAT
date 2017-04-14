@@ -14,11 +14,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import model.LoginModel;
 import model.requests.Request;
@@ -81,10 +83,10 @@ public class LoginController {
 		try {
 			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginServerView.fxml"));
 			loader.setController(this);
-			mainController.getStage().setTitle("JCHAT - Configuração Server");
 			mainController.getStage().setScene(new Scene(loader.load()));
 			mainController.getStage().setResizable(false);
 			mainController.getStage().initStyle(StageStyle.UNDECORATED);
+			mainController.getStage().getIcons().setAll(new Image(this.getClass().getResourceAsStream("../../view/icon.png")));
 			loginScreen = false;
 		} catch (IOException e) {
 			Alert alert = new Alert(AlertType.ERROR);
@@ -92,6 +94,7 @@ public class LoginController {
 			alert.setHeaderText("IOException:");
 			alert.setTitle("APPLICATION ERROR");
 			alert.setResizable(false);
+			((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image(this.getClass().getResourceAsStream("../../view/error-icon.png")));
 			alert.show();
 
 			e.printStackTrace();
@@ -133,6 +136,7 @@ public class LoginController {
 				alert.setHeaderText("ERROR:");
 				alert.setTitle("APPLICATION ERROR");
 				alert.setResizable(false);
+				((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image(this.getClass().getResourceAsStream("../../view/error-icon.png")));
 				alert.show();
 				btnBack.setDisable(false);
 				btnNext.setDisable(false);
@@ -152,6 +156,7 @@ public class LoginController {
 					alert.setHeaderText("Ocorreu um erro:");
 					alert.setTitle("ERRO");
 					alert.setResizable(false);
+					((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image(this.getClass().getResourceAsStream("../../view/error-icon.png")));
 					alert.show();
 				}
 			} catch (IOException e) {
@@ -160,6 +165,7 @@ public class LoginController {
 				alert.setHeaderText("IOException:");
 				alert.setTitle("APPLICATION ERROR");
 				alert.setResizable(false);
+				((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image(this.getClass().getResourceAsStream("../../view/error-icon.png")));
 				alert.show();
 
 				e.printStackTrace();
@@ -185,6 +191,7 @@ public class LoginController {
 				alert.setHeaderText("IOException:");
 				alert.setTitle("APPLICATION ERROR");
 				alert.setResizable(false);
+				((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image(this.getClass().getResourceAsStream("../../view/error-icon.png")));
 				alert.show();
 
 				e.printStackTrace();
