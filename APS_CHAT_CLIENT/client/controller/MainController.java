@@ -104,6 +104,7 @@ public class MainController extends Application {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		Thread.getAllStackTraces().keySet().forEach((thread) -> thread.interrupt());
 	}
 
 	// Método que irá executar as ações de recebimento de alguma Request através da Thread RecieveObject
@@ -215,8 +216,10 @@ public class MainController extends Application {
 	public void logoff() {
 		try {
 			if(!connection.isClosed()) {
-				ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
-				oos.writeObject(new Request(OperationType.LOGOFF));
+				if(connection.isConnected()) {
+					ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
+					oos.writeObject(new Request(OperationType.LOGOFF));
+				}
 				connection.close();
 			}
 			if(testConnection != null) testConnection.closeThread();
