@@ -99,11 +99,13 @@ public class LoginController {
 
 	}
 
+	// Método de evento quando o mouse é pressionado no paneTop
 	public void moveWindowOnMousePressed(MouseEvent event) {
 		xOffset = event.getSceneX();
         yOffset = event.getSceneY();
 	}
 
+	// Método de evento quando o mouse é arrastado no paneTop
 	public void moveWindowOnMouseDrag(MouseEvent event) {
 		mainController.getStage().setX(event.getScreenX() - xOffset);
 		mainController.getStage().setY(event.getScreenY() - yOffset);
