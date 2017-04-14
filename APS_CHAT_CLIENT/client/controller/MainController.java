@@ -72,6 +72,7 @@ public class MainController extends Application {
 		connectionStatusEvent(this.connectionStatus); // Irá inserir um evento no connectionStatus
 		rootStage.setOnCloseRequest((event) -> close());
 		openLogonScreen(); // Abertura da tela de logon
+		rootStage.show();
 	}
 
 	// Retorna o Stage principal da aplicação(Janela)

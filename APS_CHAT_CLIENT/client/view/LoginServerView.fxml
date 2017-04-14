@@ -12,12 +12,11 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="500.0" styleClass="dark-panel" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="500.0" styleClass="dark-panel" stylesheets="@stylefx.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
    <top>
-      <AnchorPane prefHeight="32.0" prefWidth="500.0" styleClass="dark-header" BorderPane.alignment="CENTER">
+      <AnchorPane fx:id="paneTop" onMouseDragged="#moveWindowOnMouseDrag" onMousePressed="#moveWindowOnMousePressed" prefHeight="32.0" prefWidth="500.0" styleClass="dark-header" BorderPane.alignment="CENTER">
          <children>
-            <ImageView fitWidth="64.0" layoutX="218.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="logo" fitWidth="64.0" layoutX="218.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@logo.png" />
                </image>
@@ -26,7 +25,7 @@
       </AnchorPane>
    </top>
    <center>
-      <GridPane prefHeight="85.0" prefWidth="500.0" BorderPane.alignment="CENTER">
+      <GridPane fx:id="gridCenter" prefHeight="85.0" prefWidth="500.0" BorderPane.alignment="CENTER">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
@@ -34,21 +33,21 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <AnchorPane prefHeight="111.0" prefWidth="500.0">
+            <AnchorPane fx:id="paneCenter" prefHeight="111.0" prefWidth="500.0">
                <children>
-                  <Label layoutX="180.0" layoutY="37.0" text="Insira o IP do servidor: " textAlignment="CENTER" textFill="WHITE">
+                  <Label fx:id="lbServer" layoutX="180.0" layoutY="37.0" text="Insira o IP do servidor: " textAlignment="CENTER" textFill="WHITE">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField layoutX="122.0" layoutY="65.0" prefHeight="36.0" prefWidth="256.0" styleClass="textfield" />
+                  <TextField fx:id="tfServer" layoutX="122.0" layoutY="65.0" prefHeight="36.0" prefWidth="256.0" styleClass="textfield" />
                </children>
             </AnchorPane>
          </children>
       </GridPane>
    </center>
    <bottom>
-      <GridPane prefHeight="32.0" prefWidth="500.0" BorderPane.alignment="CENTER">
+      <GridPane fx:id="gridBottom" prefHeight="32.0" prefWidth="500.0" BorderPane.alignment="CENTER">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -57,7 +56,7 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button contentDisplay="RIGHT" mnemonicParsing="false" prefHeight="64.0" prefWidth="250.0" styleClass="dark-button-full" text="PRÓXIMO" GridPane.columnIndex="1">
+            <Button fx:id="btnNext" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#btnNextEvent" prefHeight="64.0" prefWidth="250.0" styleClass="dark-button-full" text="PRÓXIMO" GridPane.columnIndex="1">
                <graphic>
                   <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -66,7 +65,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button contentDisplay="RIGHT" mnemonicParsing="false" prefHeight="64.0" prefWidth="250.0" styleClass="dark-button-full" text="SAIR">
+            <Button fx:id="btnBack" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#btnExitEvent" prefHeight="64.0" prefWidth="250.0" styleClass="dark-button-full" text="SAIR">
                <graphic>
                   <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                      <image>

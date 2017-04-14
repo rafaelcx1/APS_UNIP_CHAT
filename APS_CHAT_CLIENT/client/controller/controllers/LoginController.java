@@ -15,7 +15,11 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.stage.StageStyle;
 import model.LoginModel;
 import model.requests.Request;
 
@@ -31,6 +35,18 @@ public class LoginController {
 
 	@FXML
 	private BorderPane pane;
+	@FXML
+	private AnchorPane paneTop;
+	@FXML
+	private AnchorPane paneCenter;
+	@FXML
+	private GridPane gridCenter;
+	@FXML
+	private GridPane gridBottom;
+	@FXML
+	private ImageView imgBtnNext;
+	@FXML
+	private ImageView imgBtnBack;
 	@FXML
 	private FlowLayout statusBar;
 	@FXML
@@ -55,6 +71,9 @@ public class LoginController {
 	private boolean loginScreen;
 	private Alert loginStatus;
 
+	private double xOffset;
+	private double yOffset;
+
 	public LoginController(MainController mainController) {
 		this.mainController = mainController;
 		loginModel = new LoginModel();
@@ -62,7 +81,10 @@ public class LoginController {
 		try {
 			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginServerView.fxml"));
 			loader.setController(this);
+			mainController.getStage().setTitle("JCHAT - Configuração Server");
 			mainController.getStage().setScene(new Scene(loader.load()));
+			mainController.getStage().setResizable(false);
+			mainController.getStage().initStyle(StageStyle.UNDECORATED);
 			loginScreen = false;
 		} catch (IOException e) {
 			Alert alert = new Alert(AlertType.ERROR);
@@ -75,6 +97,16 @@ public class LoginController {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void moveWindowOnMousePressed(MouseEvent event) {
+		xOffset = event.getSceneX();
+        yOffset = event.getSceneY();
+	}
+
+	public void moveWindowOnMouseDrag(MouseEvent event) {
+		mainController.getStage().setX(event.getScreenX() - xOffset);
+		mainController.getStage().setY(event.getScreenY() - yOffset);
 	}
 
 	// MÃ©todo padrÃ£o do FXML que Ã© chamado ao carregar os elementos
@@ -105,12 +137,21 @@ public class LoginController {
 			}
 		} else {
 			try {
-				MainController.setConnection(new Socket(tfServer.getText(), 9876));
+				if(tfServer.getText().matches("\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}")) {
+					MainController.setConnection(new Socket(tfServer.getText(), 9876));
 
-				FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginView.fxml"));
-				loader.setController(this);
-				mainController.getStage().setScene(new Scene(loader.load()));
-				loginScreen = true;
+					FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginView.fxml"));
+					loader.setController(this);
+					mainController.getStage().setScene(new Scene(loader.load()));
+					loginScreen = true;
+				} else {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setContentText("Endereço de IP inválido.");
+					alert.setHeaderText("Ocorreu um erro:");
+					alert.setTitle("ERRO");
+					alert.setResizable(false);
+					alert.show();
+				}
 			} catch (IOException e) {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setContentText("An IOException has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
