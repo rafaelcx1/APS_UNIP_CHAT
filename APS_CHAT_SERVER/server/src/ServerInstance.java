@@ -70,6 +70,10 @@ public class ServerInstance {
 		return (InfoUserModel[]) users.toArray();
 	}
 
+	public static ClientSession[] getLoggedClients() {
+		return (ClientSession[]) loggedClients.toArray();
+	}
+
 	private static class LoggedClientEvent implements ListChangeListener<ClientSession> {
 
 		@Override

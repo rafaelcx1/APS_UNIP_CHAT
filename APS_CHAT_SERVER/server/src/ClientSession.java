@@ -105,21 +105,25 @@ public class ClientSession implements Runnable {
 			}
 
 			case SEND_OR_RECIEVE_MSG: {
-				System.out.println("The user '" + request.getUserFrom() + "' is sending a message to '" + request.getUserTo() + "'. | " + LocalDateTime.now().toString() + "\n");
-				if(ServerTasks.sendObject(request)){
-					InfoReturn infoReturn = new InfoReturn(false);
-					infoReturn.setUserFrom("Server");
-					infoReturn.setUserTo(request.getUserFrom());
-					infoReturn.setOperationSource(OperationType.SUCCESS_MSG);
-					infoReturn.setMessage("Message sended!");
-					ServerTasks.sendObject(infoReturn);
+				System.out.println("The user '" + request.getUserFrom() + "' is sending a message to '" + ((request.getUserTo() == null) ? "Global" : request.getUserTo()) + "'. | " + LocalDateTime.now().toString() + "\n");
+				if(request.getUserTo() == null) {
+					ServerTasks.broadcast(request, ServerInstance.getLoggedClients(), new ClientSession[] {this});
 				} else {
-					InfoReturn infoReturn = new InfoReturn(true);
-					infoReturn.setUserFrom("Server");
-					infoReturn.setUserTo(request.getUserFrom());
-					infoReturn.setOperationSource(OperationType.ERROR_MSG);
-					infoReturn.setMessage("Error on send message.");
-					ServerTasks.sendObject(infoReturn);
+					if(ServerTasks.sendObject(request)){
+						InfoReturn infoReturn = new InfoReturn(false);
+						infoReturn.setUserFrom("Server");
+						infoReturn.setUserTo(request.getUserFrom());
+						infoReturn.setOperationSource(OperationType.SUCCESS_MSG);
+						infoReturn.setMessage("Message sended!");
+						ServerTasks.sendObject(infoReturn);
+					} else {
+						InfoReturn infoReturn = new InfoReturn(true);
+						infoReturn.setUserFrom("Server");
+						infoReturn.setUserTo(request.getUserFrom());
+						infoReturn.setOperationSource(OperationType.ERROR_MSG);
+						infoReturn.setMessage("Error on send message.");
+						ServerTasks.sendObject(infoReturn);
+					}
 				}
 				break;
 			}

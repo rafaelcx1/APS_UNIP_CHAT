@@ -9,11 +9,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -21,6 +22,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import model.PrincipalModel;
 import model.requests.InfoRequest;
+import model.requests.InfoUserModel;
 import model.requests.MessageRequest;
 import model.requests.OperationType;
 import model.requests.Request;
@@ -71,6 +73,8 @@ public class PrincipalController {
 	public PrincipalController(MainController mainController, String nickname) {
 		this.mainController = mainController;
 		principalModel = new PrincipalModel(nickname);
+		globalChatMsgEvent(principalModel.getGlobalChatMsg());
+		usersListEvent(principalModel.getUsers());
 
 		try {
 			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/PrincipalView.fxml"));
@@ -86,7 +90,7 @@ public class PrincipalController {
 
 			e.printStackTrace();
 		}
-		
+
 		Request request = new Request(OperationType.INFO);
 		request.setUserFrom(nickname);
 		request.setUserTo("Server");
@@ -100,7 +104,7 @@ public class PrincipalController {
 			statusLogon.show();
 		} else {
 			Alert alert = new Alert(AlertType.ERROR);
-			alert.setContentText("An error has been occurred.\nDetails: " + principalModel.getMessage());
+			alert.setContentText("An error has been occurred.\nDetails: " + principalModel.getErrorMessage());
 			alert.setHeaderText("ERROR:");
 			alert.setTitle("APPLICATION ERROR");
 			alert.setResizable(false);
@@ -119,12 +123,12 @@ public class PrincipalController {
 					statusLogon.getDialogPane().lookupButton(ButtonType.CLOSE).setVisible(false);
 					statusLogon.close();
 				}
-				
+
 				// COMPLETAR
-				
+
 			} else {
 				Alert alert = new Alert(AlertType.ERROR);
-				alert.setContentText("An error has been occurred.\nDetails: " + principalModel.getMessage());
+				alert.setContentText("An error has been occurred.\nDetails: " + principalModel.getErrorMessage());
 				alert.setHeaderText("ERROR:");
 				alert.setTitle("APPLICATION ERROR");
 				alert.setResizable(false);
@@ -137,7 +141,7 @@ public class PrincipalController {
 				// COMPLETAR
 			} else {
 				Alert alert = new Alert(AlertType.ERROR);
-				alert.setContentText("An error has been occurred.\nDetails: " + principalModel.getMessage());
+				alert.setContentText("An error has been occurred.\nDetails: " + principalModel.getErrorMessage());
 				alert.setHeaderText("ERROR:");
 				alert.setTitle("APPLICATION ERROR");
 				alert.setResizable(false);
@@ -173,7 +177,7 @@ public class PrincipalController {
 
 	}
 
-	public void usersListEvent(ObservableList<String> users) {
+	public void usersListEvent(ObservableList<InfoUserModel> users) {
 
 	}
 

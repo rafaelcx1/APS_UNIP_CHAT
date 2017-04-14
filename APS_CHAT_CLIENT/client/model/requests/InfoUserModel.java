@@ -25,4 +25,11 @@ public class InfoUserModel {
 		this.status = status;
 	}
 
+	@Override
+	public boolean equals(Object user) {
+		if(login.equals( ((InfoUserModel) user).getLogin()) ) {
+			return true;
+		}
+		return false;
+	}
 }
