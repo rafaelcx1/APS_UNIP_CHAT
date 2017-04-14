@@ -23,7 +23,7 @@ public class LoginModel {
     	loginRequest.setUserFrom(user);
     	loginRequest.setUserTo("Server");
 
-    	try(ObjectOutputStream ois = (ObjectOutputStream) MainController.getConnection().getOutputStream()){
+    	try(ObjectOutputStream ois = new ObjectOutputStream(MainController.getConnection().getOutputStream())){
     		ois.writeObject(loginRequest);
     		return true;
 		} catch (IOException e) {

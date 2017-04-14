@@ -2,17 +2,16 @@ package controller;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.InetAddress;
+import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.SocketException;
 import java.util.ArrayList;
 
 import controller.controllers.LoginController;
 import controller.controllers.MessageController;
 import controller.controllers.PrincipalController;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -23,6 +22,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import model.requests.OperationType;
 import model.requests.Request;
 
 @SuppressWarnings("unused")
@@ -41,13 +41,13 @@ public class MainController extends Application {
 	 * rootStage = Stage(Janela) principal
 	 */
 	private static Socket connection = new Socket();
-	private TestConnectionThread testConnection;
-	private RecieveObjectThread recieveObject;
+	private static TestConnectionThread testConnection;
+	private static RecieveObjectThread recieveObject;
 	private LoginController loginController;
 	private PrincipalController principalController;
 	private ArrayList<MessageController> messageWindows = new ArrayList<>();
 	private ObservableList<String> chatWindowsUsers = FXCollections.observableArrayList();
-	private BooleanProperty connectionStatus = new SimpleBooleanProperty(false);
+	private BooleanProperty connectionStatus = new SimpleBooleanProperty(true);
 	private boolean userLogged;
 	private String nickname;
 	private Stage rootStage;
@@ -64,9 +64,14 @@ public class MainController extends Application {
 	}
 
 	// Método que retorna o Socket da conexão
-	public static boolean setConnection(String host) {
+	public boolean setConnection(String host) {
+		connection = new Socket();
 		try {
 			connection.connect(new InetSocketAddress(host, 9876), 1500);
+			testConnection = new TestConnectionThread();
+			recieveObject = new RecieveObjectThread();
+			new Thread(testConnection).start();
+			new Thread(recieveObject).start();
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -81,7 +86,7 @@ public class MainController extends Application {
 		userLogged = false;
 		chatWindowsUsersEvent(this.chatWindowsUsers); // Irá inserir um evento na lista chatWindowsUsers
 		connectionStatusEvent(this.connectionStatus); // Irá inserir um evento no connectionStatus
-		rootStage.setOnCloseRequest((event) -> close());
+		rootStage.setOnCloseRequest((event) -> closeApp());
 		openLogonScreen(); // Abertura da tela de logon
 	}
 
@@ -91,9 +96,14 @@ public class MainController extends Application {
 	}
 
 	// Método que irá ser executado quando o usuário clicar no botão fechar da janela
-	public void close() {
+	public void closeApp() {
 		logoff();
 		rootStage.close();
+		try {
+			this.stop();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// Método que irá executar as ações de recebimento de alguma Request através da Thread RecieveObject
@@ -203,13 +213,18 @@ public class MainController extends Application {
 
 	// Método para deslogar o usuário e fechar a conexão com o servidor
 	public void logoff() {
-		if(connection != null) {
-			try {
+		try {
+			if(!connection.isClosed()) {
+				ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
+				oos.writeObject(new Request(OperationType.LOGOFF));
 				connection.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+			if(testConnection != null) testConnection.closeThread();
+			testConnection = null;
+			if(recieveObject != null) recieveObject.closeThread();
+			recieveObject = null;
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -233,15 +248,27 @@ public class MainController extends Application {
 					Thread.sleep(100);
 				}
 			} catch(InterruptedException e) {
-				Alert alert = new Alert(AlertType.ERROR);
-				alert.setContentText("An InterruptedException has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
-				alert.setHeaderText("InterruptedException:");
-				alert.setTitle("APPLICATION ERROR");
-				alert.setResizable(false);
-				alert.show();
+				Platform.runLater(new Runnable(){
+
+					@Override
+					public void run() {
+						Alert alert = new Alert(AlertType.ERROR);
+						alert.setContentText("A FATAL ERROR has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
+						alert.setHeaderText("ERROR:");
+						alert.setTitle("APPLICATION ERROR");
+						alert.setResizable(false);
+						alert.show();
+
+					}
+
+				});
 			}
 		}
 
+		public void closeThread() throws Throwable {
+			this.finalize();
+			Thread.currentThread().interrupt();
+		}
 	}
 
 	/*
@@ -256,8 +283,8 @@ public class MainController extends Application {
 
 				while(true) {
 					if(connection != null) {
-						ObjectInputStream ois = (ObjectInputStream) connection.getInputStream();
-						try {
+
+						try(ObjectInputStream ois = new ObjectInputStream(connection.getInputStream())) {
 							while(true) {
 								if(ois.read() > -1) {
 									recieveObject((Request) ois.readObject());
@@ -269,16 +296,29 @@ public class MainController extends Application {
 					Thread.sleep(100);
 				}
 
-		} catch(InterruptedException | IOException e) {
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.setContentText("A FATAL ERROR has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
-			alert.setHeaderText("ERROR:");
-			alert.setTitle("APPLICATION ERROR");
-			alert.setResizable(false);
-			alert.show();
+			} catch(InterruptedException e) {
+				Platform.runLater(new Runnable(){
+
+					@Override
+					public void run() {
+						Alert alert = new Alert(AlertType.ERROR);
+						alert.setContentText("A FATAL ERROR has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
+						alert.setHeaderText("ERROR:");
+						alert.setTitle("APPLICATION ERROR");
+						alert.setResizable(false);
+						alert.show();
+
+					}
+
+				});
+			}
+		}
+
+		public void closeThread() throws Throwable {
+			this.finalize();
+			Thread.currentThread().interrupt();
 		}
 	}
 
-}
 
 }

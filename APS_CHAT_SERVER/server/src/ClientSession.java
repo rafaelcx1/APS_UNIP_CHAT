@@ -21,44 +21,61 @@ public class ClientSession implements Runnable {
 
 	@Override
 	public void run() {
+		// Thread para testar conexão com o client
+		new Thread(() -> {
+			while(!session.isClosed() && session.isConnected()) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
+				}
+			}
+
+			try {
+				ServerInstance.logoffClient(this);
+				System.out.println("Closing session with user '" + ((user != null) ? user : "%not logged user%") + "'... | " + LocalDateTime.now().toString());
+				System.out.println("Session with user '" + ((user != null) ? user : "%not logged user%") + "' closed. | " + LocalDateTime.now().toString());
+				this.finalize();
+				this.closeThread();
+				Thread.currentThread().interrupt();
+			} catch (IOException e) {
+				System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
+			} catch (Throwable e) {
+				System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
+			}
+		}).start();
+
 		sessionStart();
 	}
 
+	public void closeThread() throws Throwable {
+		Thread.currentThread().interrupt();
+		this.finalize();
+	}
 
 	public void sessionStart() {
-		// Thread para testar conexão com o client
-		new Thread(() -> {
-			while(session.isConnected() || !session.isClosed()) {
-				try {
-					System.out.println("Closing session with user '" + ((user != null) ? user : "%not logged user%") + "'... | " + LocalDateTime.now().toString());
-					this.session.close();
-					ServerInstance.logoffClient(this);
-					System.out.println("Session with user '" + ((user != null) ? user : "%not logged user%") + "' closed. | " + LocalDateTime.now().toString());
-					this.finalize();
-				} catch (IOException e) {
-					System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
-				} catch (Throwable e) {
-					System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
-				}
-			}
-		});
-
-		try(ObjectInputStream ois = (ObjectInputStream) session.getInputStream()) {
-
-			while(true) {
+		while(!session.isClosed()) {
+			try(ObjectInputStream ois = new ObjectInputStream(session.getInputStream())) {
 				if(ois.read() > -1) {
 					Request request = (Request) ois.readObject();
 					new Thread(() -> treatObject(request)).start();
-					Thread.sleep(100);
 				}
+				Thread.sleep(100);
+			} catch(IOException e) {
+				if(session == null || session.isClosed()) {
+					try {
+						closeThread();
+					} catch (Throwable e1) {
+						e1.printStackTrace();
+					}
+				} else {
+					System.out.println("IOException occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
+				}
+			} catch (ClassNotFoundException e) {
+				System.out.println("Invalid Object Recieved.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
+			} catch (Exception e) {
+				System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
 			}
-
-		} catch(IOException e) {
-			System.out.println("IOException occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
-		} catch (ClassNotFoundException e) {
-			System.out.println("Invalid Object Recieved.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
-		} catch (Exception e) {
-			System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
 		}
 	}
 

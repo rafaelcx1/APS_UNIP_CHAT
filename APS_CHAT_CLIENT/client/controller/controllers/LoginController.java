@@ -144,7 +144,7 @@ public class LoginController {
 		} else {
 			try {
 				if(tfServer.getText().matches("\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}")) {
-					if(MainController.setConnection(tfServer.getText())) {
+					if(mainController.setConnection(tfServer.getText())) {
 
 						FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginView.fxml"));
 						loader.setController(this);
@@ -170,8 +170,6 @@ public class LoginController {
 				alert.setResizable(false);
 				((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image(this.getClass().getResourceAsStream("../../view/error-icon.png")));
 				alert.show();
-
-				e.printStackTrace();
 			}
 
 		}
@@ -181,8 +179,7 @@ public class LoginController {
 	public void btnBackEvent(ActionEvent event) {
 		if(loginScreen) {
 			try {
-				MainController.getConnection().close();
-				MainController.setConnection(null);
+				mainController.logoff();
 
 				FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginServerView.fxml"));
 				loader.setController(this);
@@ -250,7 +247,7 @@ public class LoginController {
 
 	// Método que irá fechar a janela
 	public void close() {
-		mainController.close();
+		mainController.closeApp();
 	}
 
 }

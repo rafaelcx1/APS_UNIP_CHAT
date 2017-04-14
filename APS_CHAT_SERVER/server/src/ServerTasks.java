@@ -20,7 +20,7 @@ public class ServerTasks {
 			}
 			if(!contains) {
 				request.setUserTo(client.getUser());
-				try(ObjectOutputStream oos = (ObjectOutputStream) client.getSession().getOutputStream()) {
+				try(ObjectOutputStream oos = new ObjectOutputStream(client.getSession().getOutputStream())) {
 					System.out.println("Sending request to '" + client.getUser() + "' from '" + request.getUserFrom() + "'... | " + LocalDateTime.now().toString());
 					oos.writeObject(request);
 					System.out.println("Send request to '" + client.getUser() + "' from '" + request.getUserFrom() + "' complete with success. | " + LocalDateTime.now().toString() + "\n");
@@ -38,7 +38,7 @@ public class ServerTasks {
 
 	public static boolean sendObject(Request request) {
 		Socket userToConnection = ServerInstance.getClientSession(request.getUserTo());
-		try(ObjectOutputStream oos = (ObjectOutputStream) userToConnection.getOutputStream()) {
+		try(ObjectOutputStream oos = new ObjectOutputStream(userToConnection.getOutputStream())) {
 			System.out.println("Sending request to '" + request.getUserTo() + "' from '" + request.getUserFrom() + "'... | " + LocalDateTime.now().toString());
 			oos.writeObject(request);
 			System.out.println("Send request to '" + request.getUserTo() + "' from '" + request.getUserFrom() + "' complete with success. | " + LocalDateTime.now().toString() + "\n");
