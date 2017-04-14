@@ -40,7 +40,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="tfServer" layoutX="122.0" layoutY="65.0" prefHeight="36.0" prefWidth="256.0" styleClass="textfield" />
+                  <TextField fx:id="tfServer" layoutX="122.0" layoutY="65.0" onKeyPressed="#enterPressed" prefHeight="36.0" prefWidth="256.0" styleClass="textfield" />
                </children>
             </AnchorPane>
          </children>
@@ -58,16 +58,16 @@
          <children>
             <Button fx:id="btnNext" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#btnNextEvent" prefHeight="64.0" prefWidth="250.0" styleClass="dark-button-full" text="PRÓXIMO" GridPane.columnIndex="1">
                <graphic>
-                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgBtnNext" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@next.png" />
                      </image>
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="btnBack" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#btnExitEvent" prefHeight="64.0" prefWidth="250.0" styleClass="dark-button-full" text="SAIR">
+            <Button fx:id="btnBack" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#btnBackEvent" prefHeight="64.0" prefWidth="250.0" styleClass="dark-button-full" text="SAIR">
                <graphic>
-                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgBtnBack" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@exit.png" />
                      </image>

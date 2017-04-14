@@ -1,7 +1,5 @@
 package controller.controllers;
-import java.awt.FlowLayout;
 import java.io.IOException;
-import java.net.Socket;
 
 import controller.MainController;
 import javafx.event.ActionEvent;
@@ -16,12 +14,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import model.LoginModel;
 import model.requests.Request;
 
@@ -50,8 +49,6 @@ public class LoginController {
 	@FXML
 	private ImageView imgBtnBack;
 	@FXML
-	private FlowLayout statusBar;
-	@FXML
 	private ImageView logo;
 	@FXML
 	private Label lbServer;
@@ -65,13 +62,13 @@ public class LoginController {
 	private Button btnBack;
 	@FXML
 	private Button btnNext;
-	@FXML
-	private Label lblStatus;
+
 
 	private MainController mainController;
 	private LoginModel loginModel;
 	private boolean loginScreen;
 	private Alert loginStatus;
+	private Alert lostConnectionAlert;
 
 	private double xOffset;
 	private double yOffset;
@@ -84,8 +81,6 @@ public class LoginController {
 			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginServerView.fxml"));
 			loader.setController(this);
 			mainController.getStage().setScene(new Scene(loader.load()));
-			mainController.getStage().setResizable(false);
-			mainController.getStage().initStyle(StageStyle.UNDECORATED);
 			mainController.getStage().getIcons().setAll(new Image(this.getClass().getResourceAsStream("../../view/icon.png")));
 			loginScreen = false;
 		} catch (IOException e) {
@@ -105,7 +100,7 @@ public class LoginController {
 	// M�todo de evento quando o mouse � pressionado no paneTop
 	public void moveWindowOnMousePressed(MouseEvent event) {
 		xOffset = event.getSceneX();
-        yOffset = event.getSceneY();
+		yOffset = event.getSceneY();
 	}
 
 	// M�todo de evento quando o mouse � arrastado no paneTop
@@ -114,8 +109,12 @@ public class LoginController {
 		mainController.getStage().setY(event.getScreenY() - yOffset);
 	}
 
-	// Método padrão do FXML que é chamado ao carregar os elementos
-	public void initialize() {}
+	// Método para clicar no btnNext ao pressionar enter
+	public void enterPressed(KeyEvent event) {
+		if(event.getCode().equals(KeyCode.ENTER)) {
+			btnNext.fire();
+		}
+	}
 
 	// Método do botão btnNext, ele irá logar se o loginScreen for true, ou passar para a tela de login se esta variável for false
 	public void btnNextEvent(ActionEvent event) {
@@ -127,6 +126,7 @@ public class LoginController {
 				loginStatus.setTitle("Aguarde");
 				loginStatus.setResizable(false);
 				loginStatus.getButtonTypes().setAll(new ButtonType[] {});
+				((Stage) loginStatus.getDialogPane().getScene().getWindow()).getIcons().add(new Image(this.getClass().getResourceAsStream("../../view/waiting-icon.png")));
 				loginStatus.show();
 				btnBack.setDisable(true);
 				btnNext.setDisable(true);
@@ -144,12 +144,15 @@ public class LoginController {
 		} else {
 			try {
 				if(tfServer.getText().matches("\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}")) {
-					MainController.setConnection(new Socket(tfServer.getText(), 9876));
+					if(MainController.setConnection(tfServer.getText())) {
 
-					FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginView.fxml"));
-					loader.setController(this);
-					mainController.getStage().setScene(new Scene(loader.load()));
-					loginScreen = true;
+						FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginView.fxml"));
+						loader.setController(this);
+						mainController.getStage().setScene(new Scene(loader.load()));
+						loginScreen = true;
+					} else {
+						throw new IOException("Sem conex�o com o servidor");
+					}
 				} else {
 					Alert alert = new Alert(AlertType.ERROR);
 					alert.setContentText("Endere�o de IP inv�lido.");
@@ -175,7 +178,7 @@ public class LoginController {
 	}
 
 	// Método do botão btnExit, irá sair se o loginScreen for false, ou voltar caso seja true
-	public void btnExitEvent(ActionEvent event) {
+	public void btnBackEvent(ActionEvent event) {
 		if(loginScreen) {
 			try {
 				MainController.getConnection().close();
@@ -230,16 +233,19 @@ public class LoginController {
 
 	// Método que irá executar ações quando a conexão com o servidor cair
 	public void lostConnection() {
-		lblStatus.setText("STATUS: Sem conexão com o servidor.");
-		tfLogin.setDisable(true);
-		btnNext.setDisable(true);
+		lostConnectionAlert = new Alert(AlertType.ERROR);
+		lostConnectionAlert.setTitle("Lost Connection");
+		lostConnectionAlert.setHeaderText("Erro:");
+		lostConnectionAlert.setContentText("Foi perdido a conex�o com o servidor. Clique no bot�o 'OK' abaixo para voltar para a tela inicial ou aguarde.\nAguardando conex�o...");
+		if(lostConnectionAlert.showAndWait().get().getButtonData().isDefaultButton()) {
+			btnBack.fire();
+		}
 	}
 
 	// Método que irá executar ações quando a conexão com o servidor voltar
 	public void reconnect() {
-		lblStatus.setText("STATUS: Conectado.");
-		tfLogin.setDisable(false);
-		btnNext.setDisable(false);
+		lostConnectionAlert.getButtonTypes().setAll(new ButtonType[] {});
+		lostConnectionAlert.close();
 	}
 
 	// Método que irá fechar a janela

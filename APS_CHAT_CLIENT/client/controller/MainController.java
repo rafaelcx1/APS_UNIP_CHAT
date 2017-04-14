@@ -2,7 +2,11 @@ package controller;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.SocketException;
 import java.util.ArrayList;
 
 import controller.controllers.LoginController;
@@ -18,6 +22,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import model.requests.Request;
 
 @SuppressWarnings("unused")
@@ -35,7 +40,7 @@ public class MainController extends Application {
 	 * nickname = Atributo para armazenar o nickname do usuário
 	 * rootStage = Stage(Janela) principal
 	 */
-	private static Socket connection;
+	private static Socket connection = new Socket();
 	private TestConnectionThread testConnection;
 	private RecieveObjectThread recieveObject;
 	private LoginController loginController;
@@ -59,8 +64,14 @@ public class MainController extends Application {
 	}
 
 	// Método que retorna o Socket da conexão
-	public static void setConnection(Socket connection) {
-		MainController.connection = connection;
+	public static boolean setConnection(String host) {
+		try {
+			connection.connect(new InetSocketAddress(host, 9876), 1500);
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	// Método chamado através do método main - Serve para a preparação da Janela
@@ -72,7 +83,6 @@ public class MainController extends Application {
 		connectionStatusEvent(this.connectionStatus); // Irá inserir um evento no connectionStatus
 		rootStage.setOnCloseRequest((event) -> close());
 		openLogonScreen(); // Abertura da tela de logon
-		rootStage.show();
 	}
 
 	// Retorna o Stage principal da aplicação(Janela)
@@ -99,11 +109,15 @@ public class MainController extends Application {
 	public void openLogonScreen() {
 		if(principalController == null) {
 			loginController = new LoginController(this);
+
 		} else {
 			principalController.close();
 			principalController = null;
 			loginController = new LoginController(this);
 		}
+		rootStage.setResizable(false);
+		rootStage.initStyle(StageStyle.UNDECORATED);
+		rootStage.show();
 	}
 
 	// Método que irá abrir a janela principal
@@ -115,6 +129,8 @@ public class MainController extends Application {
 			loginController = null;
 			principalController = new PrincipalController(this, nickname);
 		}
+		rootStage.initStyle(StageStyle.UNDECORATED);
+		rootStage.show();
 	}
 
 	// Método que irá abrir uma nova janela caso receba uma mensagem
