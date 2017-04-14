@@ -118,7 +118,7 @@ public class PrincipalController {
 
 			if(principalModel.treatObject((InfoRequest) request)) {
 				if(statusLogon != null) {
-					// Ações para tornar possível o fechamento da janela de status
+					// A��es para tornar possível o fechamento da janela de status
 					statusLogon.getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
 					statusLogon.getDialogPane().lookupButton(ButtonType.CLOSE).setVisible(false);
 					statusLogon.close();

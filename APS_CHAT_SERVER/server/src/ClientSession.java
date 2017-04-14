@@ -21,7 +21,7 @@ public class ClientSession implements Runnable {
 
 	@Override
 	public void run() {
-		// Thread para testar conexÃ£o com o client
+		// Thread para testar conexão com o client
 		new Thread(() -> {
 			while(!session.isClosed() && session.isConnected()) {
 				try {
