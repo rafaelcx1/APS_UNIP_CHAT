@@ -19,7 +19,8 @@ public class ServerTasks {
 				}
 			}
 			if(!contains) {
-				request.setUserTo(client.getUser());
+				if(request.getUserTo() != null)
+					request.setUserTo(client.getUser());
 				try(ObjectOutputStream oos = new ObjectOutputStream(client.getSession().getOutputStream())) {
 					System.out.println("Sending request to '" + client.getUser() + "' from '" + request.getUserFrom() + "'... | " + LocalDateTime.now().toString());
 					oos.writeObject(request);

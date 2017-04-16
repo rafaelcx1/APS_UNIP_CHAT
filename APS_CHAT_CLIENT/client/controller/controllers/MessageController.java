@@ -1,7 +1,6 @@
 package controller.controllers;
 
-import java.net.Socket;
-
+import controller.MainController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -12,7 +11,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import model.MessageModel;
-import model.requests.MessageRequest;
+import model.requests.Request;
 
 @SuppressWarnings("unused")
 public class MessageController {
@@ -37,13 +36,14 @@ public class MessageController {
 	private Button btnHelpEmoction;
 
 	private MessageModel messageModel;
+	private MainController mainController;
 
 
-	public MessageController(String loginRecipient) {
+	public MessageController(String loginRecipient, MainController mainController) {
 
 	}
 
-	public boolean recieveObject(MessageRequest msgRequest) {
+	public boolean recieveObject(Request msgRequest) {
 		return false;
 	}
 

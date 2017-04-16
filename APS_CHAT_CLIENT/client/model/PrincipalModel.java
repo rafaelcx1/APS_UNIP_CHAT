@@ -2,7 +2,6 @@ package model;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.time.LocalTime;
 
 import controller.MainController;
 import javafx.collections.ObservableList;
@@ -16,7 +15,7 @@ public class PrincipalModel {
 	private String errorMessage = "";
 	private String nickname;
 	private ObservableList<InfoUserModel> users;
-	private ObservableList<String> globalChatMsg;
+	private ObservableList<MessageRequest> globalChatMsg;
 
 	public PrincipalModel(String nickname) {
 		this.nickname = nickname;
@@ -26,7 +25,7 @@ public class PrincipalModel {
 		return errorMessage;
 	}
 
-	public String getnickname() {
+	public String getNickname() {
 		return nickname;
 	}
 
@@ -34,13 +33,13 @@ public class PrincipalModel {
 		return users;
 	}
 
-	public ObservableList<String> getGlobalChatMsg() {
+	public ObservableList<MessageRequest> getGlobalChatMsg() {
 		return globalChatMsg;
 	}
 
 	public boolean treatObject(MessageRequest request) {
-		if(request.getUserTo().equals(nickname)) {
-			globalChatMsg.add(LocalTime.now() + " | " + request.getUserFrom() + ": " + request.getMessage());
+		if(request.getUserTo() == null) {
+			globalChatMsg.add(request);
 			return true;
 		} else {
 			errorMessage = "Invalid User";
@@ -68,7 +67,7 @@ public class PrincipalModel {
 	}
 
 	public boolean sendObject(Request request) {
-		try(ObjectOutputStream ois = (ObjectOutputStream) MainController.getConnection().getOutputStream()) {
+		try(ObjectOutputStream ois = new ObjectOutputStream(MainController.getConnection().getOutputStream())) {
 			ois.writeObject(request);
 			return true;
 		} catch (IOException e) {

@@ -1,6 +1,7 @@
 package controller.controllers;
 
 import java.io.IOException;
+import java.util.List;
 
 import controller.MainController;
 import javafx.collections.ObservableList;
@@ -22,6 +23,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import model.PrincipalModel;
 import model.requests.InfoRequest;
+import model.requests.InfoReturn;
 import model.requests.InfoUserModel;
 import model.requests.MessageRequest;
 import model.requests.OperationType;
@@ -117,14 +119,13 @@ public class PrincipalController {
 		if(request.getOperation() == OperationType.INFO) {
 
 			if(principalModel.treatObject((InfoRequest) request)) {
+
 				if(statusLogon != null) {
 					// Ações para tornar possÃ­vel o fechamento da janela de status
 					statusLogon.getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
 					statusLogon.getDialogPane().lookupButton(ButtonType.CLOSE).setVisible(false);
 					statusLogon.close();
 				}
-
-				// COMPLETAR
 
 			} else {
 				Alert alert = new Alert(AlertType.ERROR);
@@ -137,19 +138,24 @@ public class PrincipalController {
 
 		} else if(request.getOperation() == OperationType.SEND_OR_RECIEVE_MSG) {
 
-			if(principalModel.treatObject((MessageRequest) request)) {
-				// COMPLETAR
-			} else {
-				Alert alert = new Alert(AlertType.ERROR);
-				alert.setContentText("An error has been occurred.\nDetails: " + principalModel.getErrorMessage());
-				alert.setHeaderText("ERROR:");
-				alert.setTitle("APPLICATION ERROR");
-				alert.setResizable(false);
-				alert.show();
+			if(request.getUserTo() == null) {
+				if(!principalModel.treatObject((MessageRequest) request)) {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setContentText("An error has been occurred.\nDetails: " + principalModel.getErrorMessage());
+					alert.setHeaderText("ERROR:");
+					alert.setTitle("APPLICATION ERROR");
+					alert.setResizable(false);
+					alert.show();
+				}
 			}
 
 		} else {
-
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setContentText("An error has been occurred.\nDetails: Invalid Object");
+			alert.setHeaderText("ERROR:");
+			alert.setTitle("APPLICATION ERROR");
+			alert.setResizable(false);
+			alert.show();
 		}
 	}
 
@@ -181,7 +187,7 @@ public class PrincipalController {
 
 	}
 
-	public void globalChatMsgEvent(ObservableList<String> users) {
+	public void globalChatMsgEvent(ObservableList<MessageRequest> globalChat) {
 
 	}
 

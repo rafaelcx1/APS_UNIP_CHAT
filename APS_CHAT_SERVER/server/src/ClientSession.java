@@ -128,14 +128,14 @@ public class ClientSession implements Runnable {
 				} else {
 					if(ServerTasks.sendObject(request)){
 						InfoReturn infoReturn = new InfoReturn(false);
-						infoReturn.setUserFrom("Server");
+						infoReturn.setUserFrom(request.getUserTo());
 						infoReturn.setUserTo(request.getUserFrom());
 						infoReturn.setOperationSource(OperationType.SUCCESS_MSG);
 						infoReturn.setMessage("Message sended!");
 						ServerTasks.sendObject(infoReturn);
 					} else {
 						InfoReturn infoReturn = new InfoReturn(true);
-						infoReturn.setUserFrom("Server");
+						infoReturn.setUserFrom(request.getUserTo());
 						infoReturn.setUserTo(request.getUserFrom());
 						infoReturn.setOperationSource(OperationType.ERROR_MSG);
 						infoReturn.setMessage("Error on send message.");

@@ -22,6 +22,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import model.requests.MessageRequest;
 import model.requests.OperationType;
 import model.requests.Request;
 
@@ -112,7 +113,8 @@ public class MainController extends Application {
 		if(loginController != null) {
 			loginController.recieveObject(request);
 		} else if(principalController != null) {
-			principalController.recieveObject(request);
+			if(!isMessageWindowRequest(request))
+				principalController.recieveObject(request);
 		}
 	}
 
@@ -149,6 +151,29 @@ public class MainController extends Application {
 		chatWindowsUsers.add(loginRecipient);
 	}
 
+	// Método que irá tratar os requests para as janelas de mensagens
+	public boolean isMessageWindowRequest(Request msg) {
+		if(msg.getOperation() == OperationType.SEND_OR_RECIEVE_MSG && !msg.getUserFrom().equals("Server") && msg.getUserTo() != null) {
+			boolean found = false;
+			for(MessageController msgWindow : messageWindows) {
+				if(msgWindow.getRecipient().equals(msg.getUserFrom())) {
+					msgWindow.recieveObject(msg);
+					found = true;
+					break;
+				}
+			}
+			if(!found) {
+				openMessageScreen(msg.getUserFrom());
+				isMessageWindowRequest(msg);
+			}
+			return true;
+		} else if(msg.getOperation() == OperationType.SUCCESS_MSG || msg.getOperation() == OperationType.ERROR_MSG && !msg.getUserFrom().equals("Server")){
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	// Método que irá inicializar as Threads
 	public void initializeThreads() {
 		testConnection = new TestConnectionThread();
@@ -164,12 +189,12 @@ public class MainController extends Application {
 			while(c.next()) {
 				if(c.wasAdded()) {
 					for(String user : c.getAddedSubList()) {
-						messageWindows.add(new MessageController(user));
+						messageWindows.add(new MessageController(user, this));
 					}
 				} else if(c.wasRemoved()) {
 					for(String user : c.getRemoved()) {
 						messageWindows.removeIf((t) -> {
-							if(t.getRecipient().equals("user")) {
+							if(t.getRecipient().equals(user)) {
 								return true;
 							} else {
 								return false;
