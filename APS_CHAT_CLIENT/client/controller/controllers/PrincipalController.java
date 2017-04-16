@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import controller.MainController;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -184,16 +185,29 @@ public class PrincipalController {
 	}
 
 	public void usersListEvent(ObservableList<InfoUserModel> users) {
+		users.addListener((ListChangeListener<InfoUserModel>) (c) -> {
+			while(c.next()) {
+				if(c.wasAdded()) {
 
+				} else {
+
+				}
+			}
+		});
 	}
 
 	public void globalChatMsgEvent(ObservableList<MessageRequest> globalChat) {
+		globalChat.addListener((ListChangeListener<MessageRequest>) (c) -> {
+			while(c.next()) {
+				if(c.wasAdded()) {
 
+				}
+			}
+		});
 	}
 
 	public void close() {
-		// TODO Auto-generated method stub
-
+		mainController.closeApp();
 	}
 
 }

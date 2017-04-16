@@ -64,6 +64,11 @@ public class MainController extends Application {
 		return connection;
 	}
 
+	// Método get que retorna o nickname
+	public String getNickname() {
+		return nickname;
+	}
+
 	// Método que retorna o Socket da conexão
 	public boolean setConnection(String host) {
 		connection = new Socket();
@@ -142,6 +147,8 @@ public class MainController extends Application {
 			loginController = null;
 			principalController = new PrincipalController(this, nickname);
 		}
+		this.nickname = nickname;
+		userLogged = true;
 		rootStage.initStyle(StageStyle.UNDECORATED);
 		rootStage.show();
 	}
