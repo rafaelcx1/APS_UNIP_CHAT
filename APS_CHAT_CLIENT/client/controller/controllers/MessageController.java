@@ -21,7 +21,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.MessageModel;
+import model.requests.InfoReturn;
 import model.requests.MessageRequest;
+import model.requests.OperationType;
 import model.requests.Request;
 
 public class MessageController extends Application {
@@ -77,8 +79,37 @@ public class MessageController extends Application {
 		}
 	}
 
-	public void recieveObject(Request msgRequest) {
-		// COMPLETAR
+	public void recieveObject(Request request) {
+		if(request.getOperation() == OperationType.SUCCESS_MSG || request.getOperation() == OperationType.ERROR_MSG) {
+
+			if(!messageModel.treatObject((InfoReturn) request)) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setContentText("An error has been occurred.\nDetails: " + messageModel.getErrorMessage());
+				alert.setHeaderText("ERROR:");
+				alert.setTitle("APPLICATION ERROR");
+				alert.setResizable(false);
+				alert.show();
+			}
+
+		} else if(request.getOperation() == OperationType.SEND_OR_RECIEVE_MSG) {
+
+			if(!messageModel.treatObject((MessageRequest) request)) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setContentText("An error has been occurred.\nDetails: " + messageModel.getErrorMessage());
+				alert.setHeaderText("ERROR:");
+				alert.setTitle("APPLICATION ERROR");
+				alert.setResizable(false);
+				alert.show();
+			}
+
+		} else {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setContentText("An error has been occurred.\nDetails: Invalid Object");
+			alert.setHeaderText("ERROR:");
+			alert.setTitle("APPLICATION ERROR");
+			alert.setResizable(false);
+			alert.show();
+		}
 	}
 
 	public String getRecipient() {

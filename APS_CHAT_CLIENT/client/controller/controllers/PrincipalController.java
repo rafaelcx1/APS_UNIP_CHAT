@@ -188,9 +188,9 @@ public class PrincipalController {
 		users.addListener((ListChangeListener<InfoUserModel>) (c) -> {
 			while(c.next()) {
 				if(c.wasAdded()) {
-
+					// COMPLETAR
 				} else {
-
+					// COMPLETAR
 				}
 			}
 		});
@@ -200,7 +200,7 @@ public class PrincipalController {
 		globalChat.addListener((ListChangeListener<MessageRequest>) (c) -> {
 			while(c.next()) {
 				if(c.wasAdded()) {
-
+					// COMPLETAR
 				}
 			}
 		});
