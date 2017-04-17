@@ -196,7 +196,14 @@ public class MainController extends Application {
 			while(c.next()) {
 				if(c.wasAdded()) {
 					for(String user : c.getAddedSubList()) {
-						messageWindows.add(new MessageController(user, this));
+						if(!chatWindowsUsers.contains(user))
+							messageWindows.add(new MessageController(user, this));
+						else {
+							for(MessageController msgWindow : messageWindows) {
+								if(msgWindow.getRecipient().equals(user))
+									msgWindow.showWindow();
+							}
+						}
 					}
 				} else if(c.wasRemoved()) {
 					for(String user : c.getRemoved()) {

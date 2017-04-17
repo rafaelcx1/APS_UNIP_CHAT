@@ -1,7 +1,6 @@
 package controller.controllers;
 
 import java.io.IOException;
-import java.util.List;
 
 import controller.MainController;
 import javafx.collections.ListChangeListener;
@@ -24,13 +23,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import model.PrincipalModel;
 import model.requests.InfoRequest;
-import model.requests.InfoReturn;
 import model.requests.InfoUserModel;
 import model.requests.MessageRequest;
 import model.requests.OperationType;
 import model.requests.Request;
 
-@SuppressWarnings("unused")
 public class PrincipalController {
 
 	@FXML
@@ -122,7 +119,7 @@ public class PrincipalController {
 			if(principalModel.treatObject((InfoRequest) request)) {
 
 				if(statusLogon != null) {
-					// Ações para tornar possÃ­vel o fechamento da janela de status
+					// Ações para tornar possível o fechamento da janela de status
 					statusLogon.getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
 					statusLogon.getDialogPane().lookupButton(ButtonType.CLOSE).setVisible(false);
 					statusLogon.close();
@@ -161,27 +158,56 @@ public class PrincipalController {
 	}
 
 	public void lostConnection() {
-
+		tfMsgBox.setDisable(true);
+		lblStatus.setText("Sem conexão com o servidor.");
+		btnLogoffReconnect.setText("Reconectar");
+		// COMPLETAR
 	}
 
 	public void reconnect() {
-
+		tfMsgBox.setDisable(false);
+		lblStatus.setText("Conectado.");
+		btnLogoffReconnect.setText("Logoff");
+		// COMPLETAR
 	}
 
 	public void btnLogoffReconnectAction(ActionEvent action) {
+		if(btnLogoffReconnect.getText().equals("Logoff")) {
 
+		}
+		// COMPLETAR
 	}
 
 	public void btnHelpEmoctionAction(ActionEvent action) {
-
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setContentText(""); // Emoctions
+		alert.setHeaderText("Emoctions:");
+		alert.setTitle("Help Emoction Window");
+		alert.setResizable(false);
+		alert.show();
+		// COMPLETAR
 	}
 
 	public void btnSendMsgAction(ActionEvent action) {
-
+		MessageRequest msgRequest = new MessageRequest();
+		msgRequest.setUserFrom(principalModel.getNickname());
+		msgRequest.setUserTo(null);
+		msgRequest.setMessage(tfMsgBox.getText());
+		if(!principalModel.sendObject(msgRequest)) {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setContentText("An error has been occurred.\nDetails: " + principalModel.getErrorMessage());
+			alert.setHeaderText("ERROR:");
+			alert.setTitle("APPLICATION ERROR");
+			alert.setResizable(false);
+			alert.show();
+		} else {
+			principalModel.getGlobalChatMsg().add(msgRequest);
+		}
 	}
 
-	public void openMessagePrivateWindow(Label user) {
-
+	public void openMessagePrivateWindow(ActionEvent user) {
+		mainController.openMessageScreen(((Label)user.getSource()).getText());
+		// COMPLETAR
 	}
 
 	public void usersListEvent(ObservableList<InfoUserModel> users) {

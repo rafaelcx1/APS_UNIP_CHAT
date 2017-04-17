@@ -168,6 +168,12 @@ public class MessageController extends Application {
 		alert.show();
 	}
 
+	public void showWindow() {
+		rootStage.centerOnScreen();
+		rootStage.requestFocus();
+		rootStage.show();
+	}
+
 	public void close() {
 		mainController.closeApp();
 	}

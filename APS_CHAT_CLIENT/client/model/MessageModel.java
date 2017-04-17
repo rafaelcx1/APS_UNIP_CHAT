@@ -19,7 +19,7 @@ public class MessageModel {
 	private List<MessageRequest> tempMsg = new ArrayList<>();
 
 	public MessageModel(String loginRecipient) {
-
+		this.loginRecipient = loginRecipient;
 	}
 
 	public String getErrorMessage() {
