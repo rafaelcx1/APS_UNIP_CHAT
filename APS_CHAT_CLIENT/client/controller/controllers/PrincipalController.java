@@ -1,13 +1,17 @@
 package controller.controllers;
 
 import java.io.IOException;
+import java.time.LocalTime;
 
 import controller.MainController;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -23,6 +27,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import model.PrincipalModel;
 import model.requests.InfoRequest;
+import model.requests.InfoReturn;
 import model.requests.InfoUserModel;
 import model.requests.MessageRequest;
 import model.requests.OperationType;
@@ -119,10 +124,14 @@ public class PrincipalController {
 			if(principalModel.treatObject((InfoRequest) request)) {
 
 				if(statusLogon != null) {
-					// Ações para tornar possível o fechamento da janela de status
+					// Aï¿½ï¿½es para tornar possï¿½vel o fechamento da janela de status
 					statusLogon.getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
 					statusLogon.getDialogPane().lookupButton(ButtonType.CLOSE).setVisible(false);
 					statusLogon.close();
+
+					tfMsgBox.setDisable(false);
+					lblStatus.setText("Conectado.");
+					statusLogon = null;
 				}
 
 			} else {
@@ -147,6 +156,38 @@ public class PrincipalController {
 				}
 			}
 
+		} else if(request.getOperation() == OperationType.SUCCESS_MSG || request.getOperation() == OperationType.ERROR_MSG) {
+
+			if(((InfoReturn)request).getOperationSource() == OperationType.LOGIN && request.getOperation() == OperationType.SUCCESS_MSG) {
+				Request requestInfo = new Request(OperationType.INFO);
+				request.setUserFrom(principalModel.getNickname());
+				request.setUserTo("Server");
+				if(principalModel.sendObject(requestInfo)) {
+					statusLogon = new Alert(AlertType.INFORMATION);
+					statusLogon.setTitle("Logon");
+					statusLogon.setHeaderText("Buscando dados do servidor...");
+					statusLogon.setContentText("Aguarde...");
+					statusLogon.setResizable(false);
+					statusLogon.getButtonTypes().setAll(new ButtonType[] {});
+					statusLogon.show();
+				} else {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setContentText("An error has been occurred.\nDetails: " + principalModel.getErrorMessage());
+					alert.setHeaderText("ERROR:");
+					alert.setTitle("APPLICATION ERROR");
+					alert.setResizable(false);
+					alert.show();
+				}
+			} else if(request.getOperation() == OperationType.ERROR_MSG) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setContentText("An error has been occurred.\nDetails: " + ((InfoReturn)request).getMessage());
+				alert.setHeaderText("ERROR:");
+				alert.setTitle("APPLICATION ERROR");
+				alert.setResizable(false);
+				alert.showAndWait();
+				this.close();
+			}
+
 		} else {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setContentText("An error has been occurred.\nDetails: Invalid Object");
@@ -159,23 +200,31 @@ public class PrincipalController {
 
 	public void lostConnection() {
 		tfMsgBox.setDisable(true);
-		lblStatus.setText("Sem conexão com o servidor.");
+		lblStatus.setText("Sem conexÃ£o com o servidor.");
 		btnLogoffReconnect.setText("Reconectar");
-		// COMPLETAR
 	}
 
 	public void reconnect() {
-		tfMsgBox.setDisable(false);
-		lblStatus.setText("Conectado.");
-		btnLogoffReconnect.setText("Logoff");
-		// COMPLETAR
+		lblStatus.setText("ConexÃ£o feita. Clique no botÃ£o 'Reconectar' para relogar no servidor.");
 	}
 
 	public void btnLogoffReconnectAction(ActionEvent action) {
-		if(btnLogoffReconnect.getText().equals("Logoff")) {
+		if(btnLogoffReconnect.getText().equals("Reconectar")) {
+			Request loginRequest = new Request(OperationType.LOGIN);
+	    	loginRequest.setUserFrom(principalModel.getNickname());
+	    	loginRequest.setUserTo("Server");
 
+	    	if(!principalModel.sendObject(loginRequest)) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setContentText("An IOException error has been occurred.\nDetails: " + principalModel.getErrorMessage());
+				alert.setHeaderText("ERROR:");
+				alert.setTitle("APPLICATION ERROR");
+				alert.setResizable(false);
+				alert.show();
+			}
+		} else {
+			this.close();
 		}
-		// COMPLETAR
 	}
 
 	public void btnHelpEmoctionAction(ActionEvent action) {
@@ -185,7 +234,6 @@ public class PrincipalController {
 		alert.setTitle("Help Emoction Window");
 		alert.setResizable(false);
 		alert.show();
-		// COMPLETAR
 	}
 
 	public void btnSendMsgAction(ActionEvent action) {
@@ -205,18 +253,31 @@ public class PrincipalController {
 		}
 	}
 
-	public void openMessagePrivateWindow(ActionEvent user) {
+	public void openMessagePrivateWindow(Event user) {
 		mainController.openMessageScreen(((Label)user.getSource()).getText());
-		// COMPLETAR
 	}
 
 	public void usersListEvent(ObservableList<InfoUserModel> users) {
 		users.addListener((ListChangeListener<InfoUserModel>) (c) -> {
 			while(c.next()) {
 				if(c.wasAdded()) {
-					// COMPLETAR
+					for(InfoUserModel user : c.getAddedSubList()) {
+						Label lblUser = new Label(user.getLogin());
+						lblUser.setOnMouseClicked((event) -> openMessagePrivateWindow(event));
+						lblUser.getStyleClass().add("recipient");
+						lblUser.getPseudoClassStates().add(PseudoClass.getPseudoClass("hover"));
+						lblUser.getPseudoClassStates().add(PseudoClass.getPseudoClass("click"));
+						lblUser.getStylesheets().add(this.getClass().getResource("../../view/GlobalMsgStyle.css").toExternalForm());
+						vbUsersListPane.getChildren().add(lblUser);
+					}
 				} else {
-					// COMPLETAR
+					for(InfoUserModel user : c.getRemoved()) {
+						for(Node label : vbUsersListPane.getChildren()) {
+							if(((Label)label).getText().equals(user.getLogin())) {
+								vbUsersListPane.getChildren().remove(label);
+							}
+						}
+					}
 				}
 			}
 		});
@@ -226,7 +287,16 @@ public class PrincipalController {
 		globalChat.addListener((ListChangeListener<MessageRequest>) (c) -> {
 			while(c.next()) {
 				if(c.wasAdded()) {
-					// COMPLETAR
+					for(MessageRequest msg : c.getAddedSubList()) {
+						Label lblmsg = new Label("<" + LocalTime.now().toString() + ">" + " " + msg.getUserFrom() + ": " + msg.getMessage());
+						if(msg.getUserFrom().equals(principalModel.getNickname()))
+							lblmsg.getStyleClass().add("messageUser");
+						else
+							lblmsg.getStyleClass().add("message");
+						lblmsg.getPseudoClassStates().add(PseudoClass.getPseudoClass("hover"));
+						lblmsg.getStylesheets().add(this.getClass().getResource("../../view/GlobalMsgStyle.css").toExternalForm());
+						vbGlobalChatPane.getChildren().add(lblmsg);
+					}
 				}
 			}
 		});

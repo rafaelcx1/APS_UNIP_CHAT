@@ -37,7 +37,7 @@ public class MessageController extends Application {
 	@FXML
 	private HBox hbSendMsgPane;
 	@FXML
-	private Label lblnicknameRecipient;
+	private Label lblNicknameRecipient;
 	@FXML
 	private Label lblStatusRecipient;
 	@FXML
@@ -56,6 +56,8 @@ public class MessageController extends Application {
 		messageModel = new MessageModel(loginRecipient);
 		this.mainController = mainController;
 		chatMsgListEvent(messageModel.getChatMsg());
+		lblNicknameRecipient.setText(loginRecipient);
+		lblStatusRecipient.setText("Online");
 		launch();
 	}
 
@@ -67,6 +69,7 @@ public class MessageController extends Application {
 			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/MessageView.fxml"));
 			loader.setController(this);
 			rootStage.setScene(new Scene(loader.load()));
+			rootStage.show();
 		} catch(IOException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setContentText("An IOException has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
