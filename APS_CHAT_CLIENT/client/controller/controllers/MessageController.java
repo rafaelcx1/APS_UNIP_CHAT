@@ -65,6 +65,10 @@ public class MessageController extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		rootStage = primaryStage;
+		rootStage.setOnCloseRequest((event) -> {
+			mainController.closeChatWindow(messageModel.getLoginRecipient());
+			this.close();
+		});
 
 		try {
 			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/MessageView.fxml"));
@@ -190,9 +194,14 @@ public class MessageController extends Application {
 		rootStage.show();
 	}
 
-	public void close() throws Exception {
+	public void close() {
 		rootStage.close();
-		this.stop();
+		try {
+			this.stop();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		mainController.closeApp();
 	}
 

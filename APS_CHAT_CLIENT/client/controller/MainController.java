@@ -29,16 +29,16 @@ import model.requests.Request;
 @SuppressWarnings("unused")
 public class MainController extends Application {
 
-	/* connection = Atributo de conexão com o servidor
-	 * testConnection = InstÃƒÂ¢ncia da Thread que testa a conexão com o servidor
+	/* connection = Atributo de conexï¿½o com o servidor
+	 * testConnection = InstÃƒÂ¢ncia da Thread que testa a conexï¿½o com o servidor
 	 * recieveObject = InstÃƒÂ¢ncia da Thread que recebe os objetos do servidor
 	 * loginController = InstÃƒÂ¢ncia da tela de login
 	 * principalController = InstÃƒÂ¢ncia da tela Principal
 	 * messageWindows = Lista com as janelas de mensagem
-	 * chatWindowsUsers = Lista com listener com os usuários de cada janela
-	 * connectionStatus = Atributo com o status da conexão, caso a conexão falhe, este atributo será setado como false
-	 * userLogged = Atributo para indicar se há um usuário logado
-	 * nickname = Atributo para armazenar o nickname do usuário
+	 * chatWindowsUsers = Lista com listener com os usuï¿½rios de cada janela
+	 * connectionStatus = Atributo com o status da conexï¿½o, caso a conexï¿½o falhe, este atributo serï¿½ setado como false
+	 * userLogged = Atributo para indicar se hï¿½ um usuï¿½rio logado
+	 * nickname = Atributo para armazenar o nickname do usuï¿½rio
 	 * rootStage = Stage(Janela) principal
 	 */
 	private static Socket connection = new Socket();
@@ -54,22 +54,22 @@ public class MainController extends Application {
 	private Stage rootStage;
 
 
-	// Método main - Inicial
+	// Mï¿½todo main - Inicial
 	public static void main(String[] args) {
 		launch(args);
 	}
 
-	// Método que retorna o Socket da conexão
+	// Mï¿½todo que retorna o Socket da conexï¿½o
 	public static Socket getConnection() {
 		return connection;
 	}
 
-	// Método get que retorna o nickname
+	// Mï¿½todo get que retorna o nickname
 	public String getNickname() {
 		return nickname;
 	}
 
-	// Método que retorna o Socket da conexão
+	// Mï¿½todo que retorna o Socket da conexï¿½o
 	public boolean setConnection(String host) {
 		connection = new Socket();
 		try {
@@ -85,23 +85,23 @@ public class MainController extends Application {
 		}
 	}
 
-	// Método chamado através do método main - Serve para a preparação da Janela
+	// Mï¿½todo chamado atravï¿½s do mï¿½todo main - Serve para a preparaï¿½ï¿½o da Janela
 	@Override
 	public void start(Stage stage) {
 		rootStage = stage;
 		userLogged = false;
-		chatWindowsUsersEvent(this.chatWindowsUsers); // Irá inserir um evento na lista chatWindowsUsers
-		connectionStatusEvent(this.connectionStatus); // Irá inserir um evento no connectionStatus
+		chatWindowsUsersEvent(this.chatWindowsUsers); // Irï¿½ inserir um evento na lista chatWindowsUsers
+		connectionStatusEvent(this.connectionStatus); // Irï¿½ inserir um evento no connectionStatus
 		rootStage.setOnCloseRequest((event) -> closeApp());
 		openLogonScreen(); // Abertura da tela de logon
 	}
 
-	// Retorna o Stage principal da aplicação(Janela)
+	// Retorna o Stage principal da aplicaï¿½ï¿½o(Janela)
 	public Stage getStage() {
 		return rootStage;
 	}
 
-	// Método que irá ser executado quando o usuário clicar no botão fechar da janela
+	// Mï¿½todo que irï¿½ ser executado quando o usuï¿½rio clicar no botï¿½o fechar da janela
 	public void closeApp() {
 		logoff();
 		rootStage.close();
@@ -113,7 +113,12 @@ public class MainController extends Application {
 		Thread.getAllStackTraces().keySet().forEach((thread) -> thread.interrupt());
 	}
 
-	// Método que irá executar as ações de recebimento de alguma Request através da Thread RecieveObject
+	// MÃ©todo que fecha uma janela de mensagem ativa
+	public void closeChatWindow(String loginRecipient) {
+		chatWindowsUsers.remove(loginRecipient);
+	}
+
+	// Mï¿½todo que irï¿½ executar as aï¿½ï¿½es de recebimento de alguma Request atravï¿½s da Thread RecieveObject
 	public void recieveObject(Request request) {
 		if(loginController != null) {
 			loginController.recieveObject(request);
@@ -123,7 +128,7 @@ public class MainController extends Application {
 		}
 	}
 
-	// Método que irá abrir a janela de logon
+	// Mï¿½todo que irï¿½ abrir a janela de logon
 	public void openLogonScreen() {
 		if(principalController == null) {
 			loginController = new LoginController(this);
@@ -138,7 +143,7 @@ public class MainController extends Application {
 		rootStage.show();
 	}
 
-	// Método que irá abrir a janela principal
+	// Mï¿½todo que irï¿½ abrir a janela principal
 	public void openPrincipalScreen(String nickname) {
 		if(loginController == null) {
 			principalController = new PrincipalController(this, nickname);
@@ -153,12 +158,12 @@ public class MainController extends Application {
 		rootStage.show();
 	}
 
-	// Método que irá abrir uma nova janela caso receba uma mensagem
+	// Mï¿½todo que irï¿½ abrir uma nova janela caso receba uma mensagem
 	public void openMessageScreen(String loginRecipient) {
 		chatWindowsUsers.add(loginRecipient);
 	}
 
-	// Método que irá tratar os requests para as janelas de mensagens
+	// Mï¿½todo que irï¿½ tratar os requests para as janelas de mensagens
 	public boolean isMessageWindowRequest(Request msg) {
 		if(msg.getOperation() == OperationType.SEND_OR_RECIEVE_MSG && !msg.getUserFrom().equals("Server") && msg.getUserTo() != null) {
 			boolean found = false;
@@ -181,7 +186,7 @@ public class MainController extends Application {
 		}
 	}
 
-	// Método que irá inicializar as Threads
+	// Mï¿½todo que irï¿½ inicializar as Threads
 	public void initializeThreads() {
 		testConnection = new TestConnectionThread();
 		recieveObject = new RecieveObjectThread();
@@ -189,7 +194,7 @@ public class MainController extends Application {
 		new Thread(recieveObject);
 	}
 
-	// Método de evento do ObservableList chatWindowsUsers
+	// Mï¿½todo de evento do ObservableList chatWindowsUsers
 	public void chatWindowsUsersEvent(ObservableList<String> list) {
 
 		list.addListener((ListChangeListener<String>) (c) -> {
@@ -221,7 +226,7 @@ public class MainController extends Application {
 
 	}
 
-	// Método de evento do BooleanProperty connectionStatus
+	// Mï¿½todo de evento do BooleanProperty connectionStatus
 	public void connectionStatusEvent(BooleanProperty connectionStatus) {
 		connectionStatus.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 			if(newValue && oldValue != newValue)
@@ -231,7 +236,7 @@ public class MainController extends Application {
 		});
 	}
 
-	// Método que irá executar os procedimentos de perda de conexão
+	// Mï¿½todo que irï¿½ executar os procedimentos de perda de conexï¿½o
 	public void lostConnectionAction() {
 		if(loginController != null) {
 			loginController.lostConnection();
@@ -241,7 +246,7 @@ public class MainController extends Application {
 		}
 	}
 
-	// Método que irá executar os procedimentos de reconexão
+	// Mï¿½todo que irï¿½ executar os procedimentos de reconexï¿½o
 	public void reconnectionAction() {
 		if(loginController != null) {
 			loginController.reconnect();
@@ -251,7 +256,7 @@ public class MainController extends Application {
 		}
 	}
 
-	// Método para deslogar o usuário e fechar a conexão com o servidor
+	// Mï¿½todo para deslogar o usuï¿½rio e fechar a conexï¿½o com o servidor
 	public void logoff() {
 		try {
 			if(!connection.isClosed()) {
@@ -273,9 +278,9 @@ public class MainController extends Application {
 	/*---------- Threads ----------*/
 
 	/*
-	 * Thread para testar a conexão com o servidor a cada 100ms.
-	 * Caso a conexão falhe, é setado como false o atributo connectionStatus.
-	 * E executa o método lostConnectionAction().
+	 * Thread para testar a conexï¿½o com o servidor a cada 100ms.
+	 * Caso a conexï¿½o falhe, ï¿½ setado como false o atributo connectionStatus.
+	 * E executa o mï¿½todo lostConnectionAction().
 	 */
 	private class TestConnectionThread implements Runnable {
 
@@ -315,7 +320,7 @@ public class MainController extends Application {
 
 	/*
 	 * Thread que verifica o recebimento de objetos do servidor a cada 100ms.
-	 * Caso receba um objeto Request do servidor, ele executa o método recieveObject(request).
+	 * Caso receba um objeto Request do servidor, ele executa o mï¿½todo recieveObject(request).
 	 */
 	private class RecieveObjectThread implements Runnable {
 
