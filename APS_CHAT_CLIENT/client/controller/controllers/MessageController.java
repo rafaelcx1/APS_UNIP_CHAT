@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -139,9 +140,21 @@ public class MessageController extends Application {
 		chatMsgList.addListener((ListChangeListener<MessageRequest>) (c) -> {
 			while(c.next()) {
 				if(c.wasAdded()) {
-					// COMPLETAR
-				} else {
-					// COMPLETAR
+					for(MessageRequest msg : c.getAddedSubList()) {
+						Label lblRecipient = new Label(msg.getUserFrom());
+						if(msg.getUserFrom().equals(this.getRecipient()))
+							lblRecipient.getStyleClass().add("repientUser");
+						else
+							lblRecipient.getStyleClass().add("recipient");
+
+						Label lblMsg = new Label(msg.getMessage());
+						lblMsg.getStyleClass().add("message");
+
+						VBox vboxMsg = new VBox(lblRecipient, lblMsg);
+						vboxMsg.setPadding(new Insets(0,0,0,0));
+						vboxMsg.setFillWidth(true);
+						vbMsgPane.getChildren().add(vboxMsg);
+					}
 				}
 			}
 		});
@@ -177,7 +190,9 @@ public class MessageController extends Application {
 		rootStage.show();
 	}
 
-	public void close() {
+	public void close() throws Exception {
+		rootStage.close();
+		this.stop();
 		mainController.closeApp();
 	}
 
