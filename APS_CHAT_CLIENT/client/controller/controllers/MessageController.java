@@ -145,7 +145,7 @@ public class MessageController extends Application {
 			while(c.next()) {
 				if(c.wasAdded()) {
 					for(MessageRequest msg : c.getAddedSubList()) {
-						Label lblRecipient = new Label(msg.getUserFrom());
+						Label lblRecipient = new Label("<" + LocalTime.now().toString() + "> " + msg.getUserFrom() + ":");
 						if(msg.getUserFrom().equals(this.getRecipient()))
 							lblRecipient.getStyleClass().add("repientUser");
 						else
