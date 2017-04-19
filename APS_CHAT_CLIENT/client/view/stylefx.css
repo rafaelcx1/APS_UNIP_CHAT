@@ -1,22 +1,30 @@
 .dark-panel{
     -fx-background-color: #303030;
-    -fx-border-width: 2px;
-    -fx-border-color: #FFFFFF;
-    -fx-border-style: solid;
+}
+.dark-scrollpane{
+    -fx-background: transparent;
+    -fx-region-background: transparent;
 }
 .dark-header{
     -fx-background-color: #212121;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 8, 0, 0, 0);
+}
+.dark-button{
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 3;
+    -fx-background-color: #000000;
 }
 .dark-button-full{
     -fx-text-fill: #FFFFFF;
     -fx-background-radius: 0;
     -fx-background-color: #000000;
 }
-.dark-button-full:hover, .dark-button-full:active{
+.dark-button-full:hover, .dark-button-full:active, .dark-button:hover, .dark-button:active{
     -fx-background-color: #424242;
 }
-
+.button-icon{
+    -fx-background-color: transparent;
+}
 .textfield{
     -fx-text-fill: #FFFFFF;
     -fx-border-color: #009688;
@@ -25,4 +33,8 @@
 }
 .textfield:focused{
     -fx-border-width: 0 0 2 0;
+}
+.dark-left-menu{
+    -fx-border-color: rgba(255, 255, 255, 0.12);
+    -fx-border-width: 0 1 0 0;
 }
