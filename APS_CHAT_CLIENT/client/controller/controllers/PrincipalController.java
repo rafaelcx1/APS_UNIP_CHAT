@@ -18,12 +18,9 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import model.PrincipalModel;
 import model.requests.InfoRequest;
@@ -36,29 +33,11 @@ import model.requests.Request;
 public class PrincipalController {
 
 	@FXML
-	private AnchorPane rootPane;
-	@FXML
-	private BorderPane usersPane;
-	@FXML
-	private BorderPane globalChatPane;
-	@FXML
-	private ScrollPane scrollPaneUsers;
-	@FXML
-	private ScrollPane scrollPaneChat;
-	@FXML
 	private VBox vbUsersListPane;
 	@FXML
 	private VBox vbGlobalChatPane;
 	@FXML
-	private HBox hbSendMsgBox;
-	@FXML
-	private FlowPane statusBar;
-	@FXML
-	private Label lblUsernickname;
-	@FXML
-	private Label lblTitleUsersPane;
-	@FXML
-	private Label lblTitleGlobalChatPane;
+	private Label lblUserNickname;
 	@FXML
 	private Label lblStatus;
 	@FXML
@@ -206,6 +185,12 @@ public class PrincipalController {
 
 	public void reconnect() {
 		lblStatus.setText("Conexão feita. Clique no botão 'Reconectar' para relogar no servidor.");
+	}
+
+	public void tfMsgBoxEnterPressed(KeyEvent action) {
+		if(action.getCode() == KeyCode.ENTER) {
+			btnSendMsg.fire();
+		}
 	}
 
 	public void btnLogoffReconnectAction(ActionEvent action) {

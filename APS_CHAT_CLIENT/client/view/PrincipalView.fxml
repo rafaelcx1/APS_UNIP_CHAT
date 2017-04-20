@@ -1,154 +1,153 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="dark-panel" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-   <center>
-      <GridPane BorderPane.alignment="CENTER">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" percentWidth="25" />
-          <ColumnConstraints hgrow="SOMETIMES" percentWidth="75" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="700.0" prefHeight="400.0" prefWidth="700.0" styleClass="dark-header" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Button fx:id="btnLogoffReconnect" layoutX="613.0" layoutY="-2.0" mnemonicParsing="false" onAction="#btnLogoffReconnectAction" prefHeight="45.0" prefWidth="88.0" styleClass="dark-button" text="Logoff" textFill="WHITE" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <graphic>
+            <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@exit.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+      <HBox alignment="CENTER" prefHeight="45.0" prefWidth="700.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <BorderPane prefHeight="200.0" prefWidth="200.0" styleClass="dark-left-menu">
+            <ImageView fitHeight="82.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
+               <image>
+                  <Image url="@logo.png" />
+               </image>
+               <viewport>
+                  <Rectangle2D />
+               </viewport>
+            </ImageView>
+         </children>
+      </HBox>
+      <HBox layoutY="364.0" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="45.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <Label fx:id="lblStatus" alignment="BOTTOM_LEFT" prefHeight="51.0" prefWidth="250.0" text="Status: " textFill="WHITE">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblUserNickname" alignment="BOTTOM_LEFT" prefHeight="50.0" prefWidth="180.0" text="Nickname: " textFill="WHITE">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+            <Button fx:id="btnHelpEmoction" alignment="CENTER" contentDisplay="CENTER" graphicTextGap="0.0" mnemonicParsing="false" onAction="#btnHelpEmoctionAction" prefHeight="28.0" prefWidth="30.0" styleClass="button-icon">
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@emoticon_icon.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="2.0" />
+         </padding>
+      </HBox>
+      <BorderPane layoutX="10.0" layoutY="43.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="314.0" prefWidth="700.0" styleClass="dark-panel" stylesheets="@stylefx.css" AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0">
+         <left>
+            <BorderPane prefHeight="314.0" prefWidth="278.0" styleClass="dark-left-menu" BorderPane.alignment="CENTER">
                <top>
-                  <Label text="Usuários" textFill="WHITE" BorderPane.alignment="CENTER">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
+                  <HBox BorderPane.alignment="CENTER">
                      <BorderPane.margin>
                         <Insets />
                      </BorderPane.margin>
-                     <padding>
-                        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
-                     </padding>
-                  </Label>
-               </top>
-               <center>
-                  <ScrollPane styleClass="dark-scrollpane" BorderPane.alignment="CENTER">
-                     <content>
-                        <VBox prefHeight="429.0" prefWidth="114.0" style="-fx-pref-width: Double.MAX_VALUE;">
-                           <children>
-                              <Label styleClass="recipient" text="Usuário 1" />
-                              <Label layoutX="10.0" layoutY="10.0" styleClass="recipient" text="Usuário 1" />
-                              <Label layoutX="10.0" layoutY="27.0" styleClass="recipient" text="Usuário 1" />
-                              <Label layoutX="10.0" layoutY="44.0" styleClass="recipient" text="Usuário 1" />
-                              <Label layoutX="10.0" layoutY="61.0" styleClass="recipient" text="Usuário 1" />
-                              <Label layoutX="10.0" layoutY="78.0" styleClass="recipient" text="Usuário 1" />
-                              <Label layoutX="10.0" layoutY="95.0" styleClass="recipient" text="Usuário 1" />
-                              <Label layoutX="10.0" layoutY="112.0" styleClass="recipient" text="Usuário 1" />
-                              <Label layoutX="10.0" layoutY="129.0" styleClass="recipient" text="Usuário 1" />
-                              <Label layoutX="10.0" layoutY="146.0" styleClass="recipient" text="Usuário 1" />
-                              <Label layoutX="10.0" layoutY="307.0" styleClass="recipient" text="Usuário 1" />
-                              <Label layoutX="10.0" layoutY="340.0" styleClass="recipient" text="Usuário 1" />
-                              <Label layoutX="10.0" layoutY="340.0" styleClass="recipient" text="Usuário 1" />
-                           </children></VBox>
-                     </content></ScrollPane>
-               </center></BorderPane>
-            <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
-               <top>
-                  <Label text="Chat" textFill="WHITE" BorderPane.alignment="CENTER">
-                     <padding>
-                        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
-                     </padding>
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Label>
-               </top>
-               <center>
-                  <ScrollPane styleClass="dark-scrollpane" BorderPane.alignment="CENTER">
-                     <content>
-                        <VBox prefHeight="200.0" prefWidth="448.0">
-                           <children>
-                              <Label styleClass="message" text="Mensagem de outro usuário">
-                                 <VBox.margin>
-                                    <Insets />
-                                 </VBox.margin>
-                              </Label>
-                              <Label contentDisplay="CENTER" nodeOrientation="LEFT_TO_RIGHT" styleClass="messageUser" text="Minha mensagem">
-                                 <VBox.margin>
-                                    <Insets />
-                                 </VBox.margin>
-                              </Label>
-                           </children></VBox>
-                     </content></ScrollPane>
-               </center>
-               <bottom>
-                  <HBox prefHeight="21.0" prefWidth="450.0" BorderPane.alignment="CENTER">
                      <children>
-                        <TextField prefHeight="26.0" prefWidth="378.0" styleClass="textfield">
-                           <HBox.margin>
-                              <Insets bottom="8.0" left="8.0" top="8.0" />
-                           </HBox.margin></TextField>
-                        <Button mnemonicParsing="false" styleClass="dark-button" text="Enviar">
-                           <HBox.margin>
+                        <Label alignment="CENTER" prefHeight="44.0" prefWidth="283.0" styleClass="label-title" text="Usuários" textFill="WHITE" HBox.hgrow="ALWAYS">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <padding>
                               <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
-                           </HBox.margin></Button>
+                           </padding>
+                        </Label>
                      </children>
                   </HBox>
-               </bottom></BorderPane>
-         </children>
-      </GridPane>
-   </center>
-   <top>
-      <HBox alignment="CENTER" prefHeight="32.0" prefWidth="600.0" styleClass="dark-header" BorderPane.alignment="CENTER">
-         <children>
-            <GridPane prefHeight="32.0" prefWidth="633.0">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="304.0" minWidth="10.0" prefWidth="301.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="434.0" minWidth="10.0" prefWidth="299.0" />
-                  <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="434.0" minWidth="10.0" prefWidth="299.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-              </rowConstraints>
-               <children>
-                  <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
-                     <center>
-                        <ImageView fitWidth="64.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
-                           <image>
-                              <Image url="@logo.png" />
-                           </image>
-                        </ImageView>
-                     </center>
-                  </BorderPane>
-                  <ButtonBar prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="2">
-                    <buttons>
-                      <Button mnemonicParsing="false" styleClass="button-icon">
-                           <graphic>
-                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@exit.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
+               </top>
+               <center>
+                  <ScrollPane hbarPolicy="NEVER" styleClass="dark-scrollpane" BorderPane.alignment="CENTER">
+                     <content>
+                        <AnchorPane prefHeight="267.0" prefWidth="193.0">
+                           <children>
+                              <VBox fx:id="vbUsersListPane" prefHeight="270.0" prefWidth="193.0" style="-fx-pref-width: Double.MAX_VALUE;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                           </children>
+                        </AnchorPane>
+                     </content>
+                  </ScrollPane>
+               </center>
+            </BorderPane>
+         </left>
+         <center>
+            <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <top>
+                  <HBox BorderPane.alignment="CENTER">
+                     <children>
+                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="label-title" text="Chat" textFill="WHITE" HBox.hgrow="ALWAYS">
+                           <padding>
+                              <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                           </padding>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+               </top>
+               <center>
+                  <ScrollPane hbarPolicy="NEVER" pannable="true" prefHeight="236.0" prefWidth="500.0" styleClass="dark-scrollpane" BorderPane.alignment="CENTER">
+                     <content>
+                        <AnchorPane prefHeight="222.0" prefWidth="404.0">
+                           <children>
+                              <VBox fx:id="vbGlobalChatPane" prefHeight="223.0" prefWidth="397.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="94.0" AnchorPane.topAnchor="0.0" />
+                           </children>
+                        </AnchorPane>
+                     </content>
+                  </ScrollPane>
+               </center>
+               <bottom>
+                  <HBox maxWidth="1.7976931348623157E308" styleClass="hbox-texfield" BorderPane.alignment="CENTER_LEFT">
+                     <children>
+                        <TextField fx:id="tfMsgBox" onKeyPressed="#tfMsgBoxEnterPressed" prefHeight="26.0" prefWidth="378.0" styleClass="textfield" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets bottom="8.0" left="8.0" top="8.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <Button fx:id="btnSendMsg" mnemonicParsing="false" onAction="#btnSendMsgAction" prefHeight="25.0" prefWidth="168.0" styleClass="dark-button" text="Enviar">
+                           <HBox.margin>
+                              <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                           </HBox.margin>
                         </Button>
-                    </buttons>
-                     <GridPane.margin>
-                        <Insets right="8.0" />
-                     </GridPane.margin>
-                  </ButtonBar>
-               </children>
-            </GridPane>
-         </children>
-      </HBox>
-   </top>
-</BorderPane>
+                     </children>
+                  </HBox>
+               </bottom>
+            </BorderPane>
+         </center>
+      </BorderPane>
+   </children>
+   <stylesheets>
+      <URL value="@GlobalMsgStyle.css" />
+      <URL value="@stylefx.css" />
+   </stylesheets>
+</AnchorPane>

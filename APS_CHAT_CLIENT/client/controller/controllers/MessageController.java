@@ -1,6 +1,7 @@
 package controller.controllers;
 
 import java.io.IOException;
+import java.time.LocalTime;
 
 import controller.MainController;
 import javafx.application.Application;
@@ -15,12 +16,14 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import model.MessageModel;
 import model.requests.InfoReturn;
 import model.requests.MessageRequest;
@@ -30,13 +33,9 @@ import model.requests.Request;
 public class MessageController extends Application {
 
 	@FXML
-	private AnchorPane rootPane;
-	@FXML
-	private ScrollPane scrollPaneVBox;
-	@FXML
 	private VBox vbMsgPane;
 	@FXML
-	private HBox hbSendMsgPane;
+	private HBox hbTopPane;
 	@FXML
 	private Label lblNicknameRecipient;
 	@FXML
@@ -46,19 +45,22 @@ public class MessageController extends Application {
 	@FXML
 	private Button btnSendMsg;
 	@FXML
-	private Button btnHelpEmoction;
+	private Button btnClose;
 
 	private MessageModel messageModel;
 	private MainController mainController;
 	private Stage rootStage;
+
+	private double xOffset;
+	private double yOffset;
 
 
 	public MessageController(String loginRecipient, MainController mainController) {
 		messageModel = new MessageModel(loginRecipient);
 		this.mainController = mainController;
 		chatMsgListEvent(messageModel.getChatMsg());
-		lblNicknameRecipient.setText(loginRecipient);
-		lblStatusRecipient.setText("Online");
+		lblNicknameRecipient.setText("Usuário: " + loginRecipient);
+		lblStatusRecipient.setText("Status: Online");
 		launch();
 	}
 
@@ -69,7 +71,7 @@ public class MessageController extends Application {
 			mainController.closeChatWindow(messageModel.getLoginRecipient());
 			this.close();
 		});
-
+		rootStage.initStyle(StageStyle.UNDECORATED);
 		try {
 			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/MessageView.fxml"));
 			loader.setController(this);
@@ -85,6 +87,18 @@ public class MessageController extends Application {
 
 			e.printStackTrace();
 		}
+	}
+
+	// M�todo de evento quando o mouse � pressionado no paneTop
+	public void moveWindowOnMousePressed(MouseEvent event) {
+		xOffset = event.getSceneX();
+		yOffset = event.getSceneY();
+	}
+
+	// M�todo de evento quando o mouse � arrastado no paneTop
+	public void moveWindowOnMouseDrag(MouseEvent event) {
+		rootStage.setX(event.getScreenX() - xOffset);
+		rootStage.setY(event.getScreenY() - yOffset);
 	}
 
 	public void recieveObject(Request request) {
@@ -135,7 +149,7 @@ public class MessageController extends Application {
 	}
 
 	public void recipientDisconnected() {
-		lblStatusRecipient.setText("Offline");
+		lblStatusRecipient.setText("Status: Offline");
 		tfSendMsg.setText("User Offline");
 		tfSendMsg.setDisable(true);
 	}
@@ -179,6 +193,17 @@ public class MessageController extends Application {
 		}
 	}
 
+	public void btnCloseEvent(ActionEvent event) {
+		this.close();
+	}
+
+	public void tfSendMsgEnterPressed(KeyEvent event) {
+		if(event.getCode() == KeyCode.ENTER) {
+			btnSendMsg.fire();
+		}
+	}
+
+	/*
 	public void btnHelpEmoctionEvent(ActionEvent event) {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setContentText(""); // Emoctions
@@ -187,6 +212,7 @@ public class MessageController extends Application {
 		alert.setResizable(false);
 		alert.show();
 	}
+	*/
 
 	public void showWindow() {
 		rootStage.centerOnScreen();
@@ -195,6 +221,7 @@ public class MessageController extends Application {
 	}
 
 	public void close() {
+		mainController.closeChatWindow(messageModel.getLoginRecipient());
 		rootStage.close();
 		try {
 			this.stop();
@@ -202,7 +229,6 @@ public class MessageController extends Application {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		mainController.closeApp();
 	}
 
 }
