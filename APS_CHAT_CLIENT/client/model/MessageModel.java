@@ -1,7 +1,6 @@
 package model;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,8 +56,8 @@ public class MessageModel {
 	}
 
 	public boolean sendMsgObject(MessageRequest msgRequest) {
-		try(ObjectOutputStream oos = new ObjectOutputStream(MainController.getConnection().getOutputStream())) {
-			oos.writeObject(msgRequest);
+		try {
+			MainController.getOos().writeObject(msgRequest);
 			tempMsg.add(msgRequest);
 			return true;
 		} catch(IOException e) {

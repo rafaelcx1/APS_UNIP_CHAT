@@ -1,8 +1,6 @@
 package src;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.time.LocalDateTime;
 
 import requests.Request;
@@ -21,9 +19,9 @@ public class ServerTasks {
 			if(!contains) {
 				if(request.getUserTo() != null)
 					request.setUserTo(client.getUser());
-				try(ObjectOutputStream oos = new ObjectOutputStream(client.getSession().getOutputStream())) {
+				try {
 					System.out.println("Sending request to '" + client.getUser() + "' from '" + request.getUserFrom() + "'... | " + LocalDateTime.now().toString());
-					oos.writeObject(request);
+					client.getOos().writeObject(request);
 					System.out.println("Send request to '" + client.getUser() + "' from '" + request.getUserFrom() + "' complete with success. | " + LocalDateTime.now().toString() + "\n");
 				} catch (IOException e) {
 					System.out.println("IOExeption error with user '" + client.getUser() + "' from '" + request.getUserFrom() + "' on broadcast.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
@@ -38,10 +36,10 @@ public class ServerTasks {
 	}
 
 	public static boolean sendObject(Request request) {
-		Socket userToConnection = ServerInstance.getClientSession(request.getUserTo());
-		try(ObjectOutputStream oos = new ObjectOutputStream(userToConnection.getOutputStream())) {
+		ClientSession userToConnection = ServerInstance.getClientSession(request.getUserTo());
+		try {
 			System.out.println("Sending request to '" + request.getUserTo() + "' from '" + request.getUserFrom() + "'... | " + LocalDateTime.now().toString());
-			oos.writeObject(request);
+			userToConnection.getOos().writeObject(request);
 			System.out.println("Send request to '" + request.getUserTo() + "' from '" + request.getUserFrom() + "' complete with success. | " + LocalDateTime.now().toString() + "\n");
 			return true;
 		} catch(IOException e) {

@@ -1,5 +1,6 @@
 package controller.controllers;
 import java.io.IOException;
+import java.util.Optional;
 
 import controller.MainController;
 import javafx.event.ActionEvent;
@@ -28,10 +29,10 @@ import model.requests.Request;
 public class LoginController {
 
 	/*
-	 * Atributos com anotação @FXML = Elementos de interface
+	 * Atributos com anotaï¿½ï¿½o @FXML = Elementos de interface
 	 * mainController = InstÃ¢ncia do mainController
 	 * loginModel = InstÃƒÂ¢ncia do loginModel para fazer o envio e tratamento de Requests
-	 * loginScreen = booleano para indicar se a tela está em config do servidor(false) ou do nickname(true)
+	 * loginScreen = booleano para indicar se a tela estï¿½ em config do servidor(false) ou do nickname(true)
 	 * */
 
 	@FXML
@@ -97,26 +98,26 @@ public class LoginController {
 
 	}
 
-	// Método de evento quando o mouse é pressionado no paneTop
+	// Mï¿½todo de evento quando o mouse ï¿½ pressionado no paneTop
 	public void moveWindowOnMousePressed(MouseEvent event) {
 		xOffset = event.getSceneX();
 		yOffset = event.getSceneY();
 	}
 
-	// Método de evento quando o mouse é arrastado no paneTop
+	// Mï¿½todo de evento quando o mouse ï¿½ arrastado no paneTop
 	public void moveWindowOnMouseDrag(MouseEvent event) {
 		mainController.getStage().setX(event.getScreenX() - xOffset);
 		mainController.getStage().setY(event.getScreenY() - yOffset);
 	}
 
-	// Método para clicar no btnNext ao pressionar enter
+	// Mï¿½todo para clicar no btnNext ao pressionar enter
 	public void enterPressed(KeyEvent event) {
 		if(event.getCode().equals(KeyCode.ENTER)) {
 			btnNext.fire();
 		}
 	}
 
-	// Método do botão btnNext, ele irá logar se o loginScreen for true, ou passar para a tela de login se esta variável for false
+	// Mï¿½todo do botï¿½o btnNext, ele irï¿½ logar se o loginScreen for true, ou passar para a tela de login se esta variï¿½vel for false
 	public void btnNextEvent(ActionEvent event) {
 		if(loginScreen) {
 			if(loginModel.login(tfLogin.getText())) {
@@ -128,8 +129,6 @@ public class LoginController {
 				loginStatus.getButtonTypes().setAll(new ButtonType[] {});
 				((Stage) loginStatus.getDialogPane().getScene().getWindow()).getIcons().add(new Image(this.getClass().getResourceAsStream("../../view/waiting-icon.png")));
 				loginStatus.show();
-				btnBack.setDisable(true);
-				btnNext.setDisable(true);
 			} else {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
@@ -151,11 +150,11 @@ public class LoginController {
 						mainController.getStage().setScene(new Scene(loader.load()));
 						loginScreen = true;
 					} else {
-						throw new IOException("Sem conexão com o servidor");
+						throw new IOException("Sem conexÃ£o com o servidor");
 					}
 				} else {
 					Alert alert = new Alert(AlertType.ERROR);
-					alert.setContentText("Endereço de IP inválido.");
+					alert.setContentText("EndereÃ§o de IP invÃ¡lido.");
 					alert.setHeaderText("Ocorreu um erro:");
 					alert.setTitle("ERRO");
 					alert.setResizable(false);
@@ -171,11 +170,10 @@ public class LoginController {
 				((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image(this.getClass().getResourceAsStream("../../view/error-icon.png")));
 				alert.show();
 			}
-
 		}
 	}
 
-	// Método do botão btnExit, irá sair se o loginScreen for false, ou voltar caso seja true
+	// Mï¿½todo do botï¿½o btnExit, irï¿½ sair se o loginScreen for false, ou voltar caso seja true
 	public void btnBackEvent(ActionEvent event) {
 		if(loginScreen) {
 			try {
@@ -202,11 +200,11 @@ public class LoginController {
 
 	}
 
-	// Método irá passar o request para o login model
+	// Mï¿½todo irï¿½ passar o request para o login model
 	public void recieveObject(Request request) {
 		if(loginModel.loginObjectRecieve(request)) {
 			if(loginStatus != null) {
-				// Ações para tornar possível o fechamento da janela
+				// Aï¿½ï¿½es para tornar possï¿½vel o fechamento da janela
 				loginStatus.getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
 				loginStatus.getDialogPane().lookupButton(ButtonType.CLOSE).setVisible(false);
 				loginStatus.close();
@@ -228,24 +226,33 @@ public class LoginController {
 		}
 	}
 
-	// Método que irá executar ações quando a conexão com o servidor cair
+	// Mï¿½todo que irï¿½ executar aï¿½ï¿½es quando a conexï¿½o com o servidor cair
 	public void lostConnection() {
+		System.out.println("perdeu conexao");
 		lostConnectionAlert = new Alert(AlertType.ERROR);
 		lostConnectionAlert.setTitle("Lost Connection");
 		lostConnectionAlert.setHeaderText("Erro:");
-		lostConnectionAlert.setContentText("Foi perdido a conexão com o servidor. Clique no botão 'OK' abaixo para voltar para a tela inicial ou aguarde.\nAguardando conexão...");
-		if(lostConnectionAlert.showAndWait().get().getButtonData().isDefaultButton()) {
+		lostConnectionAlert.setContentText("Foi perdido a conexï¿½o com o servidor. Clique no botï¿½o 'OK' abaixo para voltar para a tela inicial ou aguarde.\nAguardando conexï¿½o...");
+		Optional<ButtonType> result = lostConnectionAlert.showAndWait();
+		if(result.isPresent()) {
+			System.out.println("fechando conexao");
+			if(loginStatus != null) {
+				// Aï¿½ï¿½es para tornar possï¿½vel o fechamento da janela
+				loginStatus.getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
+				loginStatus.getDialogPane().lookupButton(ButtonType.CLOSE).setVisible(false);
+				loginStatus.close();
+			}
 			btnBack.fire();
 		}
 	}
 
-	// Método que irá executar ações quando a conexão com o servidor voltar
+	// Mï¿½todo que irï¿½ executar aï¿½ï¿½es quando a conexï¿½o com o servidor voltar
 	public void reconnect() {
 		lostConnectionAlert.getButtonTypes().setAll(new ButtonType[] {});
 		lostConnectionAlert.close();
 	}
 
-	// Método que irá fechar a janela
+	// Mï¿½todo que irï¿½ fechar a janela
 	public void close() {
 		mainController.closeApp();
 	}

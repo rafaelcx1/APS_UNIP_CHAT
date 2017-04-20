@@ -1,8 +1,10 @@
 package controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -42,6 +44,8 @@ public class MainController extends Application {
 	 * rootStage = Stage(Janela) principal
 	 */
 	private static Socket connection = new Socket();
+	private static LerObjetoArquivo ois;
+	private static GravarObjetoArquivo oos;
 	private static TestConnectionThread testConnection;
 	private static RecieveObjectThread recieveObject;
 	private LoginController loginController;
@@ -64,6 +68,14 @@ public class MainController extends Application {
 		return connection;
 	}
 
+	public static LerObjetoArquivo getOis() {
+		return ois;
+	}
+
+	public static GravarObjetoArquivo getOos() {
+		return oos;
+	}
+
 	// M�todo get que retorna o nickname
 	public String getNickname() {
 		return nickname;
@@ -74,10 +86,9 @@ public class MainController extends Application {
 		connection = new Socket();
 		try {
 			connection.connect(new InetSocketAddress(host, 9876), 1500);
-			testConnection = new TestConnectionThread();
-			recieveObject = new RecieveObjectThread();
-			new Thread(testConnection).start();
-			new Thread(recieveObject).start();
+			oos = new GravarObjetoArquivo(connection.getOutputStream());
+			ois = new LerObjetoArquivo(connection.getInputStream());
+			initializeThreads();
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -190,8 +201,8 @@ public class MainController extends Application {
 	public void initializeThreads() {
 		testConnection = new TestConnectionThread();
 		recieveObject = new RecieveObjectThread();
-		new Thread(testConnection);
-		new Thread(recieveObject);
+		new Thread(testConnection).start();
+		new Thread(recieveObject).start();;
 	}
 
 	// M�todo de evento do ObservableList chatWindowsUsers
@@ -229,16 +240,21 @@ public class MainController extends Application {
 	// M�todo de evento do BooleanProperty connectionStatus
 	public void connectionStatusEvent(BooleanProperty connectionStatus) {
 		connectionStatus.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
-			if(newValue && oldValue != newValue)
+			if(newValue && oldValue != newValue) {
+				System.out.println("fechando");
 				reconnectionAction();
-			else if(!newValue && oldValue != newValue)
+			}
+			else if(!newValue && oldValue != newValue) {
+				System.out.println("fechando");
 				lostConnectionAction();
+			}
 		});
 	}
 
 	// M�todo que ir� executar os procedimentos de perda de conex�o
 	public void lostConnectionAction() {
 		if(loginController != null) {
+			System.out.println("fechando");
 			loginController.lostConnection();
 		} else {
 			principalController.lostConnection();
@@ -263,13 +279,17 @@ public class MainController extends Application {
 				if(connection.isConnected()) {
 					ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
 					oos.writeObject(new Request(OperationType.LOGOFF));
+					System.out.println("fechando");
 				}
+				System.out.println("fechando");
 				connection.close();
 			}
 			if(testConnection != null) testConnection.closeThread();
 			testConnection = null;
 			if(recieveObject != null) recieveObject.closeThread();
 			recieveObject = null;
+			ois.close();
+			oos.close();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
@@ -288,10 +308,14 @@ public class MainController extends Application {
 		public void run() {
 			try {
 				while(true){
-					if(connection.isConnected())
-						connectionStatus.setValue(true);
-					else
-						connectionStatus.setValue(false);
+					if(connection.isConnected()) {
+						if(!connectionStatus.getValue())
+							connectionStatus.setValue(true);
+					}
+					else {
+						if(!connectionStatus.getValue() == false)
+							connectionStatus.setValue(false);
+					}
 					Thread.sleep(100);
 				}
 			} catch(InterruptedException e) {
@@ -329,21 +353,19 @@ public class MainController extends Application {
 			try {
 
 				while(true) {
-					if(connection != null) {
-
-						try(ObjectInputStream ois = new ObjectInputStream(connection.getInputStream())) {
-							while(true) {
-								if(ois.read() > -1) {
+					if(connection != null && !connection.isClosed() && connection.isConnected()) {
+						try {
+							if(ois.read() > -1) {
+								try {
 									recieveObject((Request) ois.readObject());
-								}
-								Thread.sleep(100);
+								} catch(Exception e) {e.printStackTrace();}
 							}
-						} catch(Exception e) {}
+						} catch(Exception e) {e.printStackTrace();}
 					}
-					Thread.sleep(100);
+					Thread.sleep(1000);
 				}
 
-			} catch(InterruptedException e) {
+			} catch(Exception e) {
 				Platform.runLater(new Runnable(){
 
 					@Override
@@ -366,5 +388,31 @@ public class MainController extends Application {
 			Thread.currentThread().interrupt();
 		}
 	}
+
+	public class LerObjetoArquivo extends ObjectInputStream{
+
+		  public LerObjetoArquivo(InputStream in) throws IOException {
+			  super(in);
+		  }
+
+		  @Override
+		  protected void readStreamHeader() throws IOException {
+
+		  }
+
+		}
+
+		public class GravarObjetoArquivo extends ObjectOutputStream {
+
+		  public GravarObjetoArquivo(OutputStream out) throws IOException {
+			  super(out);
+		  }
+
+		  @Override
+		  protected void writeStreamHeader() throws IOException {
+			  reset();
+		  }
+
+		}
 
 }

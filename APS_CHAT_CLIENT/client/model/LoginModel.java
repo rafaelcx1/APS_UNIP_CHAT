@@ -1,7 +1,6 @@
 package model;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 
 import controller.MainController;
 import model.requests.InfoReturn;
@@ -23,8 +22,8 @@ public class LoginModel {
     	loginRequest.setUserFrom(user);
     	loginRequest.setUserTo("Server");
 
-    	try(ObjectOutputStream ois = new ObjectOutputStream(MainController.getConnection().getOutputStream())){
-    		ois.writeObject(loginRequest);
+    	try {
+    		MainController.getOos().writeObject(loginRequest);
     		return true;
 		} catch (IOException e) {
 			errorMessage = e.getMessage() + "\n" + e.getLocalizedMessage();
@@ -40,7 +39,7 @@ public class LoginModel {
     		if(infoReturn.getOperationSource() == OperationType.LOGIN) {
     			return true;
     		} else {
-    			errorMessage = "Objeto inválido recebido do servidor.";
+    			errorMessage = "Objeto invï¿½lido recebido do servidor.";
     			return false;
     		}
     	} else if(result.getOperation() == OperationType.ERROR_MSG) {
@@ -48,7 +47,7 @@ public class LoginModel {
     		errorMessage = infoReturn.getMessage();
     		return false;
     	} else {
-    		errorMessage = "Objeto inválido recebido do servidor.";
+    		errorMessage = "Objeto invï¿½lido recebido do servidor.";
 			return false;
     	}
     }

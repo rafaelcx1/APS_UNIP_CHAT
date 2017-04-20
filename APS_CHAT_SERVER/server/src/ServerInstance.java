@@ -2,7 +2,6 @@ package src;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,10 +42,10 @@ public class ServerInstance {
 		loggedClients.add(client);
 	}
 
-	public static Socket getClientSession(String user) {
+	public static ClientSession getClientSession(String user) {
 		for(ClientSession client : loggedClients) {
 			if(client.getUser().equals(user))
-				return client.getSession();
+				return client;
 		}
 		return null;
 	}

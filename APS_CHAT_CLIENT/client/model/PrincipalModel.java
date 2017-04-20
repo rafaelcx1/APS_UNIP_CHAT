@@ -1,7 +1,6 @@
 package model;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 
 import controller.MainController;
 import javafx.collections.ObservableList;
@@ -67,8 +66,8 @@ public class PrincipalModel {
 	}
 
 	public boolean sendObject(Request request) {
-		try(ObjectOutputStream ois = new ObjectOutputStream(MainController.getConnection().getOutputStream())) {
-			ois.writeObject(request);
+		try {
+			MainController.getOos().writeObject(request);
 			return true;
 		} catch (IOException e) {
 			errorMessage = "IOException has been occurred " + e.getMessage();
