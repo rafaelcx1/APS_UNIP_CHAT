@@ -1,6 +1,8 @@
 package model.requests;
 
-public class MessageRequest extends Request {
+import java.io.Serializable;
+
+public class MessageRequest extends Request implements Serializable {
 
 	private static final long serialVersionUID = 657771955333502982L;
 	private String message;

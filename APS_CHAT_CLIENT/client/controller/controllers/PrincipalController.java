@@ -177,6 +177,10 @@ public class PrincipalController {
 		}
 	}
 
+	public String getNickname() {
+		return principalModel.getNickname();
+	}
+
 	public void lostConnection() {
 		tfMsgBox.setDisable(true);
 		lblStatus.setText("Sem conexão com o servidor.");

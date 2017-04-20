@@ -44,8 +44,8 @@ public class MainController extends Application {
 	 * rootStage = Stage(Janela) principal
 	 */
 	private static Socket connection = new Socket();
-	private static LerObjetoArquivo ois;
-	private static GravarObjetoArquivo oos;
+	private static ObjectInputStream ois;
+	private static ObjectOutputStream oos;
 	private static TestConnectionThread testConnection;
 	private static RecieveObjectThread recieveObject;
 	private LoginController loginController;
@@ -68,11 +68,11 @@ public class MainController extends Application {
 		return connection;
 	}
 
-	public static LerObjetoArquivo getOis() {
+	public static ObjectInputStream getOis() {
 		return ois;
 	}
 
-	public static GravarObjetoArquivo getOos() {
+	public static ObjectOutputStream getOos() {
 		return oos;
 	}
 
@@ -86,8 +86,8 @@ public class MainController extends Application {
 		connection = new Socket();
 		try {
 			connection.connect(new InetSocketAddress(host, 9876), 1500);
-			oos = new GravarObjetoArquivo(connection.getOutputStream());
-			ois = new LerObjetoArquivo(connection.getInputStream());
+			oos = new ObjectOutputStream(connection.getOutputStream());
+			ois = new ObjectInputStream(connection.getInputStream());
 			initializeThreads();
 			return true;
 		} catch (IOException e) {
@@ -278,10 +278,15 @@ public class MainController extends Application {
 			if(!connection.isClosed()) {
 				if(connection.isConnected()) {
 					ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
-					oos.writeObject(new Request(OperationType.LOGOFF));
-					System.out.println("fechando");
+					Request requestLogoff = new Request(OperationType.LOGOFF);
+					requestLogoff.setUserTo("Server");
+					if(loginController != null) {
+						requestLogoff.setUserFrom(null);
+					} else {
+						requestLogoff.setUserFrom(principalController.getNickname());
+					}
+					oos.writeObject(requestLogoff);
 				}
-				System.out.println("fechando");
 				connection.close();
 			}
 			if(testConnection != null) testConnection.closeThread();
@@ -355,11 +360,7 @@ public class MainController extends Application {
 				while(true) {
 					if(connection != null && !connection.isClosed() && connection.isConnected()) {
 						try {
-							if(ois.read() > -1) {
-								try {
-									recieveObject((Request) ois.readObject());
-								} catch(Exception e) {e.printStackTrace();}
-							}
+							recieveObject((Request) ois.readObject());
 						} catch(Exception e) {e.printStackTrace();}
 					}
 					Thread.sleep(1000);
@@ -388,31 +389,5 @@ public class MainController extends Application {
 			Thread.currentThread().interrupt();
 		}
 	}
-
-	public class LerObjetoArquivo extends ObjectInputStream{
-
-		  public LerObjetoArquivo(InputStream in) throws IOException {
-			  super(in);
-		  }
-
-		  @Override
-		  protected void readStreamHeader() throws IOException {
-
-		  }
-
-		}
-
-		public class GravarObjetoArquivo extends ObjectOutputStream {
-
-		  public GravarObjetoArquivo(OutputStream out) throws IOException {
-			  super(out);
-		  }
-
-		  @Override
-		  protected void writeStreamHeader() throws IOException {
-			  reset();
-		  }
-
-		}
 
 }

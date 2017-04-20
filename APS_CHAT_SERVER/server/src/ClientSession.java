@@ -1,10 +1,8 @@
 package src;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.time.LocalDateTime;
 
@@ -13,18 +11,18 @@ import requests.InfoReturn;
 import requests.OperationType;
 import requests.Request;
 
-public class ClientSession implements Runnable {
+public class ClientSession extends Thread {
 
 	private Socket session;
 	private String user;
-	private LerObjetoArquivo ois;
+	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
 
 	public ClientSession(Socket session) {
 		this.session = session;
 		try {
-			this.oos = new GravarObjetoArquivo(session.getOutputStream());
-			this.ois = new LerObjetoArquivo(session.getInputStream());
+			this.oos = new ObjectOutputStream(session.getOutputStream());
+			this.ois = new ObjectInputStream(session.getInputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -75,10 +73,8 @@ public class ClientSession implements Runnable {
 
 		while(!session.isClosed() && session.isConnected()) {
 			try {
-				if(session.getInputStream().read() > -1) {
-					Request request = (Request) ois.readObject();
-					treatObject(request);
-				}
+				Request request = (Request) ois.readObject();
+				treatObject(request);
 			} catch(IOException e) {
 				if(session == null || session.isClosed()) {
 					try {
@@ -88,7 +84,7 @@ public class ClientSession implements Runnable {
 						e1.printStackTrace();
 					}
 				} else {
-					System.out.println("IOException occurred.\nDetails: " + e.getMessage() + "\n" + e.getCause() + "\n" + LocalDateTime.now().toString() + "\n");
+					System.out.println("IOException occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
 					e.printStackTrace();
 				}
 			} catch (ClassNotFoundException e) {
@@ -196,29 +192,4 @@ public class ClientSession implements Runnable {
 		return user;
 	}
 
-	public class LerObjetoArquivo extends ObjectInputStream{
-
-	  public LerObjetoArquivo(InputStream in) throws IOException {
-		  super(in);
-	  }
-
-	  @Override
-	  protected void readStreamHeader() throws IOException {
-
-	  }
-
-	}
-
-	public class GravarObjetoArquivo extends ObjectOutputStream {
-
-	  public GravarObjetoArquivo(OutputStream out) throws IOException {
-		  super(out);
-	  }
-
-	  @Override
-	  protected void writeStreamHeader() throws IOException {
-		  reset();
-	  }
-
-	}
 }
