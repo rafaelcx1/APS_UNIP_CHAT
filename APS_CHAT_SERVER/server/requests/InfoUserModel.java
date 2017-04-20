@@ -1,7 +1,10 @@
 package requests;
 
-public class InfoUserModel {
+import java.io.Serializable;
 
+public class InfoUserModel implements Serializable {
+
+	private static final long serialVersionUID = 7690493801655956285L;
 	private String login;
 	private boolean status;
 

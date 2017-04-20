@@ -15,6 +15,7 @@ import requests.InfoUserModel;
 public class ServerInstance {
 
 	private static ObservableList<ClientSession> loggedClients = FXCollections.observableArrayList();
+	private static List<ClientSession> clientsThread = new ArrayList<>();
 
 	public static void main(String[] args) {
 		loggedClients.addListener(new LoggedClientEvent());
@@ -24,7 +25,8 @@ public class ServerInstance {
 
 			while(true) {
 				ClientSession clientConnection = new ClientSession(serverInstance.accept());
-				new Thread(clientConnection).start();
+				clientsThread.add(clientConnection);
+				clientConnection.start();
 				System.out.println("Client connection. IP: " + clientConnection.getSession().getInetAddress().getHostAddress() + " | " + LocalDateTime.now().toString() + "\n");
 			}
 
@@ -36,6 +38,7 @@ public class ServerInstance {
 
 	public static void logoffClient(ClientSession client) {
 		loggedClients.remove(client);
+		clientsThread.remove(client);
 	}
 
 	public static void loginClient(ClientSession client) {
