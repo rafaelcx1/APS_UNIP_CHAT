@@ -1,15 +1,17 @@
 package src;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.time.LocalDateTime;
 
-import requests.InfoRequest;
-import requests.InfoReturn;
-import requests.OperationType;
-import requests.Request;
+import model.requests.InfoRequest;
+import model.requests.InfoReturn;
+import model.requests.OperationType;
+import model.requests.Request;
 
 public class ClientSession extends Thread {
 
@@ -17,6 +19,7 @@ public class ClientSession extends Thread {
 	private String user;
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
+	private Thread testConnection;
 
 	public ClientSession(Socket session) {
 		this.session = session;
@@ -26,6 +29,10 @@ public class ClientSession extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public Thread getTestConnection() {
+		return testConnection;
 	}
 
 	public ObjectInputStream getOis() {
@@ -39,28 +46,28 @@ public class ClientSession extends Thread {
 	@Override
 	public void run() {
 		// Thread para testar conexão com o client
-		new Thread(() -> {
+		testConnection = new Thread(() -> {
 			while(!session.isClosed() && session.isConnected()) {
 				try {
 					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
-				}
+					if(session.isClosed() || !session.isConnected()) {
+						try {
+							ServerInstance.logoffClient(this);
+							System.out.println("Closing session with user '" + ((user != null) ? user : "%not logged user%") + "'... | " + LocalDateTime.now().toString());
+							System.out.println("Session with user '" + ((user != null) ? user : "%not logged user%") + "' closed. | " + LocalDateTime.now().toString());
+							this.finalize();
+							this.closeThread();
+							Thread.currentThread().interrupt();
+						} catch (IOException e) {
+							System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
+						} catch (Throwable e) {
+							System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
+						}
+					}
+				} catch (InterruptedException e) {}
 			}
-			try {
-				ServerInstance.logoffClient(this);
-				System.out.println("Closing session with user '" + ((user != null) ? user : "%not logged user%") + "'... | " + LocalDateTime.now().toString());
-				System.out.println("Session with user '" + ((user != null) ? user : "%not logged user%") + "' closed. | " + LocalDateTime.now().toString());
-				this.finalize();
-				this.closeThread();
-				Thread.currentThread().interrupt();
-			} catch (IOException e) {
-				System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
-			} catch (Throwable e) {
-				System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
-			}
-		}).start();
-
+		});
+		testConnection.start();
 		sessionStart();
 	}
 
@@ -73,8 +80,21 @@ public class ClientSession extends Thread {
 
 		while(!session.isClosed() && session.isConnected()) {
 			try {
-				Request request = (Request) ois.readObject();
-				treatObject(request);
+				Object obj = ois.readObject();
+				if(obj instanceof Request) {
+					Request request = (Request) obj;
+					treatObject(request);
+				}
+			} catch(SocketException e) {
+					try {
+						this.closeThread();
+						ServerInstance.logoffClient(this);
+						break;
+					} catch (Throwable e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+			} catch(EOFException e) {
 			} catch(IOException e) {
 				if(session == null || session.isClosed()) {
 					try {
@@ -110,8 +130,8 @@ public class ClientSession extends Thread {
 				infoReturn.setUserTo(request.getUserFrom());
 				infoReturn.setOperationSource(OperationType.LOGIN);
 				infoReturn.setMessage("Conected!");
-				ServerTasks.sendObject(infoReturn);
 				ServerInstance.loginClient(this);
+				ServerTasks.sendObject(infoReturn);
 			} else {
 				user = request.getUserFrom();
 				System.out.println(user + " failed to loggon! | " + LocalDateTime.now().toString() + "\n");
@@ -129,7 +149,7 @@ public class ClientSession extends Thread {
 		case LOGOFF: {
 
 			try {
-				System.out.println(request.getUserFrom() + " deslogged on server! | " + LocalDateTime.now().toString() + "\n");
+				System.out.println(((request.getUserFrom() == null) ? "%not logged user%" : request.getUserFrom())  + " deslogged on server! | " + LocalDateTime.now().toString() + "\n");
 				session.close();
 				ServerInstance.logoffClient(this);
 			} catch (Exception e) {

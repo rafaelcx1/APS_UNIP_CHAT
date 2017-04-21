@@ -9,8 +9,9 @@ import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import requests.InfoRequest;
-import requests.InfoUserModel;
+import model.requests.InfoRequest;
+import model.requests.InfoUserModel;
+import model.requests.Request;
 
 public class ServerInstance {
 
@@ -38,7 +39,12 @@ public class ServerInstance {
 
 	public static void logoffClient(ClientSession client) {
 		loggedClients.remove(client);
-		clientsThread.remove(client);
+		int index;
+		if((index = clientsThread.indexOf(client)) > -1) {
+			clientsThread.get(index).getTestConnection().interrupt();
+			clientsThread.get(index).interrupt();
+			clientsThread.remove(client);
+		}
 	}
 
 	public static void loginClient(ClientSession client) {
@@ -84,7 +90,7 @@ public class ServerInstance {
 			while(c.next()) {
 
 				if(c.wasAdded()) {
-					List<InfoUserModel> users = new ArrayList<>();
+					ArrayList<InfoUserModel> users = new ArrayList<>();
 
 					for(ClientSession client : c.getAddedSubList()) {
 						InfoUserModel user = new InfoUserModel();
@@ -93,9 +99,14 @@ public class ServerInstance {
 						users.add(user);
 					}
 
+
+					InfoUserModel[] infoUser = new InfoUserModel[users.size()];
+					ClientSession[] clients = new ClientSession[loggedClients.size()];
+					ClientSession[] exceptions = new ClientSession[c.getRemoved().size()];
 					InfoRequest infoRequest = new InfoRequest("Server");
-					infoRequest.setUsers((InfoUserModel[]) users.toArray());
-					ServerTasks.broadcast(infoRequest, (ClientSession[]) loggedClients.toArray(), (ClientSession[]) c.getAddedSubList().toArray());
+					infoRequest.setUsers(users.toArray(infoUser));
+					Request request = (Request) infoRequest;
+					ServerTasks.broadcast(request, loggedClients.toArray(clients), c.getAddedSubList().toArray(exceptions));
 
 				} else {
 					List<InfoUserModel> users = new ArrayList<>();
@@ -107,9 +118,13 @@ public class ServerInstance {
 						users.add(user);
 					}
 
+					InfoUserModel[] infoUser = new InfoUserModel[users.size()];
+					ClientSession[] clients = new ClientSession[loggedClients.size()];
+					ClientSession[] exceptions = new ClientSession[c.getRemoved().size()];
 					InfoRequest infoRequest = new InfoRequest("Server");
-					infoRequest.setUsers((InfoUserModel[]) users.toArray());
-					ServerTasks.broadcast(infoRequest, (ClientSession[]) loggedClients.toArray(), (ClientSession[]) c.getRemoved().toArray());
+					infoRequest.setUsers(users.toArray(infoUser));
+					Request request = (Request) infoRequest;
+					ServerTasks.broadcast(request, loggedClients.toArray(clients), c.getRemoved().toArray(exceptions));
 				}
 
 			}
