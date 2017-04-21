@@ -206,17 +206,6 @@ public class MessageController {
 		}
 	}
 
-	/*
-	public void btnHelpEmoctionEvent(ActionEvent event) {
-		Alert alert = new Alert(AlertType.INFORMATION);
-		alert.setContentText(""); // Emoctions
-		alert.setHeaderText("Emoctions:");
-		alert.setTitle("Help Emoction Window");
-		alert.setResizable(false);
-		alert.show();
-	}
-	*/
-
 	public void showWindow() {
 		rootStage.centerOnScreen();
 		rootStage.requestFocus();

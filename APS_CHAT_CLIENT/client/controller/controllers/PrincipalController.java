@@ -281,7 +281,8 @@ public class PrincipalController {
 					}
 				} else {
 					for(InfoUserModel user : c.getRemoved()) {
-						for(Node label : vbUsersListPane.getChildren()) {
+						ObservableList<Node> vbUsersListTemp = vbUsersListPane.getChildren();
+						for(Node label : vbUsersListTemp) {
 							if(((Label)label).getText().equals(user.getLogin())) {
 								vbUsersListPane.getChildren().remove(label);
 							}

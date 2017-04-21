@@ -46,7 +46,8 @@ public class MessageModel {
 
 	public synchronized boolean treatObject(InfoReturn info) {
 		if(info.getOperation() == OperationType.SUCCESS_MSG && info.getOperationSource() == OperationType.SEND_OR_RECIEVE_MSG) {
-			for(MessageRequest msg : tempMsg) {
+			List<MessageRequest> tempMsgTemp = tempMsg;
+			for(MessageRequest msg : tempMsgTemp) {
 				chatMsg.add(msg);
 				tempMsg.remove(msg);
 			}
