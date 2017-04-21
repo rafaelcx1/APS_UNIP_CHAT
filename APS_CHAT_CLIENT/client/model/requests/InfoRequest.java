@@ -15,7 +15,7 @@ public class InfoRequest extends Request {
 	}
 
 	public void setUsers(InfoUserModel[] users) {
-
+		this.users = users;
 	}
 
 }

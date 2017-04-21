@@ -6,7 +6,6 @@ import java.time.LocalTime;
 import controller.MainController;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -118,6 +117,7 @@ public class PrincipalController {
 
 					tfMsgBox.setDisable(false);
 					lblStatus.setText("Status: Conectado");
+					lblUserNickname.setText("Nickname: " + principalModel.getNickname());
 					statusLogon = null;
 				}
 
@@ -215,6 +215,7 @@ public class PrincipalController {
 	public void tfMsgBoxEnterPressed(KeyEvent action) {
 		if(action.getCode() == KeyCode.ENTER) {
 			btnSendMsg.fire();
+			tfMsgBox.setText("");
 		}
 	}
 
@@ -260,6 +261,7 @@ public class PrincipalController {
 			alert.show();
 		} else {
 			principalModel.getGlobalChatMsg().add(msgRequest);
+			tfMsgBox.setText("");
 		}
 	}
 
@@ -275,8 +277,6 @@ public class PrincipalController {
 						Label lblUser = new Label(user.getLogin());
 						lblUser.setOnMouseClicked((event) -> openMessagePrivateWindow(event));
 						lblUser.getStyleClass().add("recipient");
-						lblUser.getPseudoClassStates().add(PseudoClass.getPseudoClass("hover"));
-						lblUser.getPseudoClassStates().add(PseudoClass.getPseudoClass("click"));
 						lblUser.getStylesheets().add(this.getClass().getResource("../../view/GlobalMsgStyle.css").toExternalForm());
 						vbUsersListPane.getChildren().add(lblUser);
 					}

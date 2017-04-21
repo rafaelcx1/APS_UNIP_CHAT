@@ -27,7 +27,6 @@ import javafx.stage.StageStyle;
 import model.requests.OperationType;
 import model.requests.Request;
 
-@SuppressWarnings("unused")
 public class MainController extends Application {
 
 	/* connection = Atributo de conex�o com o servidor
@@ -115,6 +114,12 @@ public class MainController extends Application {
 	public void closeApp() {
 		logoff();
 		rootStage.close();
+		try {
+			this.stop();
+		} catch (Throwable e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Platform.exit();
 	}
 
@@ -125,18 +130,20 @@ public class MainController extends Application {
 
 	// M�todo que ir� executar as a��es de recebimento de alguma Request atrav�s da Thread RecieveObject
 	public void recieveObject(Request request) {
-		if(loginController != null) {
+		if(loginController != null && !userLogged) {
 			new Thread(() -> {
-				Platform.runLater(() -> loginController.recieveObject(request));
+				Platform.runLater(() -> {
+					loginController.recieveObject(request);
+				});
 			}).start();
-		} else if(principalController != null) {
+		} else if(principalController != null && userLogged) {
 			new Thread(() -> {
 				Platform.runLater(() -> {
 					if(!isMessageWindowRequest(request));
 						principalController.recieveObject(request);
 					}
 				);
-			}).start();;
+			}).start();
 		}
 	}
 
@@ -361,6 +368,12 @@ public class MainController extends Application {
 							Object obj = ois.readObject();
 							if(obj instanceof Request) {
 								Request request = (Request) obj;
+								try {
+									Thread.sleep(500);
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 								recieveObject(request);
 							}
 						} catch(EOFException e) {

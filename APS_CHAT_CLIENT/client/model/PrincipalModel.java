@@ -50,24 +50,19 @@ public class PrincipalModel {
 	}
 
 	public boolean treatObject(InfoRequest request) {
-		if(request.getUserTo().equals(nickname)) {
-			if(request.getUsers() != null) {
-				for(InfoUserModel user : request.getUsers()) {
-					if(!user.getLogin().equals(nickname)) {
-						if(users.contains(user)) {
-							if(!user.isStatus())
-								users.remove(user);
-						} else {
-							users.add(user);
-						}
+		if(request.getUsers() != null) {
+			for(InfoUserModel user : request.getUsers()) {
+				if(!user.getLogin().equals(nickname)) {
+					if(users.contains(user)) {
+						if(!user.isStatus())
+							users.remove(user);
+					} else {
+						users.add(user);
 					}
 				}
 			}
-			return true;
-		} else {
-			errorMessage = "Invalid User";
-			return false;
 		}
+		return true;
 	}
 
 	public boolean sendObject(Request request) {
