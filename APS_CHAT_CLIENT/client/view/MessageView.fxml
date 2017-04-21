@@ -15,15 +15,15 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" styleClass="dark-panel" stylesheets="@stylefx.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" styleClass="dark-panel" stylesheets="@stylefx.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <top>
       <HBox fx:id="hbTopPane" alignment="CENTER" onMouseDragged="#moveWindowOnMouseDrag" onMousePressed="#moveWindowOnMousePressed" prefHeight="48.0" prefWidth="600.0" styleClass="dark-header" BorderPane.alignment="CENTER">
          <children>
             <Button fx:id="btnClose" mnemonicParsing="false" onAction="#btnCloseEvent" styleClass="button-icon">
                <graphic>
-                  <ImageView fitHeight="32.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@close-icon.png" />
+                        <Image url="@close.png" />
                      </image>
                   </ImageView>
                </graphic>
