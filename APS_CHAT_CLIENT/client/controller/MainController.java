@@ -1,12 +1,12 @@
 package controller;
 
+import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 
 import controller.controllers.LoginController;
@@ -24,7 +24,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import model.requests.MessageRequest;
 import model.requests.OperationType;
 import model.requests.Request;
 
@@ -132,10 +131,17 @@ public class MainController extends Application {
 	// M�todo que ir� executar as a��es de recebimento de alguma Request atrav�s da Thread RecieveObject
 	public void recieveObject(Request request) {
 		if(loginController != null) {
-			loginController.recieveObject(request);
+			new Thread(() -> {
+				Platform.runLater(() -> loginController.recieveObject(request));
+			}).start();
 		} else if(principalController != null) {
-			if(!isMessageWindowRequest(request))
-				principalController.recieveObject(request);
+			new Thread(() -> {
+				Platform.runLater(() -> {
+					if(!isMessageWindowRequest(request));
+						principalController.recieveObject(request);
+					}
+				);
+			});
 		}
 	}
 
@@ -277,7 +283,6 @@ public class MainController extends Application {
 		try {
 			if(!connection.isClosed()) {
 				if(connection.isConnected()) {
-					ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
 					Request requestLogoff = new Request(OperationType.LOGOFF);
 					requestLogoff.setUserTo("Server");
 					if(loginController != null) {
@@ -359,11 +364,21 @@ public class MainController extends Application {
 
 				while(true) {
 					if(connection != null && !connection.isClosed() && connection.isConnected()) {
+
 						try {
-							recieveObject((Request) ois.readObject());
-						} catch(Exception e) {e.printStackTrace();}
+							Object obj = ois.readObject();
+							if(obj instanceof Request) {
+								Request request = (Request) obj;
+								recieveObject(request);
+							}
+						} catch(EOFException e) {
+						} catch(SocketException e) {
+						} catch (ClassNotFoundException | IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
 					}
-					Thread.sleep(1000);
 				}
 
 			} catch(Exception e) {

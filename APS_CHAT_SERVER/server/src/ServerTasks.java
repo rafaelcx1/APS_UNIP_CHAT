@@ -3,7 +3,7 @@ package src;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import requests.Request;
+import model.requests.Request;
 
 public class ServerTasks {
 
@@ -37,19 +37,24 @@ public class ServerTasks {
 
 	public static boolean sendObject(Request request) {
 		ClientSession userToConnection = ServerInstance.getClientSession(request.getUserTo());
-		try {
-			System.out.println("Sending request to '" + request.getUserTo() + "' from '" + request.getUserFrom() + "'... | " + LocalDateTime.now().toString());
-			userToConnection.getOos().writeObject(request);
-			System.out.println("Send request to '" + request.getUserTo() + "' from '" + request.getUserFrom() + "' complete with success. | " + LocalDateTime.now().toString() + "\n");
-			return true;
-		} catch(IOException e) {
-			System.out.println("IOExeption error with user '" + request.getUserTo() + "' from '" + request.getUserFrom() + "' on sendObject.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
-			return false;
-		} catch(NullPointerException e) {
-			System.out.println("NullPointerException error with user '" + request.getUserTo() + "' from '" + request.getUserFrom() + "' on sendObject.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
-			return false;
-		} catch(Exception e) {
-			System.out.println("Exception error with user '" + request.getUserTo() + "' from '" + request.getUserFrom() + "' on sendObject.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
+		if(userToConnection != null) {
+			try {
+				System.out.println("Sending request to '" + request.getUserTo() + "' from '" + request.getUserFrom() + "'... | " + LocalDateTime.now().toString());
+				userToConnection.getOos().writeObject((Request) request);
+				System.out.println("Send request to '" + request.getUserTo() + "' from '" + request.getUserFrom() + "' complete with success. | " + LocalDateTime.now().toString() + "\n");
+				return true;
+			} catch(IOException e) {
+				System.out.println("IOExeption error with user '" + request.getUserTo() + "' from '" + request.getUserFrom() + "' on sendObject.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
+				return false;
+			} catch(NullPointerException e) {
+				System.out.println("NullPointerException error with user '" + request.getUserTo() + "' from '" + request.getUserFrom() + "' on sendObject.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
+				return false;
+			} catch(Exception e) {
+				System.out.println("Exception error with user '" + request.getUserTo() + "' from '" + request.getUserFrom() + "' on sendObject.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
+				return false;
+			}
+		} else {
+			System.out.println("User " + request.getUserTo() + " not logged");
 			return false;
 		}
 	}

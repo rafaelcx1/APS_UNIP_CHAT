@@ -1,4 +1,4 @@
-package requests;
+package model.requests;
 
 import java.io.Serializable;
 

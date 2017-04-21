@@ -1,4 +1,4 @@
-package requests;
+package model.requests;
 
 public class InfoReturn extends Request {
 
