@@ -112,13 +112,8 @@ public class MainController extends Application {
 	public void closeApp() {
 		logoff();
 		rootStage.close();
-		try {
-			this.stop();
-		} catch (Throwable e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		Platform.exit();
+		System.exit(0);
 	}
 
 	// M�todo que ir� executar as a��es de recebimento de alguma Request atrav�s da Thread RecieveObject
