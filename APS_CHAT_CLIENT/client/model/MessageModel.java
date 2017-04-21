@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import controller.MainController;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.requests.InfoReturn;
 import model.requests.MessageRequest;
@@ -19,6 +20,7 @@ public class MessageModel {
 
 	public MessageModel(String loginRecipient) {
 		this.loginRecipient = loginRecipient;
+		chatMsg = FXCollections.observableArrayList();
 	}
 
 	public String getErrorMessage() {
@@ -37,13 +39,13 @@ public class MessageModel {
 		return chatMsg;
 	}
 
-	public boolean treatObject(MessageRequest msgRequest) {
+	public synchronized boolean treatObject(MessageRequest msgRequest) {
 		chatMsg.add(msgRequest);
 		return true;
 	}
 
-	public boolean treatObject(InfoReturn info) {
-		if(info.getOperation() == OperationType.SUCCESS_MSG && info.getOperation() == OperationType.SEND_OR_RECIEVE_MSG) {
+	public synchronized boolean treatObject(InfoReturn info) {
+		if(info.getOperation() == OperationType.SUCCESS_MSG && info.getOperationSource() == OperationType.SEND_OR_RECIEVE_MSG) {
 			for(MessageRequest msg : tempMsg) {
 				chatMsg.add(msg);
 				tempMsg.remove(msg);

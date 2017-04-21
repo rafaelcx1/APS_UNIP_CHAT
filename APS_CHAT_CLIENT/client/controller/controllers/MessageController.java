@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.time.LocalTime;
 
 import controller.MainController;
-import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -30,7 +29,7 @@ import model.requests.MessageRequest;
 import model.requests.OperationType;
 import model.requests.Request;
 
-public class MessageController extends Application {
+public class MessageController {
 
 	@FXML
 	private VBox vbMsgPane;
@@ -59,16 +58,12 @@ public class MessageController extends Application {
 		messageModel = new MessageModel(loginRecipient);
 		this.mainController = mainController;
 		chatMsgListEvent(messageModel.getChatMsg());
-		lblNicknameRecipient.setText("Usuário: " + loginRecipient);
-		lblStatusRecipient.setText("Status: Online");
-		launch();
+		start();
 	}
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		rootStage = primaryStage;
+	public void start() {
+		rootStage = new Stage();
 		rootStage.setOnCloseRequest((event) -> {
-			mainController.closeChatWindow(messageModel.getLoginRecipient());
 			this.close();
 		});
 		rootStage.initStyle(StageStyle.UNDECORATED);
@@ -76,6 +71,8 @@ public class MessageController extends Application {
 			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/MessageView.fxml"));
 			loader.setController(this);
 			rootStage.setScene(new Scene(loader.load()));
+			lblNicknameRecipient.setText("Usuário: " + messageModel.getLoginRecipient());
+			lblStatusRecipient.setText("Status: Online");
 			rootStage.show();
 		} catch(IOException e) {
 			Alert alert = new Alert(AlertType.ERROR);
@@ -134,6 +131,10 @@ public class MessageController extends Application {
 		}
 	}
 
+	public Stage getStage() {
+		return rootStage;
+	}
+
 	public String getRecipient() {
 		return messageModel.getLoginRecipient();
 	}
@@ -159,9 +160,9 @@ public class MessageController extends Application {
 			while(c.next()) {
 				if(c.wasAdded()) {
 					for(MessageRequest msg : c.getAddedSubList()) {
-						Label lblRecipient = new Label("<" + LocalTime.now().toString() + "> " + msg.getUserFrom() + ":");
+						Label lblRecipient = new Label("<" + LocalTime.now().getHour() + ":" + LocalTime.now().getMinute() + ":" + LocalTime.now().getSecond() + ">" + " " +  msg.getUserFrom() + ":");
 						if(msg.getUserFrom().equals(this.getRecipient()))
-							lblRecipient.getStyleClass().add("repientUser");
+							lblRecipient.getStyleClass().add("recipientUser");
 						else
 							lblRecipient.getStyleClass().add("recipient");
 
@@ -191,6 +192,7 @@ public class MessageController extends Application {
 			alert.setResizable(false);
 			alert.show();
 		}
+		tfSendMsg.setText("");
 	}
 
 	public void btnCloseEvent(ActionEvent event) {
@@ -200,6 +202,7 @@ public class MessageController extends Application {
 	public void tfSendMsgEnterPressed(KeyEvent event) {
 		if(event.getCode() == KeyCode.ENTER) {
 			btnSendMsg.fire();
+			tfSendMsg.setText("");
 		}
 	}
 
@@ -222,13 +225,6 @@ public class MessageController extends Application {
 
 	public void close() {
 		mainController.closeChatWindow(messageModel.getLoginRecipient());
-		rootStage.close();
-		try {
-			this.stop();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 }

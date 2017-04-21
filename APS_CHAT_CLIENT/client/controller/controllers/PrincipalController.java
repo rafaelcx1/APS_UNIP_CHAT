@@ -201,7 +201,6 @@ public class PrincipalController {
 		mainController.getStage().setY(event.getScreenY() - yOffset);
 	}
 
-
 	public void lostConnection() {
 		tfMsgBox.setDisable(true);
 		lblStatus.setText("Sem conexão com o servidor.");
@@ -298,7 +297,7 @@ public class PrincipalController {
 			while(c.next()) {
 				if(c.wasAdded()) {
 					for(MessageRequest msg : c.getAddedSubList()) {
-						Label lblmsg = new Label("<" + LocalTime.now().toString() + ">" + " " + msg.getUserFrom() + ": " + msg.getMessage());
+						Label lblmsg = new Label("<" + LocalTime.now().getHour() + ":" + LocalTime.now().getMinute() + ":" + LocalTime.now().getSecond() + ">" + " " + msg.getUserFrom() + ": " + msg.getMessage());
 						if(msg.getUserFrom().equals(principalModel.getNickname()))
 							lblmsg.getStyleClass().add("messageUser");
 						else

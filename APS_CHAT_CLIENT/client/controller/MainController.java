@@ -18,8 +18,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
@@ -49,7 +48,7 @@ public class MainController extends Application {
 	private LoginController loginController;
 	private PrincipalController principalController;
 	private ArrayList<MessageController> messageWindows = new ArrayList<>();
-	private ObservableList<String> chatWindowsUsers = FXCollections.observableArrayList();
+	private ObservableSet<String> chatWindowsUsers = FXCollections.observableSet();
 	private BooleanProperty connectionStatus = new SimpleBooleanProperty(true);
 	private boolean userLogged;
 	private String nickname;
@@ -99,7 +98,6 @@ public class MainController extends Application {
 	public void start(Stage stage) {
 		rootStage = stage;
 		userLogged = false;
-		chatWindowsUsersEvent(this.chatWindowsUsers); // Ir� inserir um evento na lista chatWindowsUsers
 		connectionStatusEvent(this.connectionStatus); // Ir� inserir um evento no connectionStatus
 		rootStage.setOnCloseRequest((event) -> closeApp());
 		openLogonScreen(); // Abertura da tela de logon
@@ -121,11 +119,6 @@ public class MainController extends Application {
 			e.printStackTrace();
 		}
 		Platform.exit();
-	}
-
-	// Método que fecha uma janela de mensagem ativa
-	public void closeChatWindow(String loginRecipient) {
-		chatWindowsUsers.remove(loginRecipient);
 	}
 
 	// M�todo que ir� executar as a��es de recebimento de alguma Request atrav�s da Thread RecieveObject
@@ -176,7 +169,30 @@ public class MainController extends Application {
 
 	// M�todo que ir� abrir uma nova janela caso receba uma mensagem
 	public void openMessageScreen(String loginRecipient) {
-		chatWindowsUsers.add(loginRecipient);
+		if(chatWindowsUsers.add(loginRecipient)) {
+			messageWindows.add(new MessageController(loginRecipient, this));
+		} else {
+			for(MessageController msgWindow : messageWindows) {
+				if(msgWindow.getRecipient().equals(loginRecipient)) {
+					msgWindow.showWindow();
+					break;
+				}
+			}
+		}
+	}
+
+	// Método que fecha uma janela de mensagem ativa
+	public void closeChatWindow(String loginRecipient) {
+		if(chatWindowsUsers.remove(loginRecipient)) {
+			messageWindows.removeIf((t) -> {
+				if(t.getRecipient().equals(loginRecipient)) {
+					t.getStage().close();
+					return true;
+				} else {
+					return false;
+				}
+			});
+		}
 	}
 
 	// M�todo que ir� tratar os requests para as janelas de mensagens
@@ -196,6 +212,12 @@ public class MainController extends Application {
 			}
 			return true;
 		} else if(msg.getOperation() == OperationType.SUCCESS_MSG || msg.getOperation() == OperationType.ERROR_MSG && !msg.getUserFrom().equals("Server")){
+			for(MessageController msgWindow : messageWindows) {
+				if(msgWindow.getRecipient().equals(msg.getUserFrom())) {
+					msgWindow.recieveObject(msg);
+					break;
+				}
+			}
 			return true;
 		} else {
 			return false;
@@ -208,38 +230,6 @@ public class MainController extends Application {
 		recieveObject = new RecieveObjectThread();
 		new Thread(testConnection).start();
 		new Thread(recieveObject).start();;
-	}
-
-	// M�todo de evento do ObservableList chatWindowsUsers
-	public void chatWindowsUsersEvent(ObservableList<String> list) {
-
-		list.addListener((ListChangeListener<String>) (c) -> {
-			while(c.next()) {
-				if(c.wasAdded()) {
-					for(String user : c.getAddedSubList()) {
-						if(!chatWindowsUsers.contains(user))
-							messageWindows.add(new MessageController(user, this));
-						else {
-							for(MessageController msgWindow : messageWindows) {
-								if(msgWindow.getRecipient().equals(user))
-									msgWindow.showWindow();
-							}
-						}
-					}
-				} else if(c.wasRemoved()) {
-					for(String user : c.getRemoved()) {
-						messageWindows.removeIf((t) -> {
-							if(t.getRecipient().equals(user)) {
-								return true;
-							} else {
-								return false;
-							}
-						});
-					}
-				}
-			}
-		});
-
 	}
 
 	// M�todo de evento do BooleanProperty connectionStatus
@@ -368,11 +358,13 @@ public class MainController extends Application {
 							Object obj = ois.readObject();
 							if(obj instanceof Request) {
 								Request request = (Request) obj;
-								try {
-									Thread.sleep(500);
-								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+								if(loginController != null || !userLogged) {
+									try {
+										Thread.sleep(500);
+									} catch (InterruptedException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 								}
 								recieveObject(request);
 							}

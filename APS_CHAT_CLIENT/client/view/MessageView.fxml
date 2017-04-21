@@ -67,7 +67,7 @@
             </Label>
          </top>
          <center>
-            <ScrollPane styleClass="dark-scrollpane" BorderPane.alignment="CENTER">
+            <ScrollPane style="-fx-background-color: transparent;" styleClass="dark-scrollpane" BorderPane.alignment="CENTER">
                <content>
                   <VBox fx:id="vbMsgPane">
                      <padding>

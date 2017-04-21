@@ -168,7 +168,7 @@ public class ClientSession extends Thread {
 					InfoReturn infoReturn = new InfoReturn(false);
 					infoReturn.setUserFrom(request.getUserTo());
 					infoReturn.setUserTo(request.getUserFrom());
-					infoReturn.setOperationSource(OperationType.SUCCESS_MSG);
+					infoReturn.setOperationSource(OperationType.SEND_OR_RECIEVE_MSG);
 					infoReturn.setMessage("Message sended!");
 					Request requestCast = (Request) infoReturn;
 					ServerTasks.sendObject(requestCast);
@@ -176,7 +176,7 @@ public class ClientSession extends Thread {
 					InfoReturn infoReturn = new InfoReturn(true);
 					infoReturn.setUserFrom(request.getUserTo());
 					infoReturn.setUserTo(request.getUserFrom());
-					infoReturn.setOperationSource(OperationType.ERROR_MSG);
+					infoReturn.setOperationSource(OperationType.SEND_OR_RECIEVE_MSG);
 					infoReturn.setMessage("Error on send message.");
 					Request requestCast = (Request) infoReturn;
 					ServerTasks.sendObject(requestCast);
