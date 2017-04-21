@@ -75,11 +75,13 @@ public class ServerInstance {
 			user.setStatus(true);
 			users.add(user);
 		}
-		return (InfoUserModel[]) users.toArray();
+		InfoUserModel[] usersArray = new InfoUserModel[users.size()];
+		return users.toArray(usersArray);
 	}
 
 	public static ClientSession[] getLoggedClients() {
-		return (ClientSession[]) loggedClients.toArray();
+		ClientSession[] loggedClientsArray = new ClientSession[loggedClients.size()];
+		return loggedClients.toArray(loggedClientsArray);
 	}
 
 	private static class LoggedClientEvent implements ListChangeListener<ClientSession> {

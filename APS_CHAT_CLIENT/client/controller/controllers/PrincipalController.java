@@ -21,6 +21,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import model.PrincipalModel;
 import model.requests.InfoRequest;
@@ -48,14 +50,20 @@ public class PrincipalController {
 	private Button btnSendMsg;
 	@FXML
 	private TextField tfMsgBox;
+	@FXML
+	private HBox hboxTittle;
 
 	private MainController mainController;
 	private PrincipalModel principalModel;
 	private Alert statusLogon;
 
+	private double xOffset;
+	private double yOffset;
+
 
 	public PrincipalController(MainController mainController, String nickname) {
 		this.mainController = mainController;
+		mainController.getStage().setResizable(true);
 		principalModel = new PrincipalModel(nickname);
 		globalChatMsgEvent(principalModel.getGlobalChatMsg());
 		usersListEvent(principalModel.getUsers());
@@ -109,7 +117,7 @@ public class PrincipalController {
 					statusLogon.close();
 
 					tfMsgBox.setDisable(false);
-					lblStatus.setText("Conectado.");
+					lblStatus.setText("Status: Conectado");
 					statusLogon = null;
 				}
 
@@ -180,6 +188,19 @@ public class PrincipalController {
 	public String getNickname() {
 		return principalModel.getNickname();
 	}
+
+	// M�todo de evento quando o mouse � pressionado no paneTop
+	public void moveWindowOnMousePressed(MouseEvent event) {
+		xOffset = event.getSceneX();
+		yOffset = event.getSceneY();
+	}
+
+	// M�todo de evento quando o mouse � arrastado no paneTop
+	public void moveWindowOnMouseDrag(MouseEvent event) {
+		mainController.getStage().setX(event.getScreenX() - xOffset);
+		mainController.getStage().setY(event.getScreenY() - yOffset);
+	}
+
 
 	public void lostConnection() {
 		tfMsgBox.setDisable(true);
@@ -282,7 +303,6 @@ public class PrincipalController {
 							lblmsg.getStyleClass().add("messageUser");
 						else
 							lblmsg.getStyleClass().add("message");
-						lblmsg.getPseudoClassStates().add(PseudoClass.getPseudoClass("hover"));
 						lblmsg.getStylesheets().add(this.getClass().getResource("../../view/GlobalMsgStyle.css").toExternalForm());
 						vbGlobalChatPane.getChildren().add(lblmsg);
 					}

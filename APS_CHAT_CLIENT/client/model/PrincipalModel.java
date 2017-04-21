@@ -3,6 +3,7 @@ package model;
 import java.io.IOException;
 
 import controller.MainController;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.requests.InfoRequest;
 import model.requests.InfoUserModel;
@@ -18,6 +19,8 @@ public class PrincipalModel {
 
 	public PrincipalModel(String nickname) {
 		this.nickname = nickname;
+		users = FXCollections.observableArrayList();
+		globalChatMsg = FXCollections.observableArrayList();
 	}
 
 	public String getErrorMessage() {
@@ -48,13 +51,15 @@ public class PrincipalModel {
 
 	public boolean treatObject(InfoRequest request) {
 		if(request.getUserTo().equals(nickname)) {
-			for(InfoUserModel user : request.getUsers()) {
-				if(!user.getLogin().equals(nickname)) {
-					if(users.contains(user)) {
-						if(!user.isStatus())
-							users.remove(user);
-					} else {
-						users.add(user);
+			if(request.getUsers() != null) {
+				for(InfoUserModel user : request.getUsers()) {
+					if(!user.getLogin().equals(nickname)) {
+						if(users.contains(user)) {
+							if(!user.isStatus())
+								users.remove(user);
+						} else {
+							users.add(user);
+						}
 					}
 				}
 			}

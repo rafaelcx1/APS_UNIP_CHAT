@@ -3,7 +3,6 @@
 }
 .dark-scrollpane{
     -fx-background: transparent;
-     -fx-region-background: transparent;
 }
 .dark-header{
     -fx-background-color: #212121;

@@ -115,12 +115,7 @@ public class MainController extends Application {
 	public void closeApp() {
 		logoff();
 		rootStage.close();
-		try {
-			this.stop();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		Thread.getAllStackTraces().keySet().forEach((thread) -> thread.interrupt());
+		Platform.exit();
 	}
 
 	// Método que fecha uma janela de mensagem ativa
@@ -141,7 +136,7 @@ public class MainController extends Application {
 						principalController.recieveObject(request);
 					}
 				);
-			});
+			}).start();;
 		}
 	}
 
@@ -165,14 +160,11 @@ public class MainController extends Application {
 		if(loginController == null) {
 			principalController = new PrincipalController(this, nickname);
 		} else {
-			loginController.close();
 			loginController = null;
 			principalController = new PrincipalController(this, nickname);
 		}
 		this.nickname = nickname;
 		userLogged = true;
-		rootStage.initStyle(StageStyle.UNDECORATED);
-		rootStage.show();
 	}
 
 	// M�todo que ir� abrir uma nova janela caso receba uma mensagem
@@ -372,6 +364,7 @@ public class MainController extends Application {
 								recieveObject(request);
 							}
 						} catch(EOFException e) {
+							e.printStackTrace();
 						} catch(SocketException e) {
 						} catch (ClassNotFoundException | IOException e) {
 							// TODO Auto-generated catch block

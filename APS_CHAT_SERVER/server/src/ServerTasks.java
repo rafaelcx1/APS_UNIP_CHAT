@@ -40,7 +40,7 @@ public class ServerTasks {
 		if(userToConnection != null) {
 			try {
 				System.out.println("Sending request to '" + request.getUserTo() + "' from '" + request.getUserFrom() + "'... | " + LocalDateTime.now().toString());
-				userToConnection.getOos().writeObject((Request) request);
+				userToConnection.getOos().writeObject(request);
 				System.out.println("Send request to '" + request.getUserTo() + "' from '" + request.getUserFrom() + "' complete with success. | " + LocalDateTime.now().toString() + "\n");
 				return true;
 			} catch(IOException e) {

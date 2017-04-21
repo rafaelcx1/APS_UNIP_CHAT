@@ -149,7 +149,7 @@ public class ClientSession extends Thread {
 		case LOGOFF: {
 
 			try {
-				System.out.println(((request.getUserFrom() == null) ? "%not logged user%" : request.getUserFrom())  + " deslogged on server! | " + LocalDateTime.now().toString() + "\n");
+				System.out.println(((request.getUserFrom() == null) ? "%not logged user%" : request.getUserFrom())  + " deslogged from server! | " + LocalDateTime.now().toString() + "\n");
 				session.close();
 				ServerInstance.logoffClient(this);
 			} catch (Exception e) {
@@ -170,14 +170,16 @@ public class ClientSession extends Thread {
 					infoReturn.setUserTo(request.getUserFrom());
 					infoReturn.setOperationSource(OperationType.SUCCESS_MSG);
 					infoReturn.setMessage("Message sended!");
-					ServerTasks.sendObject(infoReturn);
+					Request requestCast = (Request) infoReturn;
+					ServerTasks.sendObject(requestCast);
 				} else {
 					InfoReturn infoReturn = new InfoReturn(true);
 					infoReturn.setUserFrom(request.getUserTo());
 					infoReturn.setUserTo(request.getUserFrom());
 					infoReturn.setOperationSource(OperationType.ERROR_MSG);
 					infoReturn.setMessage("Error on send message.");
-					ServerTasks.sendObject(infoReturn);
+					Request requestCast = (Request) infoReturn;
+					ServerTasks.sendObject(requestCast);
 				}
 			}
 			break;
@@ -188,7 +190,8 @@ public class ClientSession extends Thread {
 			InfoRequest infoRequest = new InfoRequest("Server");
 			infoRequest.setUserTo(request.getUserFrom());
 			infoRequest.setUsers(ServerInstance.getOnlineUsers());
-			ServerTasks.sendObject(infoRequest);
+			Request requestCast = (Request) infoRequest;
+			ServerTasks.sendObject(requestCast);
 			break;
 		}
 		default: {
@@ -198,7 +201,8 @@ public class ClientSession extends Thread {
 			infoReturn.setUserTo(request.getUserFrom());
 			infoReturn.setOperationSource(OperationType.LOGIN);
 			infoReturn.setMessage("Invalid Object Sended to the Server.");
-			ServerTasks.sendObject(infoReturn);
+			Request requestCast = (Request) infoReturn;
+			ServerTasks.sendObject(requestCast);
 		}
 
 		}

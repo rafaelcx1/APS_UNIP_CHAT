@@ -18,16 +18,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="700.0" prefHeight="400.0" prefWidth="700.0" styleClass="dark-header" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Button fx:id="btnLogoffReconnect" layoutX="613.0" layoutY="-2.0" mnemonicParsing="false" onAction="#btnLogoffReconnectAction" prefHeight="45.0" prefWidth="88.0" styleClass="dark-button" text="Logoff" textFill="WHITE" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <graphic>
-            <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@exit.png" />
-               </image>
-            </ImageView>
-         </graphic>
-      </Button>
-      <HBox alignment="CENTER" prefHeight="45.0" prefWidth="700.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <HBox fx:id="hboxTittle" alignment="CENTER" onMouseDragged="#moveWindowOnMouseDrag" onMousePressed="#moveWindowOnMousePressed" prefHeight="45.0" prefWidth="700.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <ImageView fitHeight="82.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
                <image>
@@ -87,11 +78,11 @@
                   </HBox>
                </top>
                <center>
-                  <ScrollPane hbarPolicy="NEVER" styleClass="dark-scrollpane" BorderPane.alignment="CENTER">
+                  <ScrollPane hbarPolicy="NEVER" style="-fx-background-color: transparent;" styleClass="dark-scrollpane" BorderPane.alignment="CENTER">
                      <content>
-                        <AnchorPane prefHeight="267.0" prefWidth="193.0">
+                        <AnchorPane prefHeight="267.0" prefWidth="193.0" styleClass="dark-scrollpane">
                            <children>
-                              <VBox fx:id="vbUsersListPane" prefHeight="270.0" prefWidth="193.0" style="-fx-pref-width: Double.MAX_VALUE;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <VBox fx:id="vbUsersListPane" prefHeight="270.0" prefWidth="193.0" styleClass="dark-scrollpane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                            </children>
                         </AnchorPane>
                      </content>
@@ -116,11 +107,11 @@
                   </HBox>
                </top>
                <center>
-                  <ScrollPane hbarPolicy="NEVER" pannable="true" prefHeight="236.0" prefWidth="500.0" styleClass="dark-scrollpane" BorderPane.alignment="CENTER">
+                  <ScrollPane hbarPolicy="NEVER" pannable="true" prefHeight="236.0" prefWidth="500.0" style="-fx-background-color: transparent;" styleClass="dark-scrollpane" BorderPane.alignment="CENTER">
                      <content>
-                        <AnchorPane prefHeight="222.0" prefWidth="404.0">
+                        <AnchorPane prefHeight="222.0" prefWidth="404.0" style="-fx-background-color: transparent;" styleClass="dark-scrollpane">
                            <children>
-                              <VBox fx:id="vbGlobalChatPane" prefHeight="223.0" prefWidth="397.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="94.0" AnchorPane.topAnchor="0.0" />
+                              <VBox fx:id="vbGlobalChatPane" prefHeight="223.0" prefWidth="397.0" style="-fx-background-color: transparent;" styleClass="dark-scrollpane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="94.0" AnchorPane.topAnchor="0.0" />
                            </children>
                         </AnchorPane>
                      </content>
@@ -145,6 +136,15 @@
             </BorderPane>
          </center>
       </BorderPane>
+      <Button fx:id="btnLogoffReconnect" layoutX="613.0" layoutY="-2.0" mnemonicParsing="false" onAction="#btnLogoffReconnectAction" prefHeight="44.0" prefWidth="88.0" styleClass="dark-button" text="Logoff" textFill="WHITE" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <graphic>
+            <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@exit.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
    </children>
    <stylesheets>
       <URL value="@GlobalMsgStyle.css" />
