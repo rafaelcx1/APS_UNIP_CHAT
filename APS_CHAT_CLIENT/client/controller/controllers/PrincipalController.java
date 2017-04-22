@@ -1,7 +1,6 @@
 package controller.controllers;
 
 import java.io.IOException;
-import java.time.LocalTime;
 
 import controller.MainController;
 import javafx.collections.ListChangeListener;
@@ -23,8 +22,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextFlow;
 import model.PrincipalModel;
 import model.requests.InfoRequest;
 import model.requests.InfoReturn;
@@ -32,6 +31,8 @@ import model.requests.InfoUserModel;
 import model.requests.MessageRequest;
 import model.requests.OperationType;
 import model.requests.Request;
+import util.ChatTextUtil;
+import util.HelpEmoticon;
 
 public class PrincipalController {
 
@@ -46,7 +47,7 @@ public class PrincipalController {
 	@FXML
 	private Button btnLogoffReconnect;
 	@FXML
-	private Button btnHelpEmoction;
+	private Button btnHelpEmoticon;
 	@FXML
 	private Button btnSendMsg;
 	@FXML
@@ -59,6 +60,7 @@ public class PrincipalController {
 	private MainController mainController;
 	private PrincipalModel principalModel;
 	private Alert statusLogon;
+	private HelpEmoticon<PrincipalController> helpEmoticon;
 
 	private double xOffset;
 	private double yOffset;
@@ -75,6 +77,9 @@ public class PrincipalController {
 			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/PrincipalView.fxml"));
 			loader.setController(this);
 			mainController.getStage().setScene(new Scene(loader.load()));
+			mainController.getStage().centerOnScreen();
+			vbGlobalChatPane.setMinWidth(scrollPaneGlobalMsg.getWidth() - 50);
+			tfMsgBox.requestFocus();
 		} catch(IOException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setContentText("An IOException has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
@@ -108,13 +113,20 @@ public class PrincipalController {
 
 	}
 
+	public String getNickname() {
+		return principalModel.getNickname();
+	}
+
+	public TextField getTfMsg() {
+		return tfMsgBox;
+	}
+
 	public void recieveObject(Request request) {
 		if(request.getOperation() == OperationType.INFO) {
 
 			if(principalModel.treatObject((InfoRequest) request)) {
 
 				if(statusLogon != null) {
-					// A��es para tornar poss�vel o fechamento da janela de status
 					statusLogon.getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
 					statusLogon.getDialogPane().lookupButton(ButtonType.CLOSE).setVisible(false);
 					statusLogon.close();
@@ -189,17 +201,11 @@ public class PrincipalController {
 		}
 	}
 
-	public String getNickname() {
-		return principalModel.getNickname();
-	}
-
-	// M�todo de evento quando o mouse � pressionado no paneTop
 	public void moveWindowOnMousePressed(MouseEvent event) {
 		xOffset = event.getSceneX();
 		yOffset = event.getSceneY();
 	}
 
-	// M�todo de evento quando o mouse � arrastado no paneTop
 	public void moveWindowOnMouseDrag(MouseEvent event) {
 		mainController.getStage().setX(event.getScreenX() - xOffset);
 		mainController.getStage().setY(event.getScreenY() - yOffset);
@@ -241,13 +247,16 @@ public class PrincipalController {
 		}
 	}
 
-	public void btnHelpEmoctionAction(ActionEvent action) {
-		Alert alert = new Alert(AlertType.INFORMATION);
-		alert.setContentText(""); // Emoctions
-		alert.setHeaderText("Emoctions:");
-		alert.setTitle("Help Emoction Window");
-		alert.setResizable(false);
-		alert.show();
+	public void btnHelpEmoticonAction(ActionEvent action) {
+		if(helpEmoticon == null)
+			helpEmoticon = new HelpEmoticon<PrincipalController>(this);
+		else
+			helpEmoticon.focus();
+	}
+
+	public void closeHelpEmoticon() {
+		helpEmoticon.close();
+		helpEmoticon = null;
 	}
 
 	public void btnSendMsgAction(ActionEvent action) {
@@ -311,15 +320,13 @@ public class PrincipalController {
 			while(c.next()) {
 				if(c.wasAdded()) {
 					for(MessageRequest msg : c.getAddedSubList()) {
-						Label lblmsg = new Label("<" + LocalTime.now().getHour() + ":" + LocalTime.now().getMinute() + ":" + LocalTime.now().getSecond() + ">" + " " + msg.getUserFrom() + ": " + msg.getMessage());
+						TextFlow tf = ChatTextUtil.parseMsg(msg);
+						tf.getStylesheets().add(ChatTextUtil.class.getClass().getResource("../../view/GlobalMsgStyle.css").toExternalForm());
 						if(msg.getUserFrom().equals(principalModel.getNickname()))
-							lblmsg.getStyleClass().add("messageUser");
+							tf.getStyleClass().add("messageUser");
 						else
-							lblmsg.getStyleClass().add("message");
-						lblmsg.setWrapText(true);
-						lblmsg.setMinHeight(Region.USE_PREF_SIZE);
-						lblmsg.getStylesheets().add(this.getClass().getResource("../../view/GlobalMsgStyle.css").toExternalForm());
-						vbGlobalChatPane.getChildren().add(lblmsg);
+							tf.getStyleClass().add("message");
+						vbGlobalChatPane.getChildren().add(tf);
 					}
 				}
 			}

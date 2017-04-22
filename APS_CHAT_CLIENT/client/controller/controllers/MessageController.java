@@ -1,7 +1,6 @@
 package controller.controllers;
 
 import java.io.IOException;
-import java.time.LocalTime;
 
 import controller.MainController;
 import javafx.collections.ListChangeListener;
@@ -21,8 +20,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import model.MessageModel;
@@ -30,6 +29,9 @@ import model.requests.InfoReturn;
 import model.requests.MessageRequest;
 import model.requests.OperationType;
 import model.requests.Request;
+import util.ChatTextUtil;
+import util.DateUtil;
+import util.HelpEmoticon;
 
 public class MessageController {
 
@@ -48,11 +50,15 @@ public class MessageController {
 	@FXML
 	private Button btnClose;
 	@FXML
+	private Button btnHelpEmoticon;
+	@FXML
 	private ScrollPane scrollPaneMsg;
+
 
 	private MessageModel messageModel;
 	private MainController mainController;
 	private Stage rootStage;
+	private HelpEmoticon<MessageController> helpEmoticon;
 
 	private double xOffset;
 	private double yOffset;
@@ -78,6 +84,7 @@ public class MessageController {
 			lblNicknameRecipient.setText("Usuário: " + messageModel.getLoginRecipient());
 			lblStatusRecipient.setText("Status: Online");
 			rootStage.show();
+			tfSendMsg.requestFocus();
 		} catch(IOException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setContentText("An IOException has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
@@ -90,13 +97,11 @@ public class MessageController {
 		}
 	}
 
-	// M�todo de evento quando o mouse � pressionado no paneTop
 	public void moveWindowOnMousePressed(MouseEvent event) {
 		xOffset = event.getSceneX();
 		yOffset = event.getSceneY();
 	}
 
-	// M�todo de evento quando o mouse � arrastado no paneTop
 	public void moveWindowOnMouseDrag(MouseEvent event) {
 		rootStage.setX(event.getScreenX() - xOffset);
 		rootStage.setY(event.getScreenY() - yOffset);
@@ -139,6 +144,10 @@ public class MessageController {
 		return rootStage;
 	}
 
+	public TextField getTfMsg() {
+		return tfSendMsg;
+	}
+
 	public String getRecipient() {
 		return messageModel.getLoginRecipient();
 	}
@@ -164,18 +173,16 @@ public class MessageController {
 			while(c.next()) {
 				if(c.wasAdded()) {
 					for(MessageRequest msg : c.getAddedSubList()) {
-						Label lblRecipient = new Label("<" + LocalTime.now().getHour() + ":" + LocalTime.now().getMinute() + ":" + LocalTime.now().getSecond() + ">" + " " +  msg.getUserFrom() + ":");
+						Label lblRecipient = new Label("<" + DateUtil.timeNow() + "> " +  msg.getUserFrom() + ":");
 						if(msg.getUserFrom().equals(this.getRecipient()))
 							lblRecipient.getStyleClass().add("recipientUser");
 						else
 							lblRecipient.getStyleClass().add("recipient");
 
-						Label lblMsg = new Label(msg.getMessage());
-						lblMsg.getStyleClass().add("message");
-						lblMsg.setWrapText(true);
-						lblMsg.setMinHeight(Region.USE_PREF_SIZE);
+						TextFlow tf = ChatTextUtil.parseMsg(msg.getMessage());
+						tf.getStyleClass().add("message");
 
-						VBox vboxMsg = new VBox(lblRecipient, lblMsg);
+						VBox vboxMsg = new VBox(lblRecipient, tf);
 						vboxMsg.setPadding(new Insets(0,0,0,0));
 						vboxMsg.setFillWidth(true);
 						vboxMsg.getStylesheets().add(this.getClass().getResource("../../view/MessageItemStyle.css").toExternalForm());
@@ -211,6 +218,18 @@ public class MessageController {
 			btnSendMsg.fire();
 			tfSendMsg.setText("");
 		}
+	}
+
+	public void btnHelpEmoticonAction(ActionEvent action) {
+		if(helpEmoticon == null)
+			helpEmoticon = new HelpEmoticon<MessageController>(this);
+		else
+			helpEmoticon.focus();
+	}
+
+	public void closeHelpEmoticon() {
+		helpEmoticon.close();
+		helpEmoticon = null;
 	}
 
 	public void showWindow() {
