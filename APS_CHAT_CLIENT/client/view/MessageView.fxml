@@ -68,9 +68,9 @@
             </Label>
          </top>
          <center>
-            <ScrollPane fx:id="scrollPaneMsg" style="-fx-background-color: transparent;" styleClass="dark-scrollpane" BorderPane.alignment="CENTER">
+            <ScrollPane fx:id="scrollPaneMsg" hbarPolicy="NEVER" style="-fx-background-color: transparent;" styleClass="dark-scrollpane" vvalue="1.0" BorderPane.alignment="CENTER">
                <content>
-                  <VBox fx:id="vbMsgPane">
+                  <VBox fx:id="vbMsgPane" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="369.0">
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </padding>
