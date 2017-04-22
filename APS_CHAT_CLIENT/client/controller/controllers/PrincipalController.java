@@ -17,11 +17,13 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import model.PrincipalModel;
 import model.requests.InfoRequest;
@@ -51,6 +53,8 @@ public class PrincipalController {
 	private TextField tfMsgBox;
 	@FXML
 	private HBox hboxTittle;
+	@FXML
+	private ScrollPane scrollPaneGlobalMsg;
 
 	private MainController mainController;
 	private PrincipalModel principalModel;
@@ -251,16 +255,25 @@ public class PrincipalController {
 		msgRequest.setUserFrom(principalModel.getNickname());
 		msgRequest.setUserTo(null);
 		msgRequest.setMessage(tfMsgBox.getText());
-		if(!principalModel.sendObject(msgRequest)) {
+		if(tfMsgBox.getText().length() == 0) {
 			Alert alert = new Alert(AlertType.ERROR);
-			alert.setContentText("An error has been occurred.\nDetails: " + principalModel.getErrorMessage());
+			alert.setContentText("An error has been occurred.\nDetails: Mensagem vazia!");
 			alert.setHeaderText("ERROR:");
 			alert.setTitle("APPLICATION ERROR");
 			alert.setResizable(false);
 			alert.show();
 		} else {
-			principalModel.getGlobalChatMsg().add(msgRequest);
-			tfMsgBox.setText("");
+			if(!principalModel.sendObject(msgRequest)) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setContentText("An error has been occurred.\nDetails: " + principalModel.getErrorMessage());
+				alert.setHeaderText("ERROR:");
+				alert.setTitle("APPLICATION ERROR");
+				alert.setResizable(false);
+				alert.show();
+			} else {
+				principalModel.getGlobalChatMsg().add(msgRequest);
+				tfMsgBox.setText("");
+			}
 		}
 	}
 
@@ -303,6 +316,8 @@ public class PrincipalController {
 							lblmsg.getStyleClass().add("messageUser");
 						else
 							lblmsg.getStyleClass().add("message");
+						lblmsg.setWrapText(true);
+						lblmsg.setMinHeight(Region.USE_PREF_SIZE);
 						lblmsg.getStylesheets().add(this.getClass().getResource("../../view/GlobalMsgStyle.css").toExternalForm());
 						vbGlobalChatPane.getChildren().add(lblmsg);
 					}

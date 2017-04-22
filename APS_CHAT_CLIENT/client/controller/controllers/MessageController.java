@@ -15,11 +15,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -45,6 +47,8 @@ public class MessageController {
 	private Button btnSendMsg;
 	@FXML
 	private Button btnClose;
+	@FXML
+	private ScrollPane scrollPaneMsg;
 
 	private MessageModel messageModel;
 	private MainController mainController;
@@ -168,10 +172,13 @@ public class MessageController {
 
 						Label lblMsg = new Label(msg.getMessage());
 						lblMsg.getStyleClass().add("message");
+						lblMsg.setWrapText(true);
+						lblMsg.setMinHeight(Region.USE_PREF_SIZE);
 
 						VBox vboxMsg = new VBox(lblRecipient, lblMsg);
 						vboxMsg.setPadding(new Insets(0,0,0,0));
 						vboxMsg.setFillWidth(true);
+						vboxMsg.getStylesheets().add(this.getClass().getResource("../../view/MessageItemStyle.css").toExternalForm());
 						vbMsgPane.getChildren().add(vboxMsg);
 					}
 				}

@@ -131,16 +131,16 @@ public class ClientSession extends Thread {
 				infoReturn.setOperationSource(OperationType.LOGIN);
 				infoReturn.setMessage("Conected!");
 				ServerInstance.loginClient(this);
-				ServerTasks.sendObject(infoReturn);
+				ServerTasks.sendObject(infoReturn, this);
 			} else {
 				user = request.getUserFrom();
-				System.out.println(user + " failed to loggon! | " + LocalDateTime.now().toString() + "\n");
+				System.out.println("An user tried to logon with an existent nickname logged on | " + LocalDateTime.now().toString() + "\n");
 				InfoReturn infoReturn = new InfoReturn(true);
 				infoReturn.setUserFrom("Server");
 				infoReturn.setUserTo(request.getUserFrom());
 				infoReturn.setOperationSource(OperationType.LOGIN);
-				infoReturn.setMessage("Incorrect Login.");
-				ServerTasks.sendObject(infoReturn);
+				infoReturn.setMessage("Incorrect Login. You tried to logon with a nickname that is already logged on.");
+				ServerTasks.sendObject(infoReturn, this);
 			}
 
 			break;
@@ -164,14 +164,14 @@ public class ClientSession extends Thread {
 			if(request.getUserTo() == null) {
 				ServerTasks.broadcast(request, ServerInstance.getLoggedClients(), new ClientSession[] {this});
 			} else {
-				if(ServerTasks.sendObject(request)){
+				if(ServerTasks.sendObject(request, ServerInstance.getClientSession(request.getUserTo()))){
 					InfoReturn infoReturn = new InfoReturn(false);
 					infoReturn.setUserFrom(request.getUserTo());
 					infoReturn.setUserTo(request.getUserFrom());
 					infoReturn.setOperationSource(OperationType.SEND_OR_RECIEVE_MSG);
 					infoReturn.setMessage("Message sended!");
 					Request requestCast = (Request) infoReturn;
-					ServerTasks.sendObject(requestCast);
+					ServerTasks.sendObject(requestCast, this);
 				} else {
 					InfoReturn infoReturn = new InfoReturn(true);
 					infoReturn.setUserFrom(request.getUserTo());
@@ -179,7 +179,7 @@ public class ClientSession extends Thread {
 					infoReturn.setOperationSource(OperationType.SEND_OR_RECIEVE_MSG);
 					infoReturn.setMessage("Error on send message.");
 					Request requestCast = (Request) infoReturn;
-					ServerTasks.sendObject(requestCast);
+					ServerTasks.sendObject(requestCast, this);
 				}
 			}
 			break;
@@ -191,7 +191,7 @@ public class ClientSession extends Thread {
 			infoRequest.setUserTo(request.getUserFrom());
 			infoRequest.setUsers(ServerInstance.getOnlineUsers());
 			Request requestCast = (Request) infoRequest;
-			ServerTasks.sendObject(requestCast);
+			ServerTasks.sendObject(requestCast, this);
 			break;
 		}
 		default: {
@@ -202,7 +202,7 @@ public class ClientSession extends Thread {
 			infoReturn.setOperationSource(OperationType.LOGIN);
 			infoReturn.setMessage("Invalid Object Sended to the Server.");
 			Request requestCast = (Request) infoReturn;
-			ServerTasks.sendObject(requestCast);
+			ServerTasks.sendObject(requestCast, this);
 		}
 
 		}

@@ -212,16 +212,25 @@ public class LoginController {
 			mainController.openPrincipalScreen(tfLogin.getText());
 		} else {
 			if(loginStatus != null) {
+				loginStatus.getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
+				loginStatus.getDialogPane().lookupButton(ButtonType.CLOSE).setVisible(false);
+				loginStatus.close();
+				loginStatus = null;
+				loginStatus = new Alert(AlertType.ERROR);
 				loginStatus.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
 				loginStatus.setHeaderText("Login:");
 				loginStatus.setTitle("ERROR");
 				loginStatus.setResizable(false);
+				((Stage) loginStatus.getDialogPane().getScene().getWindow()).getIcons().add(new Image(this.getClass().getResourceAsStream("../../view/error-icon.png")));
+				loginStatus.show();
 			} else {
 				loginStatus = new Alert(AlertType.ERROR);
 				loginStatus.setContentText("An error has been occurred.\nDetails: " + loginModel.getErrorMessage());
 				loginStatus.setHeaderText("Login:");
 				loginStatus.setTitle("ERROR");
 				loginStatus.setResizable(false);
+				((Stage) loginStatus.getDialogPane().getScene().getWindow()).getIcons().add(new Image(this.getClass().getResourceAsStream("../../view/error-icon.png")));
+				loginStatus.show();
 			}
 		}
 	}
@@ -232,7 +241,7 @@ public class LoginController {
 		lostConnectionAlert = new Alert(AlertType.ERROR);
 		lostConnectionAlert.setTitle("Lost Connection");
 		lostConnectionAlert.setHeaderText("Erro:");
-		lostConnectionAlert.setContentText("Foi perdido a conex�o com o servidor. Clique no bot�o 'OK' abaixo para voltar para a tela inicial ou aguarde.\nAguardando conex�o...");
+		lostConnectionAlert.setContentText("Foi perdido a conexão com o servidor. Clique no botão 'OK' abaixo para voltar para a tela inicial ou aguarde.\nAguardando conexão...");
 		Optional<ButtonType> result = lostConnectionAlert.showAndWait();
 		if(result.isPresent()) {
 			System.out.println("fechando conexao");

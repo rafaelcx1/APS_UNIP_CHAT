@@ -282,8 +282,8 @@ public class MainController extends Application {
 			testConnection = null;
 			if(recieveObject != null) recieveObject.closeThread();
 			recieveObject = null;
-			ois.close();
-			oos.close();
+			if(ois != null) ois.close();
+			if(oos != null) oos.close();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

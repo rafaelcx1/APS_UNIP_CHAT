@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.geometry.Rectangle2D?>
@@ -16,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="700.0" prefHeight="400.0" prefWidth="700.0" styleClass="dark-header" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="700.0" prefHeight="400.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox fx:id="hboxTittle" alignment="CENTER" onMouseDragged="#moveWindowOnMouseDrag" onMousePressed="#moveWindowOnMousePressed" prefHeight="45.0" prefWidth="700.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -107,13 +108,9 @@
                   </HBox>
                </top>
                <center>
-                  <ScrollPane hbarPolicy="NEVER" pannable="true" prefHeight="236.0" prefWidth="500.0" style="-fx-background-color: transparent;" styleClass="dark-scrollpane" BorderPane.alignment="CENTER">
+                  <ScrollPane fx:id="scrollPaneGlobalMsg" hbarPolicy="NEVER" pannable="true" prefHeight="236.0" prefWidth="500.0" style="-fx-background-color: transparent;" styleClass="dark-scrollpane" BorderPane.alignment="CENTER">
                      <content>
-                        <AnchorPane prefHeight="222.0" prefWidth="404.0" style="-fx-background-color: transparent;" styleClass="dark-scrollpane">
-                           <children>
-                              <VBox fx:id="vbGlobalChatPane" prefHeight="223.0" prefWidth="397.0" style="-fx-background-color: transparent;" styleClass="dark-scrollpane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="94.0" AnchorPane.topAnchor="0.0" />
-                           </children>
-                        </AnchorPane>
+                        <VBox fx:id="vbGlobalChatPane" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="0.0" prefWidth="410.0" style="-fx-background-color: transparent;" styleClass="dark-scrollpane" />
                      </content>
                   </ScrollPane>
                </center>
@@ -150,4 +147,8 @@
       <URL value="@GlobalMsgStyle.css" />
       <URL value="@stylefx.css" />
    </stylesheets>
+   <styleClass>
+      <String fx:value="dark-header" />
+      <String fx:value="window" />
+   </styleClass>
 </AnchorPane>
