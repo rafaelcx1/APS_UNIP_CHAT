@@ -18,7 +18,7 @@ public class HelpEmoticon<T> {
 		this.controller = controller;
 		stage = new Stage();
 		stage.setOnCloseRequest((event) -> close());
-		stage.setTitle("Emoctions");
+		stage.setTitle("Emoticons");
 		VBox vbox = new VBox();
 		vbox.getChildren().addAll(new FlowPane(ChatTextUtil.parseMsg(":)"), new Label(" = :)")));
 		vbox.getChildren().addAll(new FlowPane(ChatTextUtil.parseMsg(":D"), new Label(" = :D")));
