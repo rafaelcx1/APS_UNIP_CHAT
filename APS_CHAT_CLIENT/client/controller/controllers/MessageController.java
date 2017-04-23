@@ -235,7 +235,6 @@ public class MessageController {
 	public void showWindow() {
 		rootStage.centerOnScreen();
 		rootStage.requestFocus();
-		rootStage.show();
 	}
 
 	public void close() {
