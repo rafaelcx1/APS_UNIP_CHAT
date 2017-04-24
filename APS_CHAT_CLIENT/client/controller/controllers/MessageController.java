@@ -228,7 +228,6 @@ public class MessageController {
 	}
 
 	public void closeHelpEmoticon() {
-		helpEmoticon.close();
 		helpEmoticon = null;
 	}
 

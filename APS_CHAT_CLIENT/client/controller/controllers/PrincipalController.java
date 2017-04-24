@@ -255,7 +255,6 @@ public class PrincipalController {
 	}
 
 	public void closeHelpEmoticon() {
-		helpEmoticon.close();
 		helpEmoticon = null;
 	}
 

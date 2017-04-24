@@ -1,14 +1,21 @@
-.message, .messageUser{
-	-fx-font-size: 14px;
+.recipient {
+    -fx-padding: 8 8 8 16;
+}
+.recipient:hover {
+    -fx-background-color: #424242;
+}
+.message, .messageUser {
     -fx-padding: 12;
     -fx-border-insets: 8;
     -fx-background-radius: 3;
     -fx-background-insets: 8;
 }
-.message{
+.message {
+	-fx-font-size: 14px;
     -fx-background-color: #424242;
 }
-.messageUser{
+.messageUser {
+	-fx-font-size: 14px;
     -fx-text-fill: #000000;
     -fx-background-color: #26A69A;
 }

@@ -1,21 +1,17 @@
-.recipient {
-    -fx-padding: 8 8 8 16;
-}
-.recipient:hover {
-    -fx-background-color: #424242;
-}
-.message, .messageUser {
+.message, .messageUser{
+	-fx-font-size: 14px;
     -fx-padding: 12;
     -fx-border-insets: 8;
     -fx-background-radius: 3;
     -fx-background-insets: 8;
 }
-.message {
-	-fx-font-size: 14px;
+.message{
     -fx-background-color: #424242;
 }
-.messageUser {
-	-fx-font-size: 14px;
+.messageUser{
     -fx-text-fill: #000000;
     -fx-background-color: #26A69A;
+}
+.title {
+	-fx-font-weight: bold;
 }
