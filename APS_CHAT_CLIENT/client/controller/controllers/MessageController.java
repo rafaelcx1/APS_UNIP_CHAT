@@ -12,6 +12,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -81,10 +82,12 @@ public class MessageController {
 			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/MessageView.fxml"));
 			loader.setController(this);
 			rootStage.setScene(new Scene(loader.load()));
+			rootStage.getIcons().setAll(new Image(this.getClass().getResourceAsStream("../../view/icon.png")));
 			lblNicknameRecipient.setText("Usuário: " + messageModel.getLoginRecipient());
 			lblStatusRecipient.setText("Status: Online");
 			rootStage.show();
 			tfSendMsg.requestFocus();
+			scrollPaneMsg.vvalueProperty().bind(vbMsgPane.heightProperty());
 		} catch(IOException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setContentText("An IOException has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
@@ -105,6 +108,11 @@ public class MessageController {
 	public void moveWindowOnMouseDrag(MouseEvent event) {
 		rootStage.setX(event.getScreenX() - xOffset);
 		rootStage.setY(event.getScreenY() - yOffset);
+
+		if(helpEmoticon != null) {
+			helpEmoticon.getStage().setX(event.getScreenX() - xOffset + rootStage.getWidth());
+			helpEmoticon.getStage().setY(event.getScreenY() - yOffset);
+		}
 	}
 
 	public void recieveObject(Request request) {
@@ -173,14 +181,16 @@ public class MessageController {
 			while(c.next()) {
 				if(c.wasAdded()) {
 					for(MessageRequest msg : c.getAddedSubList()) {
-						Label lblRecipient = new Label("<" + DateUtil.timeNow() + "> " +  msg.getUserFrom() + ":");
-						if(msg.getUserFrom().equals(this.getRecipient()))
-							lblRecipient.getStyleClass().add("recipientUser");
-						else
-							lblRecipient.getStyleClass().add("recipient");
-
 						TextFlow tf = ChatTextUtil.parseMsg(msg.getMessage());
-						tf.getStyleClass().add("message");
+						Label lblRecipient = new Label("<" + DateUtil.timeNow() + "> " +  msg.getUserFrom() + ":");
+						if(msg.getUserFrom().equals(mainController.getNickname())) {
+							lblRecipient.getStyleClass().add("recipientUser");
+							tf.getStyleClass().add("messageUser");
+						}
+						else {
+							lblRecipient.getStyleClass().add("recipient");
+							tf.getStyleClass().add("message");
+						}
 
 						VBox vboxMsg = new VBox(lblRecipient, tf);
 						vboxMsg.setPadding(new Insets(0,0,0,0));

@@ -24,6 +24,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Stage;
 import model.PrincipalModel;
 import model.requests.InfoRequest;
 import model.requests.InfoReturn;
@@ -80,6 +81,7 @@ public class PrincipalController {
 			mainController.getStage().centerOnScreen();
 			vbGlobalChatPane.setMinWidth(scrollPaneGlobalMsg.getWidth() - 50);
 			tfMsgBox.requestFocus();
+			scrollPaneGlobalMsg.vvalueProperty().bind(vbGlobalChatPane.heightProperty());
 		} catch(IOException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setContentText("An IOException has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
@@ -119,6 +121,10 @@ public class PrincipalController {
 
 	public TextField getTfMsg() {
 		return tfMsgBox;
+	}
+
+	public Stage getStage() {
+		return mainController.getStage();
 	}
 
 	public void recieveObject(Request request) {
@@ -209,6 +215,11 @@ public class PrincipalController {
 	public void moveWindowOnMouseDrag(MouseEvent event) {
 		mainController.getStage().setX(event.getScreenX() - xOffset);
 		mainController.getStage().setY(event.getScreenY() - yOffset);
+
+		if(helpEmoticon != null) {
+			helpEmoticon.getStage().setX(event.getScreenX() - xOffset + mainController.getStage().getWidth());
+			helpEmoticon.getStage().setY(event.getScreenY() - yOffset);
+		}
 	}
 
 	public void lostConnection() {

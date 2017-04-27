@@ -79,8 +79,17 @@
             </ScrollPane>
          </center>
          <bottom>
-            <HBox prefHeight="21.0" prefWidth="450.0" styleClass="hbox-texfield" BorderPane.alignment="CENTER">
+            <HBox alignment="CENTER" prefHeight="21.0" prefWidth="450.0" styleClass="hbox-texfield" BorderPane.alignment="CENTER">
                <children>
+                  <Button fx:id="btnHelpEmoticon" mnemonicParsing="false" onAction="#btnHelpEmoticonAction" styleClass="button-icon">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@emoticon.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
                   <TextField fx:id="tfSendMsg" onKeyPressed="#tfSendMsgEnterPressed" prefHeight="18.0" prefWidth="328.0" styleClass="textfield" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets bottom="8.0" left="8.0" top="8.0" />

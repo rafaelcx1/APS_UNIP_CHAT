@@ -142,7 +142,7 @@ public class LoginController {
 			}
 		} else {
 			try {
-				if(tfServer.getText().matches("\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}")) {
+				if(tfServer.getText().matches("\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}") || tfServer.getText().matches("[a-z]*")) {
 					if(mainController.setConnection(tfServer.getText())) {
 
 						FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginView.fxml"));

@@ -83,6 +83,7 @@ public class MainController extends Application {
 		connection = new Socket();
 		try {
 			connection.connect(new InetSocketAddress(host, 9876), 1500);
+			connection.setKeepAlive(true);
 			oos = new ObjectOutputStream(connection.getOutputStream());
 			ois = new ObjectInputStream(connection.getInputStream());
 			initializeThreads();
@@ -221,9 +222,9 @@ public class MainController extends Application {
 
 	// M�todo que ir� inicializar as Threads
 	public void initializeThreads() {
-		testConnection = new TestConnectionThread();
+		//testConnection = new TestConnectionThread();
 		recieveObject = new RecieveObjectThread();
-		new Thread(testConnection).start();
+		//new Thread(testConnection).start();
 		new Thread(recieveObject).start();;
 	}
 
@@ -302,6 +303,15 @@ public class MainController extends Application {
 		public void run() {
 			try {
 				while(true){
+					if(connection.getInputStream().read() == -1) {
+						if(!connectionStatus.getValue() == false)
+							connectionStatus.setValue(false);
+					} else {
+						if(!connectionStatus.getValue())
+							connectionStatus.setValue(true);
+					}
+
+					/*
 					if(connection.isConnected()) {
 						if(!connectionStatus.getValue())
 							connectionStatus.setValue(true);
@@ -310,9 +320,11 @@ public class MainController extends Application {
 						if(!connectionStatus.getValue() == false)
 							connectionStatus.setValue(false);
 					}
+					*/
+
 					Thread.sleep(100);
 				}
-			} catch(InterruptedException e) {
+			} catch(Exception e) {
 				Platform.runLater(new Runnable(){
 
 					@Override

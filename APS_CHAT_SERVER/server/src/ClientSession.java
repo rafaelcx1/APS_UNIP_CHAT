@@ -24,6 +24,7 @@ public class ClientSession extends Thread {
 	public ClientSession(Socket session) {
 		this.session = session;
 		try {
+			session.setKeepAlive(true);
 			this.oos = new ObjectOutputStream(session.getOutputStream());
 			this.ois = new ObjectInputStream(session.getInputStream());
 		} catch (IOException e) {
