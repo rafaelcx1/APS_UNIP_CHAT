@@ -1,11 +1,9 @@
 package src;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 import java.time.LocalDateTime;
 
 import model.requests.InfoRequest;
@@ -19,7 +17,6 @@ public class ClientSession extends Thread {
 	private String user;
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
-	private Thread testConnection;
 
 	public ClientSession(Socket session) {
 		this.session = session;
@@ -32,10 +29,6 @@ public class ClientSession extends Thread {
 		}
 	}
 
-	public Thread getTestConnection() {
-		return testConnection;
-	}
-
 	public ObjectInputStream getOis() {
 		return ois;
 	}
@@ -46,72 +39,36 @@ public class ClientSession extends Thread {
 
 	@Override
 	public void run() {
-		// Thread para testar conexão com o client
-		testConnection = new Thread(() -> {
-			while(!session.isClosed() && session.isConnected()) {
-				try {
-					Thread.sleep(1000);
-					if(session.isClosed() || !session.isConnected()) {
-						try {
-							ServerInstance.logoffClient(this);
-							System.out.println("Closing session with user '" + ((user != null) ? user : "%not logged user%") + "'... | " + LocalDateTime.now().toString());
-							System.out.println("Session with user '" + ((user != null) ? user : "%not logged user%") + "' closed. | " + LocalDateTime.now().toString());
-							this.finalize();
-							this.closeThread();
-							Thread.currentThread().interrupt();
-						} catch (IOException e) {
-							System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
-						} catch (Throwable e) {
-							System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
-						}
-					}
-				} catch (InterruptedException e) {}
-			}
-		});
-		testConnection.start();
 		sessionStart();
 	}
 
-	public void closeThread() throws Throwable {
-		Thread.currentThread().interrupt();
-		this.finalize();
-	}
-
 	public void sessionStart() {
+		boolean down = false;
+		while(true) {
+			if(!down) {
 
-		while(!session.isClosed() && session.isConnected()) {
-			try {
-				Object obj = ois.readObject();
-				if(obj instanceof Request) {
-					Request request = (Request) obj;
-					treatObject(request);
-				}
-			} catch(SocketException e) {
-					try {
-						this.closeThread();
-						ServerInstance.logoffClient(this);
-						break;
-					} catch (Throwable e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+				try {
+
+					Object obj = ois.readObject();
+
+					if(obj instanceof Request) {
+						Request request = (Request) obj;
+						treatObject(request);
 					}
-			} catch(EOFException e) {
-			} catch(IOException e) {
-				if(session == null || session.isClosed()) {
-					try {
-						closeThread();
-						e.printStackTrace();
-					} catch (Throwable e1) {
-						e1.printStackTrace();
-					}
-				} else {
-					System.out.println("IOException occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
-					e.printStackTrace();
+
+				} catch(IOException e) {
+					down = true;
+					System.out.println("IOException has occurred.\nUser: " + ((user == null) ? "%not logged user%" : user) + ".\nDetails: " + e.getMessage() + "\nTime: " + LocalDateTime.now().toString());
+				} catch (ClassNotFoundException e) {
+					System.out.println("Invalid Object Recieved.\nUser: " + ((user == null) ? "%not logged user%" : user) + ".\nDetails: " + e.getMessage() + "\n" + LocalDateTime.now().toString() + "\n");
+				} catch (Exception e) {
+					System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
 				}
-			} catch (ClassNotFoundException e) {
-				System.out.println("Invalid Object Recieved.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
-			} catch (Exception e) {
-				System.out.println("An error occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");
+
+			} else {
+				System.out.println("The user " + ((user == null) ? "%not logged user%" : user) + " lost connection to the server. Logging out...");
+				ServerInstance.logoffClient(this);
+				break;
 			}
 		}
 

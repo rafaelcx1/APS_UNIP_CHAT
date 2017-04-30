@@ -41,7 +41,6 @@ public class ServerInstance {
 		loggedClients.remove(client);
 		int index;
 		if((index = clientsThread.indexOf(client)) > -1) {
-			clientsThread.get(index).getTestConnection().interrupt();
 			clientsThread.get(index).interrupt();
 			clientsThread.remove(client);
 		}
