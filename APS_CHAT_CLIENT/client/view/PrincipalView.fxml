@@ -33,7 +33,7 @@
       </HBox>
       <HBox layoutY="364.0" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="45.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Label fx:id="lblStatus" alignment="BOTTOM_LEFT" prefHeight="51.0" prefWidth="250.0" text="Status: " textFill="WHITE">
+            <Label fx:id="lblStatus" alignment="BOTTOM_LEFT" prefHeight="51.0" prefWidth="350.0" text="Status: " textFill="WHITE">
                <font>
                   <Font size="14.0" />
                </font>

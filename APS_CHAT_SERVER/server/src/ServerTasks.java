@@ -8,6 +8,7 @@ import model.requests.Request;
 public class ServerTasks {
 
 	public static void broadcast(Request request, ClientSession[] clients, ClientSession[] clientExceptions) {
+		System.out.println("Broadcast Requested!\n");
 		for(ClientSession client : clients) {
 			boolean contains = false;
 			for(ClientSession clientException : clientExceptions) {
@@ -20,7 +21,7 @@ public class ServerTasks {
 				if(request.getUserTo() != null)
 					request.setUserTo(client.getUser());
 				try {
-					System.out.println("Sending request to '" + client.getUser() + "' from '" + request.getUserFrom() + "'... | " + LocalDateTime.now().toString());
+					System.out.println("Sending request(" + request.getOperation() + ") to '" + client.getUser() + "' from '" + request.getUserFrom() + "'... | " + LocalDateTime.now().toString());
 					client.getOos().writeObject(request);
 					System.out.println("Send request to '" + client.getUser() + "' from '" + request.getUserFrom() + "' complete with success. | " + LocalDateTime.now().toString() + "\n");
 				} catch (IOException e) {
@@ -32,14 +33,14 @@ public class ServerTasks {
 				}
 			}
 		}
-		System.out.println("Broadcast Request Done!");
+		System.out.println("Broadcast Request Done!\n");
 	}
 
 	public static boolean sendObject(Request request, ClientSession client) {
 		try {
-			System.out.println("Sending request to '" + request.getUserTo() + "' from '" + request.getUserFrom() + "'... | " + LocalDateTime.now().toString());
+			System.out.println("Sending request(" + request.getOperation() + ") to '" + request.getUserTo() + "' from '" + request.getUserFrom() + "'... | " + LocalDateTime.now().toString());
 			client.getOos().writeObject(request);
-			System.out.println("Send request to '" + request.getUserTo() + "' from '" + request.getUserFrom() + "' complete with success. | " + LocalDateTime.now().toString() + "\n");
+			System.out.println("Send request(" + request.getOperation() + ") to '" + request.getUserTo() + "' from '" + request.getUserFrom() + "' complete with success. | " + LocalDateTime.now().toString() + "\n");
 			return true;
 		} catch(IOException e) {
 			System.out.println("IOExeption error with user '" + request.getUserTo() + "' from '" + request.getUserFrom() + "' on sendObject.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n" + LocalDateTime.now().toString() + "\n");

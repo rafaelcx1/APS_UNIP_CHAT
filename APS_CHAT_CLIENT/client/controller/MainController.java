@@ -6,7 +6,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.ArrayList;
 
 import controller.controllers.LoginController;
@@ -19,8 +18,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import model.requests.OperationType;
@@ -43,8 +40,8 @@ public class MainController extends Application {
 	private static Socket connection = new Socket();
 	private static ObjectInputStream ois;
 	private static ObjectOutputStream oos;
-	private static TestConnectionThread testConnection;
 	private static RecieveObjectThread recieveObject;
+	private static Thread recieveObjectT = new Thread(recieveObject);
 	private LoginController loginController;
 	private PrincipalController principalController;
 	private ArrayList<MessageController> messageWindows = new ArrayList<>();
@@ -53,6 +50,7 @@ public class MainController extends Application {
 	private boolean userLogged;
 	private String nickname;
 	private Stage rootStage;
+	private String host;
 
 
 	// M�todo main - Inicial
@@ -79,14 +77,14 @@ public class MainController extends Application {
 	}
 
 	// M�todo que retorna o Socket da conex�o
-	public boolean setConnection(String host) {
+	public synchronized boolean setConnection(String host) {
+		this.host = host;
 		connection = new Socket();
 		try {
-			connection.connect(new InetSocketAddress(host, 9876), 1500);
+			connection.connect(new InetSocketAddress(host, 9876), 1200);
 			connection.setKeepAlive(true);
 			oos = new ObjectOutputStream(connection.getOutputStream());
 			ois = new ObjectInputStream(connection.getInputStream());
-			initializeThreads();
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -99,6 +97,7 @@ public class MainController extends Application {
 	public void start(Stage stage) {
 		rootStage = stage;
 		userLogged = false;
+		recieveObject = new RecieveObjectThread();
 		connectionStatusEvent(this.connectionStatus); // Ir� inserir um evento no connectionStatus
 		rootStage.setOnCloseRequest((event) -> closeApp());
 		openLogonScreen(); // Abertura da tela de logon
@@ -129,9 +128,8 @@ public class MainController extends Application {
 			new Thread(() -> {
 				Platform.runLater(() -> {
 					if(!isMessageWindowRequest(request));
-						principalController.recieveObject(request);
-					}
-				);
+					principalController.recieveObject(request);
+				});
 			}).start();
 		}
 	}
@@ -191,6 +189,13 @@ public class MainController extends Application {
 		}
 	}
 
+	public void offlineUser(String loginRecipient) {
+		for(MessageController window : messageWindows) {
+			if(window.getRecipient().equals(loginRecipient))
+				window.recipientDisconnected();
+		}
+	}
+
 	// M�todo que ir� tratar os requests para as janelas de mensagens
 	public boolean isMessageWindowRequest(Request msg) {
 		if(msg.getOperation() == OperationType.SEND_OR_RECIEVE_MSG && !msg.getUserFrom().equals("Server") && msg.getUserTo() != null) {
@@ -222,21 +227,29 @@ public class MainController extends Application {
 
 	// M�todo que ir� inicializar as Threads
 	public void initializeThreads() {
-		//testConnection = new TestConnectionThread();
-		recieveObject = new RecieveObjectThread();
-		//new Thread(testConnection).start();
-		new Thread(recieveObject).start();;
+		recieveObjectT = new Thread(recieveObject);
+		recieveObjectT.start();
+	}
+
+	public void finalizeConnection() {
+		if(connection != null) {
+			if(!connection.isClosed())
+				try {
+					connection.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		}
+		connection = null;
 	}
 
 	// M�todo de evento do BooleanProperty connectionStatus
 	public void connectionStatusEvent(BooleanProperty connectionStatus) {
 		connectionStatus.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 			if(newValue && oldValue != newValue) {
-				System.out.println("fechando");
 				reconnectionAction();
 			}
 			else if(!newValue && oldValue != newValue) {
-				System.out.println("fechando");
 				lostConnectionAction();
 			}
 		});
@@ -244,21 +257,42 @@ public class MainController extends Application {
 
 	// M�todo que ir� executar os procedimentos de perda de conex�o
 	public void lostConnectionAction() {
-		if(loginController != null) {
-			System.out.println("fechando");
-			loginController.lostConnection();
+		if(loginController != null && !userLogged) {
+			finalizeConnection();
+			Platform.runLater(() -> loginController.lostConnection());
 		} else {
-			principalController.lostConnection();
+			finalizeConnection();
+			Platform.runLater(() -> principalController.lostConnection());
 			userLogged = false;
+		}
+	}
+
+	public boolean reconnect() {
+		Request loginRequest = new Request(OperationType.LOGIN);
+		loginRequest.setUserFrom(nickname);
+		loginRequest.setUserTo("Server");
+		try {
+			if(connection != null && oos != null) {
+				if(!connection.isClosed() && connection.isConnected()) {
+					oos.writeObject(loginRequest);
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		} catch(Exception e) {
+			return false;
 		}
 	}
 
 	// M�todo que ir� executar os procedimentos de reconex�o
 	public void reconnectionAction() {
 		if(loginController != null) {
-			loginController.reconnect();
+			Platform.runLater(() -> loginController.reconnect());
 		} else {
-			principalController.reconnect();
+			Platform.runLater(() -> principalController.reconnect());
 			userLogged = true;
 		}
 	}
@@ -266,87 +300,31 @@ public class MainController extends Application {
 	// M�todo para deslogar o usu�rio e fechar a conex�o com o servidor
 	public void logoff() {
 		try {
-			if(!connection.isClosed()) {
-				if(connection.isConnected()) {
-					Request requestLogoff = new Request(OperationType.LOGOFF);
-					requestLogoff.setUserTo("Server");
-					if(loginController != null) {
-						requestLogoff.setUserFrom(null);
-					} else {
-						requestLogoff.setUserFrom(principalController.getNickname());
+			if(connection != null) {
+				if(!connection.isClosed()) {
+
+					if(connection.isConnected()) {
+						Request requestLogoff = new Request(OperationType.LOGOFF);
+						requestLogoff.setUserTo("Server");
+
+						if(loginController != null) {
+							requestLogoff.setUserFrom(null);
+						} else {
+							requestLogoff.setUserFrom(principalController.getNickname());
+						}
+
+						oos.writeObject(requestLogoff);
 					}
-					oos.writeObject(requestLogoff);
+					connection.close();
 				}
-				connection.close();
 			}
-			if(testConnection != null) testConnection.closeThread();
-			testConnection = null;
-			if(recieveObject != null) recieveObject.closeThread();
-			recieveObject = null;
-			if(ois != null) ois.close();
-			if(oos != null) oos.close();
+			recieveObjectT.interrupt();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}
 
 	/*---------- Threads ----------*/
-
-	/*
-	 * Thread para testar a conex�o com o servidor a cada 100ms.
-	 * Caso a conex�o falhe, � setado como false o atributo connectionStatus.
-	 * E executa o m�todo lostConnectionAction().
-	 */
-	private class TestConnectionThread implements Runnable {
-
-		@Override
-		public void run() {
-			try {
-				while(true){
-					if(connection.getInputStream().read() == -1) {
-						if(!connectionStatus.getValue() == false)
-							connectionStatus.setValue(false);
-					} else {
-						if(!connectionStatus.getValue())
-							connectionStatus.setValue(true);
-					}
-
-					/*
-					if(connection.isConnected()) {
-						if(!connectionStatus.getValue())
-							connectionStatus.setValue(true);
-					}
-					else {
-						if(!connectionStatus.getValue() == false)
-							connectionStatus.setValue(false);
-					}
-					*/
-
-					Thread.sleep(100);
-				}
-			} catch(Exception e) {
-				Platform.runLater(new Runnable(){
-
-					@Override
-					public void run() {
-						Alert alert = new Alert(AlertType.ERROR);
-						alert.setContentText("A FATAL ERROR has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
-						alert.setHeaderText("ERROR:");
-						alert.setTitle("APPLICATION ERROR");
-						alert.setResizable(false);
-						alert.show();
-
-					}
-
-				});
-			}
-		}
-
-		public void closeThread() throws Throwable {
-			this.finalize();
-			Thread.currentThread().interrupt();
-		}
-	}
 
 	/*
 	 * Thread que verifica o recebimento de objetos do servidor a cada 100ms.
@@ -356,58 +334,71 @@ public class MainController extends Application {
 
 		@Override
 		public void run() {
-			try {
+			boolean down = false;
+			while(true) {
 
-				while(true) {
-					if(connection != null && !connection.isClosed() && connection.isConnected()) {
+				if(!down) {
 
-						try {
-							Object obj = ois.readObject();
+					try {
+						Object obj = ois.readObject();
+
+						if(obj != null) {
+
 							if(obj instanceof Request) {
 								Request request = (Request) obj;
+
 								if(loginController != null || !userLogged) {
+
 									try {
 										Thread.sleep(500);
 									} catch (InterruptedException e) {
-										// TODO Auto-generated catch block
 										e.printStackTrace();
 									}
+
 								}
+
 								recieveObject(request);
 							}
-						} catch(EOFException e) {
-							e.printStackTrace();
-						} catch(SocketException e) {
-						} catch (ClassNotFoundException | IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+
+						} else {
+							throw new IOException("Lost connection");
 						}
 
+					} catch(EOFException e) {
+						e.printStackTrace();
+					} catch(IOException e) {
+
+						connectionStatus.setValue(false);
+						down = true;
+
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+
+				} else {
+					System.out.println("tentando reconectar");
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					if(setConnection(host)) {
+						if(nickname != null) {
+							if(reconnect()) {
+								connectionStatus.setValue(true);
+								down = false;
+							} else {
+								System.out.println("ocorreu um erro");
+							}
+						}
+						down = false;
+
+					} else {
+						if(!connectionStatus.getValue() == false)
+							connectionStatus.setValue(false);
 					}
 				}
-
-			} catch(Exception e) {
-				Platform.runLater(new Runnable(){
-
-					@Override
-					public void run() {
-						Alert alert = new Alert(AlertType.ERROR);
-						alert.setContentText("A FATAL ERROR has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
-						alert.setHeaderText("ERROR:");
-						alert.setTitle("APPLICATION ERROR");
-						alert.setResizable(false);
-						alert.show();
-
-					}
-
-				});
 			}
 		}
-
-		public void closeThread() throws Throwable {
-			this.finalize();
-			Thread.currentThread().interrupt();
-		}
 	}
-
 }

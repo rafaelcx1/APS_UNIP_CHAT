@@ -169,8 +169,8 @@ public class PrincipalController {
 
 			if(((InfoReturn)request).getOperationSource() == OperationType.LOGIN && request.getOperation() == OperationType.SUCCESS_MSG) {
 				Request requestInfo = new Request(OperationType.INFO);
-				request.setUserFrom(principalModel.getNickname());
-				request.setUserTo("Server");
+				requestInfo.setUserFrom(principalModel.getNickname());
+				requestInfo.setUserTo("Server");
 				if(principalModel.sendObject(requestInfo)) {
 					statusLogon = new Alert(AlertType.INFORMATION);
 					statusLogon.setTitle("Logon");
@@ -224,12 +224,16 @@ public class PrincipalController {
 
 	public void lostConnection() {
 		tfMsgBox.setDisable(true);
-		lblStatus.setText("Sem conexão com o servidor.");
-		btnLogoffReconnect.setText("Reconectar");
+		btnSendMsg.setDisable(true);
+		lblStatus.setText("Status: Sem conexão com o servidor. Reconectando...");
+		btnLogoffReconnect.setText("Sair");
+		btnLogoffReconnect.layout();
 	}
 
 	public void reconnect() {
-		lblStatus.setText("Conexão feita. Clique no botão 'Reconectar' para relogar no servidor.");
+		lblStatus.setText("Status: Conectado.");
+		btnSendMsg.setDisable(false);
+		btnLogoffReconnect.setText("Logoff");
 	}
 
 	public void tfMsgBoxEnterPressed(KeyEvent action) {
@@ -240,22 +244,7 @@ public class PrincipalController {
 	}
 
 	public void btnLogoffReconnectAction(ActionEvent action) {
-		if(btnLogoffReconnect.getText().equals("Reconectar")) {
-			Request loginRequest = new Request(OperationType.LOGIN);
-	    	loginRequest.setUserFrom(principalModel.getNickname());
-	    	loginRequest.setUserTo("Server");
-
-	    	if(!principalModel.sendObject(loginRequest)) {
-				Alert alert = new Alert(AlertType.ERROR);
-				alert.setContentText("An IOException error has been occurred.\nDetails: " + principalModel.getErrorMessage());
-				alert.setHeaderText("ERROR:");
-				alert.setTitle("APPLICATION ERROR");
-				alert.setResizable(false);
-				alert.show();
-			}
-		} else {
-			this.close();
-		}
+		this.close();
 	}
 
 	public void btnHelpEmoticonAction(ActionEvent action) {
@@ -317,6 +306,7 @@ public class PrincipalController {
 						for(Node label : vbUsersListTemp) {
 							if(((Label)label).getText().equals(user.getLogin())) {
 								vbUsersListPane.getChildren().remove(label);
+								mainController.offlineUser(user.getLogin());
 							}
 						}
 					}

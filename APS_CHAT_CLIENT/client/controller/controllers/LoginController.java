@@ -148,6 +148,7 @@ public class LoginController {
 						FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/LoginView.fxml"));
 						loader.setController(this);
 						mainController.getStage().setScene(new Scene(loader.load()));
+						mainController.initializeThreads();
 						loginScreen = true;
 					} else {
 						throw new IOException("Sem conexão com o servidor");
@@ -237,14 +238,12 @@ public class LoginController {
 
 	// M�todo que ir� executar a��es quando a conex�o com o servidor cair
 	public void lostConnection() {
-		System.out.println("perdeu conexao");
 		lostConnectionAlert = new Alert(AlertType.ERROR);
 		lostConnectionAlert.setTitle("Lost Connection");
 		lostConnectionAlert.setHeaderText("Erro:");
 		lostConnectionAlert.setContentText("Foi perdido a conexão com o servidor. Clique no botão 'OK' abaixo para voltar para a tela inicial ou aguarde.\nAguardando conexão...");
 		Optional<ButtonType> result = lostConnectionAlert.showAndWait();
 		if(result.isPresent()) {
-			System.out.println("fechando conexao");
 			if(loginStatus != null) {
 				// A��es para tornar poss�vel o fechamento da janela
 				loginStatus.getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);

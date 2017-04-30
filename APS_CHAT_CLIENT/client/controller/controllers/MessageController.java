@@ -174,6 +174,7 @@ public class MessageController {
 		lblStatusRecipient.setText("Status: Offline");
 		tfSendMsg.setText("User Offline");
 		tfSendMsg.setDisable(true);
+		btnSendMsg.setDisable(true);
 	}
 
 	public void chatMsgListEvent(ObservableList<MessageRequest> chatMsgList) {
