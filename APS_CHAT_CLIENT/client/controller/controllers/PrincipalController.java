@@ -1,6 +1,7 @@
 package controller.controllers;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import controller.MainController;
 import javafx.collections.ListChangeListener;
@@ -18,6 +19,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -168,6 +170,10 @@ public class PrincipalController {
 		} else if(request.getOperation() == OperationType.SUCCESS_MSG || request.getOperation() == OperationType.ERROR_MSG) {
 
 			if(((InfoReturn)request).getOperationSource() == OperationType.LOGIN && request.getOperation() == OperationType.SUCCESS_MSG) {
+
+				principalModel.setNickname(request.getUserTo());
+				lblUserNickname.setText("Nickname: " + principalModel.getNickname());
+
 				Request requestInfo = new Request(OperationType.INFO);
 				requestInfo.setUserFrom(principalModel.getNickname());
 				requestInfo.setUserTo("Server");
@@ -187,14 +193,18 @@ public class PrincipalController {
 					alert.setResizable(false);
 					alert.show();
 				}
-			} else if(request.getOperation() == OperationType.ERROR_MSG) {
-				Alert alert = new Alert(AlertType.ERROR);
-				alert.setContentText("An error has been occurred.\nDetails: " + ((InfoReturn)request).getMessage());
-				alert.setHeaderText("ERROR:");
-				alert.setTitle("APPLICATION ERROR");
+			} else if(((InfoReturn)request).getOperationSource() == OperationType.LOGIN && request.getOperation() == OperationType.ERROR_MSG) {
+				TextInputDialog alert = new TextInputDialog();
+				alert.setHeaderText("Seu login já está em uso");
+				alert.setTitle("LOGON ERROR");
+				alert.setContentText("Digite outro nickname: ");
 				alert.setResizable(false);
-				alert.showAndWait();
-				this.close();
+				Optional<String> result = alert.showAndWait();
+				if(result.isPresent()) {
+					mainController.reconnect(result.get());
+				} else {
+					this.close();
+				}
 			}
 
 		} else {
@@ -281,6 +291,7 @@ public class PrincipalController {
 			} else {
 				principalModel.getGlobalChatMsg().add(msgRequest);
 				tfMsgBox.setText("");
+				tfMsgBox.requestFocus();
 			}
 		}
 	}

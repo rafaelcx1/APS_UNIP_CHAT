@@ -72,9 +72,11 @@ public class HelpEmoticon<T> {
 			if(controller instanceof PrincipalController) {
 				String tfText = ((PrincipalController) controller).getTfMsg().getText();
 				((PrincipalController) controller).getTfMsg().setText(tfText + emoticon);
+				((PrincipalController) controller).getTfMsg().requestFocus();
 			} else {
 				String tfText = ((MessageController) controller).getTfMsg().getText();
 				((MessageController) controller).getTfMsg().setText(tfText + emoticon);
+				((MessageController) controller).getTfMsg().requestFocus();
 			}
 		});
 		fp.getStyleClass().add("emoticonButton");

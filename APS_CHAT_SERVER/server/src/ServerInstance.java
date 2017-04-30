@@ -2,7 +2,6 @@ package src;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +11,7 @@ import javafx.collections.ObservableList;
 import model.requests.InfoRequest;
 import model.requests.InfoUserModel;
 import model.requests.Request;
+import util.DateUtil;
 
 public class ServerInstance {
 
@@ -22,17 +22,17 @@ public class ServerInstance {
 		loggedClients.addListener(new LoggedClientEvent());
 
 		try(ServerSocket serverInstance = new ServerSocket(9876)) {
-			System.out.println("Server started!\nLogs below:\n");
+			System.out.println("Server started! " + "<" + DateUtil.dateTimeNow() + ">" + "\nLogs below:\n");
 
 			while(true) {
 				ClientSession clientConnection = new ClientSession(serverInstance.accept());
 				clientsThread.add(clientConnection);
 				clientConnection.start();
-				System.out.println("Client connection. IP: " + clientConnection.getSession().getInetAddress().getHostAddress() + " | " + LocalDateTime.now().toString() + "\n");
+				System.out.println("<" + DateUtil.dateTimeNow() + ">" + " Client connection. IP: " + clientConnection.getSession().getInetAddress().getHostAddress() + ">\n");
 			}
 
 		} catch (IOException e) {
-			System.out.println("IOExeption error.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage() + "\n");
+			System.out.println("<" + DateUtil.dateTimeNow() + ">" + " IOExeption error.\nDetails: " + e.getMessage() + "\n");
 		}
 
 	}

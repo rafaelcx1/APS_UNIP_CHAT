@@ -31,6 +31,10 @@ public class PrincipalModel {
 		return nickname;
 	}
 
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
 	public ObservableList<InfoUserModel> getUsers() {
 		return users;
 	}

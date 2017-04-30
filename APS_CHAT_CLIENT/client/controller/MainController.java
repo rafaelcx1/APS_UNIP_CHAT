@@ -267,7 +267,7 @@ public class MainController extends Application {
 		}
 	}
 
-	public boolean reconnect() {
+	public boolean reconnect(String nickname) {
 		Request loginRequest = new Request(OperationType.LOGIN);
 		loginRequest.setUserFrom(nickname);
 		loginRequest.setUserTo("Server");
@@ -384,7 +384,7 @@ public class MainController extends Application {
 					}
 					if(setConnection(host)) {
 						if(nickname != null) {
-							if(reconnect()) {
+							if(reconnect(nickname)) {
 								connectionStatus.setValue(true);
 								down = false;
 							} else {
