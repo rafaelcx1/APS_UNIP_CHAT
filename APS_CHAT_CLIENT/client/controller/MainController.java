@@ -1,6 +1,5 @@
 package controller;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -314,11 +313,12 @@ public class MainController extends Application {
 						}
 
 						oos.writeObject(requestLogoff);
+						Thread.sleep(1000);
 					}
+					recieveObjectT.interrupt();
 					connection.close();
 				}
 			}
-			recieveObjectT.interrupt();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
@@ -364,10 +364,7 @@ public class MainController extends Application {
 							throw new IOException("Lost connection");
 						}
 
-					} catch(EOFException e) {
-						e.printStackTrace();
 					} catch(IOException e) {
-
 						connectionStatus.setValue(false);
 						down = true;
 
@@ -376,26 +373,31 @@ public class MainController extends Application {
 					}
 
 				} else {
-					System.out.println("tentando reconectar");
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					if(setConnection(host)) {
-						if(nickname != null) {
-							if(reconnect(nickname)) {
-								connectionStatus.setValue(true);
+					if(connection != null) {
+						if(connection.isClosed()) {
+							break;
+						} else {
+							try {
+								Thread.sleep(500);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							if(setConnection(host)) {
+								if(nickname != null) {
+									if(reconnect(nickname)) {
+										connectionStatus.setValue(true);
+										down = false;
+									}
+								}
 								down = false;
+
 							} else {
-								System.out.println("ocorreu um erro");
+								if(!connectionStatus.getValue() == false)
+									connectionStatus.setValue(false);
 							}
 						}
-						down = false;
-
 					} else {
-						if(!connectionStatus.getValue() == false)
-							connectionStatus.setValue(false);
+						break;
 					}
 				}
 			}

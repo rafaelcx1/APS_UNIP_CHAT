@@ -73,6 +73,7 @@ public class PrincipalController {
 		this.mainController = mainController;
 		mainController.getStage().setResizable(true);
 		principalModel = new PrincipalModel(nickname);
+		helpEmoticon = new HelpEmoticon<PrincipalController>(this);
 		globalChatMsgEvent(principalModel.getGlobalChatMsg());
 		usersListEvent(principalModel.getUsers());
 
@@ -258,14 +259,17 @@ public class PrincipalController {
 	}
 
 	public void btnHelpEmoticonAction(ActionEvent action) {
-		if(helpEmoticon == null)
-			helpEmoticon = new HelpEmoticon<PrincipalController>(this);
-		else
+		if(helpEmoticon.getStage().isShowing())
 			helpEmoticon.focus();
+		else {
+			helpEmoticon.getStage().setX(mainController.getStage().getX() + mainController.getStage().getWidth());
+			helpEmoticon.getStage().setY(mainController.getStage().getY());
+			helpEmoticon.getStage().show();
+		}
 	}
 
 	public void closeHelpEmoticon() {
-		helpEmoticon = null;
+		helpEmoticon.getStage().hide();
 	}
 
 	public void btnSendMsgAction(ActionEvent action) {

@@ -22,7 +22,7 @@ public class ServerInstance {
 		loggedClients.addListener(new LoggedClientEvent());
 
 		try(ServerSocket serverInstance = new ServerSocket(9876)) {
-			System.out.println("Server started! " + "<" + DateUtil.dateTimeNow() + ">" + "\nLogs below:\n");
+			System.out.println("<" + DateUtil.dateTimeNow() + "> Server started! Logs below:\n\n");
 
 			while(true) {
 				ClientSession clientConnection = new ClientSession(serverInstance.accept());

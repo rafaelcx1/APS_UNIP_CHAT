@@ -16,15 +16,9 @@ import javafx.stage.StageStyle;
 public class HelpEmoticon<T> {
 
 	private Stage stage;
-	private Stage stageController;
 	private T controller;
 
 	public HelpEmoticon(T controller) {
-		if(controller instanceof PrincipalController)
-			stageController = ((PrincipalController) controller).getStage();
-		 else
-			stageController = ((MessageController) controller).getStage();
-
 		this.controller = controller;
 		stage = new Stage();
 		stage.setOnCloseRequest((event) -> close());
@@ -59,24 +53,25 @@ public class HelpEmoticon<T> {
 		stage.setResizable(false);
 		stage.setWidth(150);
 		stage.setHeight(580);
-		stage.setX(stageController.getX() + stageController.getWidth());
-		stage.setY(stageController.getY());
-		stage.show();
-
-
 	}
 
 	private FlowPane makeButtonEmoticon(String emoticon) {
 		FlowPane fp = new FlowPane(ChatTextUtil.parseMsg(emoticon), new Label(" = " + emoticon));
 		fp.setOnMouseClicked((e) -> {
 			if(controller instanceof PrincipalController) {
-				String tfText = ((PrincipalController) controller).getTfMsg().getText();
-				((PrincipalController) controller).getTfMsg().setText(tfText + emoticon);
-				((PrincipalController) controller).getTfMsg().requestFocus();
+				PrincipalController controllerInstance = (PrincipalController) controller;
+				String tfText = controllerInstance.getTfMsg().getText();
+				controllerInstance.getTfMsg().setText(tfText + emoticon);
+				controllerInstance.getStage().requestFocus();
+				controllerInstance.getTfMsg().requestFocus();
+				controllerInstance.getTfMsg().positionCaret(((PrincipalController) controller).getTfMsg().getText().length());
 			} else {
-				String tfText = ((MessageController) controller).getTfMsg().getText();
-				((MessageController) controller).getTfMsg().setText(tfText + emoticon);
-				((MessageController) controller).getTfMsg().requestFocus();
+				MessageController controllerInstance = (MessageController) controller;
+				String tfText = controllerInstance.getTfMsg().getText();
+				controllerInstance.getTfMsg().setText(tfText + emoticon);
+				controllerInstance.getStage().requestFocus();
+				controllerInstance.getTfMsg().requestFocus();
+				controllerInstance.getTfMsg().positionCaret(((MessageController) controller).getTfMsg().getText().length());
 			}
 		});
 		fp.getStyleClass().add("emoticonButton");
@@ -85,7 +80,6 @@ public class HelpEmoticon<T> {
 	}
 
 	public void close() {
-		stage.close();
 		if(controller instanceof PrincipalController)
 			((PrincipalController) controller).closeHelpEmoticon();
 		else
