@@ -86,7 +86,6 @@ public class MainController extends Application {
 			ois = new ObjectInputStream(connection.getInputStream());
 			return true;
 		} catch (IOException e) {
-			e.printStackTrace();
 			return false;
 		}
 	}
@@ -334,6 +333,30 @@ public class MainController extends Application {
 
 		@Override
 		public void run() {
+			new Thread(() -> {
+
+				while(true) {
+					if(connection != null) {
+
+						if(!connection.isConnected()) {
+
+							if(!(connectionStatus.getValue() == false))
+								connectionStatus.set(false);
+
+						}
+
+					}
+
+					try {
+						Thread.sleep(500);
+					} catch(InterruptedException e) {
+						e.printStackTrace();
+					}
+
+				}
+
+			});
+
 			boolean down = false;
 			while(true) {
 
@@ -365,7 +388,8 @@ public class MainController extends Application {
 						}
 
 					} catch(IOException e) {
-						connectionStatus.setValue(false);
+						if(!(connectionStatus.get() == false))
+							connectionStatus.setValue(false);
 						down = true;
 
 					} catch (ClassNotFoundException e) {
@@ -373,32 +397,27 @@ public class MainController extends Application {
 					}
 
 				} else {
-					if(connection != null) {
-						if(connection.isClosed()) {
-							break;
-						} else {
-							try {
-								Thread.sleep(500);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-							if(setConnection(host)) {
-								if(nickname != null) {
-									if(reconnect(nickname)) {
-										connectionStatus.setValue(true);
-										down = false;
-									}
-								}
-								down = false;
 
-							} else {
-								if(!connectionStatus.getValue() == false)
-									connectionStatus.setValue(false);
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+
+					if(setConnection(host)) {
+						if(nickname != null) {
+							if(reconnect(nickname)) {
+								connectionStatus.setValue(true);
+								down = false;
 							}
 						}
+						down = false;
+
 					} else {
-						break;
+						if(!(connectionStatus.getValue() == false))
+							connectionStatus.setValue(false);
 					}
+
 				}
 			}
 		}
