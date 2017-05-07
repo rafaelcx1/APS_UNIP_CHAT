@@ -24,18 +24,6 @@ import model.requests.Request;
 
 public class MainController extends Application {
 
-	/* connection = Atributo de conex�o com o servidor
-	 * testConnection = InstÃ¢ncia da Thread que testa a conex�o com o servidor
-	 * recieveObject = InstÃ¢ncia da Thread que recebe os objetos do servidor
-	 * loginController = InstÃ¢ncia da tela de login
-	 * principalController = InstÃ¢ncia da tela Principal
-	 * messageWindows = Lista com as janelas de mensagem
-	 * chatWindowsUsers = Lista com listener com os usu�rios de cada janela
-	 * connectionStatus = Atributo com o status da conex�o, caso a conex�o falhe, este atributo ser� setado como false
-	 * userLogged = Atributo para indicar se h� um usu�rio logado
-	 * nickname = Atributo para armazenar o nickname do usu�rio
-	 * rootStage = Stage(Janela) principal
-	 */
 	private static Socket connection = new Socket();
 	private static ObjectInputStream ois;
 	private static ObjectOutputStream oos;
@@ -47,17 +35,16 @@ public class MainController extends Application {
 	private ObservableSet<String> chatWindowsUsers = FXCollections.observableSet();
 	private BooleanProperty connectionStatus = new SimpleBooleanProperty(true);
 	private boolean userLogged;
+	private boolean logoffRequested = false;
 	private String nickname;
 	private Stage rootStage;
 	private String host;
 
 
-	// M�todo main - Inicial
 	public static void main(String[] args) {
 		launch(args);
 	}
 
-	// M�todo que retorna o Socket da conex�o
 	public static Socket getConnection() {
 		return connection;
 	}
@@ -70,12 +57,10 @@ public class MainController extends Application {
 		return oos;
 	}
 
-	// M�todo get que retorna o nickname
 	public String getNickname() {
 		return nickname;
 	}
 
-	// M�todo que retorna o Socket da conex�o
 	public synchronized boolean setConnection(String host) {
 		this.host = host;
 		connection = new Socket();
@@ -90,23 +75,20 @@ public class MainController extends Application {
 		}
 	}
 
-	// M�todo chamado atrav�s do m�todo main - Serve para a prepara��o da Janela
 	@Override
 	public void start(Stage stage) {
 		rootStage = stage;
 		userLogged = false;
 		recieveObject = new RecieveObjectThread();
-		connectionStatusEvent(this.connectionStatus); // Ir� inserir um evento no connectionStatus
+		connectionStatusEvent(this.connectionStatus);
 		rootStage.setOnCloseRequest((event) -> closeApp());
-		openLogonScreen(); // Abertura da tela de logon
+		openLogonScreen();
 	}
 
-	// Retorna o Stage principal da aplica��o(Janela)
 	public Stage getStage() {
 		return rootStage;
 	}
 
-	// M�todo que ir� ser executado quando o usu�rio clicar no bot�o fechar da janela
 	public void closeApp() {
 		logoff();
 		rootStage.close();
@@ -114,7 +96,6 @@ public class MainController extends Application {
 		System.exit(0);
 	}
 
-	// M�todo que ir� executar as a��es de recebimento de alguma Request atrav�s da Thread RecieveObject
 	public void recieveObject(Request request) {
 		if(loginController != null && !userLogged) {
 			new Thread(() -> {
@@ -132,7 +113,6 @@ public class MainController extends Application {
 		}
 	}
 
-	// M�todo que ir� abrir a janela de logon
 	public void openLogonScreen() {
 		if(principalController == null) {
 			loginController = new LoginController(this);
@@ -147,7 +127,6 @@ public class MainController extends Application {
 		rootStage.show();
 	}
 
-	// M�todo que ir� abrir a janela principal
 	public void openPrincipalScreen(String nickname) {
 		if(loginController == null) {
 			principalController = new PrincipalController(this, nickname);
@@ -159,7 +138,6 @@ public class MainController extends Application {
 		userLogged = true;
 	}
 
-	// M�todo que ir� abrir uma nova janela caso receba uma mensagem
 	public void openMessageScreen(String loginRecipient) {
 		if(chatWindowsUsers.add(loginRecipient)) {
 			messageWindows.add(new MessageController(loginRecipient, this));
@@ -173,7 +151,6 @@ public class MainController extends Application {
 		}
 	}
 
-	// Método que fecha uma janela de mensagem ativa
 	public void closeChatWindow(String loginRecipient) {
 		if(chatWindowsUsers.remove(loginRecipient)) {
 			messageWindows.removeIf((t) -> {
@@ -194,7 +171,6 @@ public class MainController extends Application {
 		}
 	}
 
-	// M�todo que ir� tratar os requests para as janelas de mensagens
 	public boolean isMessageWindowRequest(Request msg) {
 		if(msg.getOperation() == OperationType.SEND_OR_RECIEVE_MSG && !msg.getUserFrom().equals("Server") && msg.getUserTo() != null) {
 			boolean found = false;
@@ -223,7 +199,6 @@ public class MainController extends Application {
 		}
 	}
 
-	// M�todo que ir� inicializar as Threads
 	public void initializeThreads() {
 		recieveObjectT = new Thread(recieveObject);
 		recieveObjectT.start();
@@ -241,7 +216,6 @@ public class MainController extends Application {
 		connection = null;
 	}
 
-	// M�todo de evento do BooleanProperty connectionStatus
 	public void connectionStatusEvent(BooleanProperty connectionStatus) {
 		connectionStatus.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 			if(newValue && oldValue != newValue) {
@@ -253,14 +227,15 @@ public class MainController extends Application {
 		});
 	}
 
-	// M�todo que ir� executar os procedimentos de perda de conex�o
 	public void lostConnectionAction() {
 		if(loginController != null && !userLogged) {
 			finalizeConnection();
-			Platform.runLater(() -> loginController.lostConnection());
+			if(!logoffRequested)
+				Platform.runLater(() -> loginController.lostConnection());
 		} else {
 			finalizeConnection();
-			Platform.runLater(() -> principalController.lostConnection());
+			if(!logoffRequested)
+				Platform.runLater(() -> principalController.lostConnection());
 			userLogged = false;
 		}
 	}
@@ -285,7 +260,6 @@ public class MainController extends Application {
 		}
 	}
 
-	// M�todo que ir� executar os procedimentos de reconex�o
 	public void reconnectionAction() {
 		if(loginController != null) {
 			Platform.runLater(() -> loginController.reconnect());
@@ -295,9 +269,9 @@ public class MainController extends Application {
 		}
 	}
 
-	// M�todo para deslogar o usu�rio e fechar a conex�o com o servidor
 	public void logoff() {
 		try {
+			logoffRequested = true;
 			if(connection != null) {
 				if(!connection.isClosed()) {
 
@@ -312,10 +286,10 @@ public class MainController extends Application {
 						}
 
 						oos.writeObject(requestLogoff);
-						Thread.sleep(1000);
+						Thread.sleep(100);
 					}
+					if(connection != null) connection.close();
 					recieveObjectT.interrupt();
-					connection.close();
 				}
 			}
 		} catch (Throwable e) {
@@ -325,10 +299,6 @@ public class MainController extends Application {
 
 	/*---------- Threads ----------*/
 
-	/*
-	 * Thread que verifica o recebimento de objetos do servidor a cada 100ms.
-	 * Caso receba um objeto Request do servidor, ele executa o m�todo recieveObject(request).
-	 */
 	private class RecieveObjectThread implements Runnable {
 
 		@Override
@@ -338,24 +308,29 @@ public class MainController extends Application {
 				while(true) {
 					if(connection != null) {
 
-						if(!connection.isConnected()) {
+						try {
+							if((!connection.isConnected() || !connection.getInetAddress().isReachable(1500)) && !logoffRequested) {
 
-							if(!(connectionStatus.getValue() == false))
-								connectionStatus.set(false);
+								if(!(connectionStatus.getValue() == false))
+									connectionStatus.set(false);
 
+							}
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
 
 					}
 
 					try {
-						Thread.sleep(500);
+						Thread.sleep(1000);
 					} catch(InterruptedException e) {
 						e.printStackTrace();
 					}
 
 				}
 
-			});
+			}).start();
 
 			boolean down = false;
 			while(true) {
@@ -397,27 +372,29 @@ public class MainController extends Application {
 					}
 
 				} else {
-
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-
-					if(setConnection(host)) {
-						if(nickname != null) {
-							if(reconnect(nickname)) {
-								connectionStatus.setValue(true);
-								down = false;
-							}
+					if(!logoffRequested) {
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
 						}
-						down = false;
 
+						if(setConnection(host)) {
+							if(nickname != null) {
+								if(reconnect(nickname)) {
+									connectionStatus.setValue(true);
+									down = false;
+								}
+							}
+							down = false;
+
+						} else {
+							if(!(connectionStatus.getValue() == false))
+								connectionStatus.setValue(false);
+						}
 					} else {
-						if(!(connectionStatus.getValue() == false))
-							connectionStatus.setValue(false);
+						break;
 					}
-
 				}
 			}
 		}

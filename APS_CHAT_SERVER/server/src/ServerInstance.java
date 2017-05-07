@@ -28,7 +28,7 @@ public class ServerInstance {
 				ClientSession clientConnection = new ClientSession(serverInstance.accept());
 				clientsThread.add(clientConnection);
 				clientConnection.start();
-				System.out.println("<" + DateUtil.dateTimeNow() + ">" + " Client connection. IP: " + clientConnection.getSession().getInetAddress().getHostAddress() + ">\n");
+				System.out.println("<" + DateUtil.dateTimeNow() + ">" + " Client connection. IP: " + clientConnection.getSession().getInetAddress().getHostAddress() + "\n");
 			}
 
 		} catch (IOException e) {

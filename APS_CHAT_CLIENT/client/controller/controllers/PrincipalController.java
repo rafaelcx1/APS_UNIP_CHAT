@@ -1,6 +1,8 @@
 package controller.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import controller.MainController;
@@ -317,12 +319,15 @@ public class PrincipalController {
 					}
 				} else {
 					for(InfoUserModel user : c.getRemoved()) {
-						ObservableList<Node> vbUsersListTemp = vbUsersListPane.getChildren();
-						for(Node label : vbUsersListTemp) {
+						List<Node> listDelete = new ArrayList<>();
+						for(Node label : vbUsersListPane.getChildren()) {
 							if(((Label)label).getText().equals(user.getLogin())) {
-								vbUsersListPane.getChildren().remove(label);
+								listDelete.add(label);
 								mainController.offlineUser(user.getLogin());
 							}
+						}
+						for(Node label : listDelete) {
+							vbUsersListPane.getChildren().remove(label);
 						}
 					}
 				}

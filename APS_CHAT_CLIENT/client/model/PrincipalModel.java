@@ -1,6 +1,8 @@
 package model;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import controller.MainController;
 import javafx.collections.FXCollections;
@@ -55,15 +57,19 @@ public class PrincipalModel {
 
 	public boolean treatObject(InfoRequest request) {
 		if(request.getUsers() != null) {
+			List<InfoUserModel> listDelete = new ArrayList<>();
 			for(InfoUserModel user : request.getUsers()) {
 				if(!user.getLogin().equals(nickname)) {
 					if(users.contains(user)) {
 						if(!user.isStatus())
-							users.remove(user);
+							listDelete.add(user);
 					} else {
 						users.add(user);
 					}
 				}
+			}
+			for(InfoUserModel user : listDelete) {
+				users.remove(user);
 			}
 		}
 		return true;

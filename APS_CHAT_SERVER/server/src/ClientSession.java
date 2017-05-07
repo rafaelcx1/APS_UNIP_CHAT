@@ -69,21 +69,21 @@ public class ClientSession extends Thread {
 				} catch(IOException e) {
 
 					if(session.isClosed()) {
-						System.out.println("<" + DateUtil.dateTimeNow() + "> Session closed with the user '" + user + "'.\n");
+						System.out.println("<" + DateUtil.dateTimeNow() + "> Session closed with the user '" + getUser() + "'.\n");
 						break;
 					} else {
 						down = true;
-						System.out.println("<" + DateUtil.dateTimeNow() + "> IOException has occurred.\nUser: '" + user + "'.\nDetails: " + e.getMessage() + "\n");
+						System.out.println("<" + DateUtil.dateTimeNow() + "> IOException has occurred.\nUser: '" + getUser() + "'.\nDetails: " + e.getMessage() + "\n");
 					}
 
 				} catch (ClassNotFoundException e) {
-					System.out.println("<" + DateUtil.dateTimeNow() + "> Invalid Object Recieved.\nUser: '" + user + "'.\nDetails: " + e.getMessage() + "\n");
+					System.out.println("<" + DateUtil.dateTimeNow() + "> Invalid Object Recieved.\nUser: '" + getUser() + "'.\nDetails: " + e.getMessage() + "\n");
 				} catch (Exception e) {
-					System.out.println("<" + DateUtil.dateTimeNow() + "> An error occurred.\nUser: '" + user + "'\nDetails: " + e.getMessage() + "\n");
+					System.out.println("<" + DateUtil.dateTimeNow() + "> An error occurred.\nUser: '" + getUser() + "'\nDetails: " + e.getMessage() + "\n");
 				}
 
 			} else {
-				System.out.println("<" + DateUtil.dateTimeNow() + "> The user '" + user + "' lost connection to the server. Logging out...");
+				System.out.println("<" + DateUtil.dateTimeNow() + "> The user '" + getUser() + "' lost connection to the server. Logging out...");
 				ServerInstance.logoffClient(this);
 				break;
 			}
@@ -100,7 +100,7 @@ public class ClientSession extends Thread {
 
 				if(!ServerInstance.checkExistClient(user = request.getUserFrom())){
 					user = request.getUserFrom();
-					System.out.println("<" + DateUtil.dateTimeNow() + "> " + user + " logged on server! \n");
+					System.out.println("<" + DateUtil.dateTimeNow() + "> " + getUser() + " logged on server! \n");
 					InfoReturn infoReturn = new InfoReturn(false);
 					infoReturn.setUserFrom("Server");
 					infoReturn.setUserTo(request.getUserFrom());
@@ -125,11 +125,11 @@ public class ClientSession extends Thread {
 			case LOGOFF: {
 
 				try {
-					System.out.println("<" + DateUtil.dateTimeNow() + "> " + ((request.getUserFrom() == null) ? "%not logged user%" : request.getUserFrom())  + " disconnected from server! \n");
+					System.out.println("<" + DateUtil.dateTimeNow() + "> " + getUser()  + " disconnected from server! \n");
 					if(!session.isClosed()) session.close();
 					ServerInstance.logoffClient(this);
 				} catch (Exception e) {
-					System.out.println("<" + DateUtil.dateTimeNow() + "> An error occurred on logoff of the user '" + ((request.getUserFrom() == null) ? "%not logged user%" : request.getUserFrom()) +"'.\nDetails: " + e.getMessage() + "\n");
+					System.out.println("<" + DateUtil.dateTimeNow() + "> An error occurred on logoff of the user '" + getUser() +"'.\nDetails: " + e.getMessage() + "\n");
 				}
 
 				break;
