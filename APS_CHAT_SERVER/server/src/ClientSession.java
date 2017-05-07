@@ -17,8 +17,10 @@ public class ClientSession extends Thread {
 	private String user;
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
+	private boolean logoffRequested;
 
 	public ClientSession(Socket session) {
+		logoffRequested = false;
 		this.session = session;
 		try {
 			session.setKeepAlive(true);
@@ -47,6 +49,38 @@ public class ClientSession extends Thread {
 
 	@Override
 	public void run() {
+		new Thread(() -> {
+
+			while(true) {
+				if(session != null) {
+
+					try {
+						if(!session.isConnected() || !session.getInetAddress().isReachable(1500)) {
+
+							try {
+								session.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							ServerInstance.logoffClient(this);
+
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+				}
+
+				try {
+					Thread.sleep(1000);
+				} catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+
+			}
+
+		}).start();
+
 		sessionStart();
 	}
 
@@ -70,10 +104,12 @@ public class ClientSession extends Thread {
 
 					if(session.isClosed()) {
 						System.out.println("<" + DateUtil.dateTimeNow() + "> Session closed with the user '" + getUser() + "'.\n");
+						ServerInstance.logoffClient(this);
 						break;
 					} else {
 						down = true;
-						System.out.println("<" + DateUtil.dateTimeNow() + "> IOException has occurred.\nUser: '" + getUser() + "'.\nDetails: " + e.getMessage() + "\n");
+						if(!logoffRequested)
+							System.out.println("<" + DateUtil.dateTimeNow() + "> IOException has occurred.\nUser: '" + getUser() + "'.\nDetails: " + e.getMessage() + "\n");
 					}
 
 				} catch (ClassNotFoundException e) {
@@ -83,8 +119,10 @@ public class ClientSession extends Thread {
 				}
 
 			} else {
-				System.out.println("<" + DateUtil.dateTimeNow() + "> The user '" + getUser() + "' lost connection to the server. Logging out...");
-				ServerInstance.logoffClient(this);
+				if(!logoffRequested) {
+					System.out.println("<" + DateUtil.dateTimeNow() + "> The user '" + getUser() + "' lost connection to the server. Logging out...");
+					ServerInstance.logoffClient(this);
+				}
 				break;
 			}
 		}
@@ -125,7 +163,8 @@ public class ClientSession extends Thread {
 			case LOGOFF: {
 
 				try {
-					System.out.println("<" + DateUtil.dateTimeNow() + "> " + getUser()  + " disconnected from server! \n");
+					System.out.println("<" + DateUtil.dateTimeNow() + "> " + getUser() + " disconnected from server! \n");
+					logoffRequested = true;
 					if(!session.isClosed()) session.close();
 					ServerInstance.logoffClient(this);
 				} catch (Exception e) {
