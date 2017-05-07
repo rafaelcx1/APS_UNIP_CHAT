@@ -74,6 +74,7 @@ public class MessageController {
 
 	public void start() {
 		rootStage = new Stage();
+		helpEmoticon = new HelpEmoticon<MessageController>(this);
 		rootStage.setOnCloseRequest((event) -> {
 			this.close();
 		});
@@ -232,6 +233,7 @@ public class MessageController {
 
 	public void btnCloseEvent(ActionEvent event) {
 		this.close();
+		helpEmoticon.getStage().close();
 	}
 
 	public void tfSendMsgEnterPressed(KeyEvent event) {
@@ -242,10 +244,13 @@ public class MessageController {
 	}
 
 	public void btnHelpEmoticonAction(ActionEvent action) {
-		if(helpEmoticon == null)
-			helpEmoticon = new HelpEmoticon<MessageController>(this);
-		else
+		if(helpEmoticon.getStage().isShowing())
 			helpEmoticon.focus();
+		else {
+			helpEmoticon.getStage().setX(rootStage.getX() + rootStage.getWidth());
+			helpEmoticon.getStage().setY(rootStage.getY());
+			helpEmoticon.getStage().show();
+		}
 	}
 
 	public void closeHelpEmoticon() {

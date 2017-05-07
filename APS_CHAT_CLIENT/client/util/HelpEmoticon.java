@@ -60,18 +60,22 @@ public class HelpEmoticon<T> {
 		fp.setOnMouseClicked((e) -> {
 			if(controller instanceof PrincipalController) {
 				PrincipalController controllerInstance = (PrincipalController) controller;
-				String tfText = controllerInstance.getTfMsg().getText();
-				controllerInstance.getTfMsg().setText(tfText + emoticon);
-				controllerInstance.getStage().requestFocus();
-				controllerInstance.getTfMsg().requestFocus();
-				controllerInstance.getTfMsg().positionCaret(((PrincipalController) controller).getTfMsg().getText().length());
+				if(!controllerInstance.getTfMsg().isDisabled()) {
+					String tfText = controllerInstance.getTfMsg().getText();
+					controllerInstance.getTfMsg().setText(tfText + emoticon);
+					controllerInstance.getStage().requestFocus();
+					controllerInstance.getTfMsg().requestFocus();
+					controllerInstance.getTfMsg().positionCaret(((PrincipalController) controller).getTfMsg().getText().length());
+				}
 			} else {
 				MessageController controllerInstance = (MessageController) controller;
-				String tfText = controllerInstance.getTfMsg().getText();
-				controllerInstance.getTfMsg().setText(tfText + emoticon);
-				controllerInstance.getStage().requestFocus();
-				controllerInstance.getTfMsg().requestFocus();
-				controllerInstance.getTfMsg().positionCaret(((MessageController) controller).getTfMsg().getText().length());
+				if(!controllerInstance.getTfMsg().isDisabled()) {
+					String tfText = controllerInstance.getTfMsg().getText();
+					controllerInstance.getTfMsg().setText(tfText + emoticon);
+					controllerInstance.getStage().requestFocus();
+					controllerInstance.getTfMsg().requestFocus();
+					controllerInstance.getTfMsg().positionCaret(((MessageController) controller).getTfMsg().getText().length());
+				}
 			}
 		});
 		fp.getStyleClass().add("emoticonButton");
