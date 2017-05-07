@@ -183,8 +183,8 @@ public class MessageController {
 	public void recipientReconnected() {
 		lblStatusRecipient.setText("Status: Online");
 		tfSendMsg.setText("");
-		tfSendMsg.setDisable(true);
-		btnSendMsg.setDisable(true);
+		tfSendMsg.setDisable(false);
+		btnSendMsg.setDisable(false);
 	}
 
 	public void chatMsgListEvent(ObservableList<MessageRequest> chatMsgList) {
