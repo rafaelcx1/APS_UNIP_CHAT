@@ -239,6 +239,7 @@ public class PrincipalController {
 		tfMsgBox.setDisable(true);
 		btnSendMsg.setDisable(true);
 		lblStatus.setText("Status: Sem conexão com o servidor. Reconectando...");
+		mainController.lostConnectionMessages();
 		btnLogoffReconnect.setText("Sair");
 		btnLogoffReconnect.layout();
 	}
@@ -247,6 +248,7 @@ public class PrincipalController {
 		lblStatus.setText("Status: Conectado.");
 		btnSendMsg.setDisable(false);
 		btnLogoffReconnect.setText("Logoff");
+		mainController.reconnectConnectionMessages();
 	}
 
 	public void tfMsgBoxEnterPressed(KeyEvent action) {

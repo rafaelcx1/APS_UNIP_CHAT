@@ -171,6 +171,13 @@ public class MainController extends Application {
 		}
 	}
 
+	public void onlineUser(String loginRecipient) {
+		for(MessageController window : messageWindows) {
+			if(window.getRecipient().equals(loginRecipient))
+				window.recipientReconnected();
+		}
+	}
+
 	public boolean isMessageWindowRequest(Request msg) {
 		if(msg.getOperation() == OperationType.SEND_OR_RECIEVE_MSG && !msg.getUserFrom().equals("Server") && msg.getUserTo() != null) {
 			boolean found = false;
@@ -216,6 +223,10 @@ public class MainController extends Application {
 		connection = null;
 	}
 
+	public boolean getConnectionStatus() {
+		return connectionStatus.get();
+	}
+
 	public void connectionStatusEvent(BooleanProperty connectionStatus) {
 		connectionStatus.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 			if(newValue && oldValue != newValue) {
@@ -225,6 +236,18 @@ public class MainController extends Application {
 				lostConnectionAction();
 			}
 		});
+	}
+
+	public void lostConnectionMessages() {
+		for(MessageController window : messageWindows) {
+			window.lostConnection();
+		}
+	}
+
+	public void reconnectConnectionMessages() {
+		for(MessageController window : messageWindows) {
+			window.reconnected();
+		}
 	}
 
 	public void lostConnectionAction() {

@@ -78,6 +78,7 @@ public class MessageController {
 			this.close();
 		});
 		rootStage.initStyle(StageStyle.UNDECORATED);
+		rootStage.getIcons().setAll(new Image(this.getClass().getResourceAsStream("../../view/icon.png")));
 		try {
 			FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../../view/MessageView.fxml"));
 			loader.setController(this);
@@ -88,6 +89,8 @@ public class MessageController {
 			rootStage.show();
 			tfSendMsg.requestFocus();
 			scrollPaneMsg.vvalueProperty().bind(vbMsgPane.heightProperty());
+			if(!mainController.getConnectionStatus())
+				lostConnection();
 		} catch(IOException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setContentText("An IOException has been occurred.\nDetails: " + e.getMessage() + "\n" + e.getLocalizedMessage());
@@ -173,6 +176,13 @@ public class MessageController {
 	public void recipientDisconnected() {
 		lblStatusRecipient.setText("Status: Offline");
 		tfSendMsg.setText("User Offline");
+		tfSendMsg.setDisable(true);
+		btnSendMsg.setDisable(true);
+	}
+
+	public void recipientReconnected() {
+		lblStatusRecipient.setText("Status: Online");
+		tfSendMsg.setText("");
 		tfSendMsg.setDisable(true);
 		btnSendMsg.setDisable(true);
 	}
